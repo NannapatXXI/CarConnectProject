@@ -1,11 +1,10 @@
-com/mycompany/carservice/gui/Book$2.class
+com/mycompany/carservice/gui/MainPage$2.class
 com/mycompany/carservice/gui/Page2$3.class
 com/mycompany/carservice/CarService.class
-com/mycompany/carservice/gui/Book$3.class
+com/mycompany/carservice/gui/MainPage.class
 com/mycompany/carservice/dao/DBConnection.class
-com/mycompany/carservice/gui/Book$1.class
+com/mycompany/carservice/gui/MainPage$1.class
 com/mycompany/carservice/gui/Book.class
-com/mycompany/carservice/gui/Book$4.class
 com/mycompany/carservice/gui/Page2$2.class
 com/mycompany/carservice/gui/Page2$4.class
 com/mycompany/carservice/gui/Page2$1.class
