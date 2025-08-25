@@ -4,7 +4,7 @@
 
 package com.mycompany.carservice;
 
-import com.mycompany.carservice.gui.Book;
+import com.mycompany.carservice.gui.BookingPage;
 import com.mycompany.carservice.dao.DBConnection;
 import java.sql.Connection;
 /**
@@ -15,7 +15,7 @@ public class CarService {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        new Book("Nannapat");
+        new BookingPage("Nannapat");
         
         //โหลดไฟล์ไปแล้วคอมเม้นบรรทัดพวกนี้ทิ้งด้วยเพราะเชื่อม database ไว้
          try (Connection conn = DBConnection.getConnection()) {

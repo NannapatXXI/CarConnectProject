@@ -230,7 +230,7 @@ public class Page2 extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
           dispose();
-          new Book(user);
+          new BookingPage(user);
     }//GEN-LAST:event_jButton3ActionPerformed
     
    private void insertData() {
@@ -289,7 +289,7 @@ public class Page2 extends javax.swing.JFrame {
         }
 
         jTable2.setModel(model);
-
+ 
     } catch (Exception e) {
         e.printStackTrace();
     }
