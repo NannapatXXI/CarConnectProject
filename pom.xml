@@ -13,7 +13,11 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>9.4.0</version> <!-- หรือเปลี่ยนเป็น 8.0.33 ถ้าต้องการ -->
         </dependency>
-
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>AbsoluteLayout</artifactId>
+            <version>RELEASE270</version>
+        </dependency>
     </dependencies>
 
     <properties>
