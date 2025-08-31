@@ -1,45 +1,51 @@
 package com.mycompany.carservice;
 
+import com.mycompany.carservice.entity.CSVHandler;
 import com.mycompany.carservice.gui.CsvTableDemo;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.List;       // สำหรับ List
+import com.formdev.flatlaf.FlatLightLaf;
+import javax.swing.*;
 
 public class CarService {
 
     public static void main(String[] args) {
-        
-        
-        InputStream info = CarService.class.getResourceAsStream("/data.csv");
-        if (info == null) {
-                System.out.println("ไฟล์ CSV ไม่เจอ!");
-                return;
-        }       
+          String path = "/Users/nannapat/Downloads/CarserviceProjectV0.1-main/src/main/data/user.csv";
+        CSVHandler csvHandler = new CSVHandler(path);
 
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(info))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                System.out.println("Column1: " + data[0] + " , Column2: " + data[1]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // อ่าน CSV
+        List<String[]> data = csvHandler.readCSV();
+        System.out.println("ข้อมูลที่อ่านจาก CSV:");
+        for (String[] row : data) {
+            System.out.println(String.join(" | ", row));
         }
-        
-        
+
+        // แก้ไขข้อมูล (เช่น เปลี่ยน status ของ row แรก)
+        if (data.size() > 1) { // row แรกคือ header
+            data.get(2)[4] = "WTF"; 
+            
+            //แถว 2 ช่อง 4
+        }
+
+        // เขียนทับไฟล์ CSV
+        csvHandler.writeCSV(data);
+        System.out.println("เขียนไฟล์ CSV เสร็จเรียบร้อย!");
         System.out.println("Hello World!");
-       
         try {
-            com.formdev.flatlaf.FlatLightLaf.setup();
-        } catch (Exception ex) {
-         ex.printStackTrace();
-        }
-
-        // new BookingPage("Nannapat");  // เรียก GUI ของคุณ
-
-                new CsvTableDemo().setVisible(true);
-   
+        UIManager.setLookAndFeel(new FlatLightLaf());
+        UIManager.put("Button.arc", 20);
+        UIManager.put("Component.arc", 20);
+        UIManager.put("CheckBox.arc", 20);
+        UIManager.put("ProgressBar.arc", 20);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    java.awt.EventQueue.invokeLater(() -> {
+       // new BookingPage("User");
+         new CsvTableDemo().setVisible(true);
+    });
+       
+         // new CsvTableDemo().setVisible(true);
     }
 }

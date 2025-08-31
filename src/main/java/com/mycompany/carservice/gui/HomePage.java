@@ -18,6 +18,7 @@ public class HomePage extends javax.swing.JFrame {
      */
     public HomePage() {
         initComponents();
+        SetupUi();
         setSize(1200, 800);        
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
@@ -26,6 +27,11 @@ public class HomePage extends javax.swing.JFrame {
         
     }
 
+    
+    private void SetupUi(){
+        adminBtn.setBorderPainted(false);  // ไม่วาดขอบ
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,6 +57,7 @@ public class HomePage extends javax.swing.JFrame {
         textInbtnHistory = new javax.swing.JLabel();
         profile = new javax.swing.JPanel();
         textInbtnProfile = new javax.swing.JLabel();
+        adminBtn = new javax.swing.JButton();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -221,9 +228,9 @@ public class HomePage extends javax.swing.JFrame {
         profileLayout.setHorizontalGroup(
             profileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(profileLayout.createSequentialGroup()
-                .addGap(52, 52, 52)
+                .addGap(56, 56, 56)
                 .addComponent(textInbtnProfile)
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(57, Short.MAX_VALUE))
         );
         profileLayout.setVerticalGroup(
             profileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,11 +242,29 @@ public class HomePage extends javax.swing.JFrame {
 
         jPanel2.add(profile, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 440, -1, 90));
 
+        adminBtn.setBackground(new java.awt.Color(28, 24, 24));
+        adminBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        adminBtn.setForeground(new java.awt.Color(255, 255, 255));
+        adminBtn.setText("Admin");
+        adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        adminBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                adminBtnMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                adminBtnMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                adminBtnMouseExited(evt);
+            }
+        });
+        jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 560, 164, 90));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1199, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -248,7 +273,7 @@ public class HomePage extends javax.swing.JFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 775, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -316,8 +341,21 @@ public class HomePage extends javax.swing.JFrame {
          new BookingPage("Nannapat");
     }//GEN-LAST:event_bookingMouseClicked
 
+    private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adminBtnMouseClicked
+
+    private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adminBtnMouseEntered
+
+    private void adminBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adminBtnMouseExited
+
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton adminBtn;
     private javax.swing.JPanel booking;
     private javax.swing.JPanel history;
     private javax.swing.JPanel home;
