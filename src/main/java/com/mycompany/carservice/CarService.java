@@ -1,17 +1,21 @@
 package com.mycompany.carservice;
 
 import com.mycompany.carservice.entity.CSVHandler;
-import com.mycompany.carservice.gui.History;
-
+import com.mycompany.carservice.gui.HomePage;
+import com.mycompany.carservice.gui.Profile;
 import java.io.InputStream;
 import java.util.List;       // สำหรับ List
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 
+
 public class CarService {
 
     public static void main(String[] args) {
-          CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
+          
+
+        CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
+
         // อ่าน CSV
         List<String[]> data = csvHandler.readCSV();
         System.out.println("ข้อมูลที่อ่านจาก CSV:");
@@ -34,13 +38,14 @@ public class CarService {
         UIManager.setLookAndFeel(new FlatLightLaf());
         UIManager.put("Button.arc", 20);
         UIManager.put("Component.arc", 20);
-        UIManager.put("CheckBox.arc", 20);
+        UIManager.put("TextComponent.arc", 20);
         UIManager.put("ProgressBar.arc", 20);
     } catch (Exception e) {
         e.printStackTrace();
     }
     java.awt.EventQueue.invokeLater(() -> {
-       new History();
+       //new HomePage();
+       new Profile();
         // new CsvTableDemo().setVisible(true);
     });
        

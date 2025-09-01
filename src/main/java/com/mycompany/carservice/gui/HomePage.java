@@ -179,10 +179,8 @@ public class HomePage extends javax.swing.JFrame {
         );
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setIcon(new javax.swing.ImageIcon("/Users/nannapat/Downloads/27-best-repair-garages-in-bangkok-cover.jpg")); // NOI18N
         jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        jLabel5.setIcon(new javax.swing.ImageIcon("/Users/nannapat/Downloads/ร้านคาร์แคร์-1024x683-2-2.png")); // NOI18N
         jLabel5.setText("jLabel3");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

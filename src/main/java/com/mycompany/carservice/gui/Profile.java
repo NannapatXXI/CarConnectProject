@@ -5,7 +5,13 @@
 package com.mycompany.carservice.gui;
 
 import java.awt.Color;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import com.formdev.flatlaf.FlatLightLaf;
 /**
  *
  * @author User
@@ -16,15 +22,107 @@ public class Profile extends javax.swing.JFrame {
     private String user;
     private String Tell;
     private String experience;
+    private String currentUserName = "";
+    
+    
     /**
      * Creates new form Profile
      */
     public Profile() {
+        
         initComponents();
+        setupui();
+        /*homebutton.putClientProperty("JButton.buttonType", "roundRect");
+        homebutton.putClientProperty("arc",5);
+        historybutton.putClientProperty("JButton.buttonType", "roundRect");
+        historybutton.putClientProperty("arc",5);
+        bookingbutton.putClientProperty("JButton.buttonType", "roundRect");
+        bookingbutton.putClientProperty("arc", 5);*/
          setSize(1280, 800);  
          setLocationRelativeTo(null); // จัดตรงกลางจอ
          setVisible(true);
+         loadFromCSV();
+         loadUserProfile(currentUserName);
     }
+    private void setupui(){
+        homebutton.setBorderPainted(false);
+        historybutton.setBorderPainted(false);
+        bookingbutton.setBorderPainted(false);
+        profilebutton.setBorderPainted(false);
+    }
+    private void loadFromCSV() {
+    String filePath = "src/main/data/user.csv"; // ตำแหน่งไฟล์
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        boolean isFirstLine = true;
+        while ((line = br.readLine()) != null) {
+            if (isFirstLine) { 
+                isFirstLine = false; // ข้ามบรรทัด header
+                continue;
+            }
+
+            String[] values = line.split(",");
+
+            // สมมติเลือกบรรทัดแรกสุด
+            if (values.length >= 4) {
+                usernameText.setText(values[1]);       // Name
+                tellText.setText(values[3]);       // Phone
+                experienceText.setText(values[2]); // Email (หรือเปลี่ยนเป็น exp ถ้ามี)
+            }
+            break; // โหลดแค่แถวแรกพอ
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    
+}
+private void updateFirstRowCSV(String newName, String newEmail, String newPhone) {
+    String filePath = "src/main/data/user.csv"; // ที่อยู่ไฟล์ CSV
+    List<String> lines = new ArrayList<>();          // เก็บข้อมูลแต่ละบรรทัด
+
+    // อ่านไฟล์ CSV ทั้งหมดเก็บใน list
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = br.readLine()) != null) lines.add(line);
+    } catch (IOException e) { e.printStackTrace(); }
+
+    // ✅ ถ้ามีข้อมูลมากกว่า 1 บรรทัด (มี header + อย่างน้อย 1 record)
+    if (lines.size() > 1) {
+        // แก้เฉพาะบรรทัดแรก (index 1) โดยใส่ค่าที่พิมพ์จากฟอร์ม
+        lines.set(1, "1," + newName + "," + newEmail + "," + newPhone);
+    }
+
+    // เขียน list ทั้งหมดกลับไปที่ไฟล์ (แทนที่ของเก่า)
+    try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+        for (String l : lines) pw.println(l); // วนเขียนแต่ละบรรทัด
+    } catch (IOException e) { e.printStackTrace(); }
+}
+private void loadUserProfile(String name) {
+    //userlabel.setLabel("" + currentUserName);
+    String filePath = "src/main/data/user.csv";
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        boolean isFirstLine = true;
+
+        while ((line = br.readLine()) != null) {
+            if (isFirstLine) {
+                isFirstLine = false; // ข้าม header
+                continue;
+            }
+
+            String[] values = line.split(",");
+            if (values[1].trim().equals(name)) {
+                usernameText.setText(values[1]);   // Name
+                tellText.setText(values[3]);       // Phone
+                experienceText.setText(values[2]); // Email
+                break;
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -39,15 +137,16 @@ public class Profile extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
+        userlabel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        home = new javax.swing.JPanel();
         texttInbtnHome = new javax.swing.JLabel();
-        booking = new javax.swing.JPanel();
-        texttInbtnBooking = new javax.swing.JLabel();
-        history = new javax.swing.JPanel();
+        homebutton = new javax.swing.JButton();
         texttInbtnHistory = new javax.swing.JLabel();
-        jPanel9 = new javax.swing.JPanel();
+        historybutton = new javax.swing.JButton();
+        texttInbtnBooking = new javax.swing.JLabel();
+        bookingbutton = new javax.swing.JButton();
         texttInbtnProfile = new javax.swing.JLabel();
+        profilebutton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         usernameText = new javax.swing.JTextField();
@@ -57,8 +156,8 @@ public class Profile extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        edittext = new javax.swing.JPanel();
         texttInbtnEdittext = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,26 +170,18 @@ public class Profile extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("User :");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 40, 110, 40));
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 40, 110, 40));
+
+        userlabel.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel1.add(userlabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 40, 200, 40));
 
         jPanel6.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1280, 104));
 
         jPanel2.setBackground(new java.awt.Color(28, 24, 24));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        home.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                homeMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                homeMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                homeMouseExited(evt);
-            }
-        });
-
         texttInbtnHome.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        texttInbtnHome.setForeground(new java.awt.Color(255, 255, 255));
         texttInbtnHome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         texttInbtnHome.setText("Home");
         texttInbtnHome.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -99,99 +190,67 @@ public class Profile extends javax.swing.JFrame {
                 texttInbtnHomeMouseClicked(evt);
             }
         });
+        jPanel2.add(texttInbtnHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, -1, -1));
 
-        javax.swing.GroupLayout homeLayout = new javax.swing.GroupLayout(home);
-        home.setLayout(homeLayout);
-        homeLayout.setHorizontalGroup(
-            homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homeLayout.createSequentialGroup()
-                .addGap(47, 47, 47)
-                .addComponent(texttInbtnHome)
-                .addContainerGap(52, Short.MAX_VALUE))
-        );
-        homeLayout.setVerticalGroup(
-            homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, homeLayout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
-                .addComponent(texttInbtnHome)
-                .addGap(26, 26, 26))
-        );
-
-        jPanel2.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 150, 164, 90));
-
-        booking.addMouseListener(new java.awt.event.MouseAdapter() {
+        homebutton.setBackground(new java.awt.Color(28, 24, 24));
+        homebutton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                bookingMouseEntered(evt);
+                homebuttonMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                bookingMouseExited(evt);
+                homebuttonMouseExited(evt);
             }
         });
+        jPanel2.add(homebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 164, 90));
 
-        texttInbtnBooking.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        texttInbtnBooking.setText("Booking");
-        texttInbtnBooking.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                texttInbtnBookingMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout bookingLayout = new javax.swing.GroupLayout(booking);
-        booking.setLayout(bookingLayout);
-        bookingLayout.setHorizontalGroup(
-            bookingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bookingLayout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(texttInbtnBooking)
-                .addContainerGap(38, Short.MAX_VALUE))
-        );
-        bookingLayout.setVerticalGroup(
-            bookingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookingLayout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
-                .addComponent(texttInbtnBooking)
-                .addGap(26, 26, 26))
-        );
-
-        jPanel2.add(booking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 300, 164, 90));
-
-        history.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                historyMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                historyMouseExited(evt);
-            }
-        });
-
+        texttInbtnHistory.setBackground(new java.awt.Color(255, 255, 255));
         texttInbtnHistory.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        texttInbtnHistory.setForeground(new java.awt.Color(255, 255, 255));
         texttInbtnHistory.setText("History");
         texttInbtnHistory.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 texttInbtnHistoryMouseClicked(evt);
             }
         });
+        jPanel2.add(texttInbtnHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 500, -1, -1));
 
-        javax.swing.GroupLayout historyLayout = new javax.swing.GroupLayout(history);
-        history.setLayout(historyLayout);
-        historyLayout.setHorizontalGroup(
-            historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historyLayout.createSequentialGroup()
-                .addContainerGap(47, Short.MAX_VALUE)
-                .addComponent(texttInbtnHistory)
-                .addGap(42, 42, 42))
-        );
-        historyLayout.setVerticalGroup(
-            historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(historyLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(texttInbtnHistory)
-                .addContainerGap(29, Short.MAX_VALUE))
-        );
+        historybutton.setBackground(new java.awt.Color(28, 24, 24));
+        historybutton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                historybuttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                historybuttonMouseExited(evt);
+            }
+        });
+        jPanel2.add(historybutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 164, 90));
 
-        jPanel2.add(history, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 450, 164, 90));
+        texttInbtnBooking.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        texttInbtnBooking.setForeground(new java.awt.Color(255, 255, 255));
+        texttInbtnBooking.setText("Booking");
+        texttInbtnBooking.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                texttInbtnBookingMouseClicked(evt);
+            }
+        });
+        jPanel2.add(texttInbtnBooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 360, -1, -1));
 
-        jPanel9.setBackground(new java.awt.Color(255, 157, 0));
+        bookingbutton.setBackground(new java.awt.Color(28, 24, 24));
+        bookingbutton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        bookingbutton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                bookingbuttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                bookingbuttonMouseExited(evt);
+            }
+        });
+        bookingbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bookingbuttonActionPerformed(evt);
+            }
+        });
+        jPanel2.add(bookingbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 164, 90));
 
         texttInbtnProfile.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         texttInbtnProfile.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -201,25 +260,10 @@ public class Profile extends javax.swing.JFrame {
                 texttInbtnProfileMouseClicked(evt);
             }
         });
+        jPanel2.add(texttInbtnProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 670, -1, -1));
 
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(texttInbtnProfile)
-                .addContainerGap(48, Short.MAX_VALUE))
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
-                .addComponent(texttInbtnProfile)
-                .addGap(26, 26, 26))
-        );
-
-        jPanel2.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 610, 164, 90));
+        profilebutton.setBackground(new java.awt.Color(255, 149, 0));
+        jPanel2.add(profilebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 640, 164, 90));
 
         jPanel6.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 225, 800));
 
@@ -272,16 +316,6 @@ public class Profile extends javax.swing.JFrame {
         jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, -1, -1));
 
-        edittext.setBackground(new java.awt.Color(0, 0, 0));
-        edittext.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                edittextMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                edittextMouseExited(evt);
-            }
-        });
-
         texttInbtnEdittext.setBackground(new java.awt.Color(0, 0, 0));
         texttInbtnEdittext.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         texttInbtnEdittext.setForeground(new java.awt.Color(255, 255, 255));
@@ -292,25 +326,10 @@ public class Profile extends javax.swing.JFrame {
                 texttInbtnEdittextMouseClicked(evt);
             }
         });
+        jPanel4.add(texttInbtnEdittext, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 450, -1, -1));
 
-        javax.swing.GroupLayout edittextLayout = new javax.swing.GroupLayout(edittext);
-        edittext.setLayout(edittextLayout);
-        edittextLayout.setHorizontalGroup(
-            edittextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, edittextLayout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
-                .addComponent(texttInbtnEdittext)
-                .addGap(28, 28, 28))
-        );
-        edittextLayout.setVerticalGroup(
-            edittextLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(edittextLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(texttInbtnEdittext)
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
-
-        jPanel4.add(edittext, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 440, 110, 60));
+        jButton1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 430, 110, 71));
 
         jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 871, 545));
 
@@ -342,6 +361,11 @@ public class Profile extends javax.swing.JFrame {
             System.out.println("Tell : "+ Tell);     
         experience = experienceText.getText();
             System.out.println("experience : "+ experience);
+            updateFirstRowCSV(
+        usernameText.getText(),       // Name
+        experienceText.getText(), // Email
+        tellText.getText()        // Phone 
+        );
     }//GEN-LAST:event_texttInbtnEdittextMouseClicked
 
     private void texttInbtnProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_texttInbtnProfileMouseClicked
@@ -363,82 +387,51 @@ public class Profile extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_texttInbtnHomeMouseClicked
 
-    private void homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseEntered
-        home.setBackground(Color.GRAY);
+    private void homebuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homebuttonMouseEntered
+        homebutton.setBackground(Color.GRAY);
+        texttInbtnHome.setForeground(Color.WHITE);
+    }//GEN-LAST:event_homebuttonMouseEntered
+
+    private void homebuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homebuttonMouseExited
+       homebutton.setBackground(new Color(28,24,24));
        texttInbtnHome.setForeground(Color.WHITE);
-    }//GEN-LAST:event_homeMouseEntered
+    }//GEN-LAST:event_homebuttonMouseExited
 
-    private void homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseExited
-        home.setBackground(Color.WHITE);
-         texttInbtnHome.setForeground(Color.BLACK);
-    }//GEN-LAST:event_homeMouseExited
+    private void historybuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historybuttonMouseEntered
+        historybutton.setBackground(Color.GRAY);
+        texttInbtnHistory.setForeground(Color.WHITE);
+    }//GEN-LAST:event_historybuttonMouseEntered
 
-    private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
-       
-    }//GEN-LAST:event_homeMouseClicked
+    private void historybuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historybuttonMouseExited
+        historybutton.setBackground(new Color(28,24,24));
+        texttInbtnHistory.setForeground(Color.WHITE);
+    }//GEN-LAST:event_historybuttonMouseExited
 
-    private void bookingMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingMouseEntered
-         booking.setBackground(Color.GRAY);
-         texttInbtnBooking.setForeground(Color.WHITE);
-    }//GEN-LAST:event_bookingMouseEntered
+    private void bookingbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookingbuttonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bookingbuttonActionPerformed
 
-    private void bookingMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingMouseExited
-        booking.setBackground(Color.WHITE);
-         texttInbtnBooking.setForeground(Color.BLACK);
-    }//GEN-LAST:event_bookingMouseExited
+    private void bookingbuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingbuttonMouseEntered
+        bookingbutton.setBackground(Color.GRAY);
+        texttInbtnBooking.setForeground(Color.WHITE);
+    }//GEN-LAST:event_bookingbuttonMouseEntered
 
-    private void historyMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyMouseEntered
-      history.setBackground(Color.GRAY);
-         texttInbtnHistory.setForeground(Color.WHITE);                                   
-    }//GEN-LAST:event_historyMouseEntered
-
-    private void historyMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyMouseExited
-        history.setBackground(Color.WHITE);
-         texttInbtnHistory.setForeground(Color.BLACK); 
-    }//GEN-LAST:event_historyMouseExited
-
-    private void edittextMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_edittextMouseEntered
-        edittext.setBackground(Color.GRAY);
-         texttInbtnEdittext.setForeground(Color.BLACK);  
-    }//GEN-LAST:event_edittextMouseEntered
-
-    private void edittextMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_edittextMouseExited
-        edittext.setBackground(Color.BLACK  );
-         texttInbtnEdittext.setForeground(Color.WHITE);  
-    }//GEN-LAST:event_edittextMouseExited
+    private void bookingbuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingbuttonMouseExited
+        bookingbutton.setBackground(new Color(28,24,24));
+        texttInbtnBooking.setForeground(Color.WHITE);
+    }//GEN-LAST:event_bookingbuttonMouseExited
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Profile().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel booking;
+    private javax.swing.JButton bookingbutton;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JPanel edittext;
     private javax.swing.JTextField experienceText;
-    private javax.swing.JPanel history;
-    private javax.swing.JPanel home;
+    private javax.swing.JButton historybutton;
+    private javax.swing.JButton homebutton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -449,13 +442,14 @@ public class Profile extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel9;
+    private javax.swing.JButton profilebutton;
     private javax.swing.JTextField tellText;
     private javax.swing.JLabel texttInbtnBooking;
     private javax.swing.JLabel texttInbtnEdittext;
     private javax.swing.JLabel texttInbtnHistory;
     private javax.swing.JLabel texttInbtnHome;
     private javax.swing.JLabel texttInbtnProfile;
+    private javax.swing.JLabel userlabel;
     private javax.swing.JTextField usernameText;
     // End of variables declaration//GEN-END:variables
 }
