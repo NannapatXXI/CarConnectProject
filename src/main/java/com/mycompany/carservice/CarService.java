@@ -6,6 +6,8 @@ import com.mycompany.carservice.gui.HomePage;
 import java.io.InputStream;
 import java.util.List;       // สำหรับ List
 import com.formdev.flatlaf.FlatLightLaf;
+import com.mycompany.carservice.gui.Login;
+import com.mycompany.carservice.gui.Register;
 import javax.swing.*;
 
 public class CarService {
@@ -33,18 +35,24 @@ public class CarService {
         csvHandler.writeCSV(data);
         System.out.println("เขียนไฟล์ CSV เสร็จเรียบร้อย!");
         System.out.println(" V0.3");
+        
         try {
+            
+        UIManager.put("Button.arc", 555);
+        UIManager.put("Component.arc", 555);
+        UIManager.put("CheckBox.arc", 555);
+        UIManager.put("TextComponent.arc", 555);
+        
         UIManager.setLookAndFeel(new FlatLightLaf());
-        UIManager.put("Button.arc", 20);
-        UIManager.put("Component.arc", 20);
-        UIManager.put("CheckBox.arc", 20);
-        UIManager.put("ProgressBar.arc", 20);
     } catch (Exception e) {
         e.printStackTrace();
     }
     java.awt.EventQueue.invokeLater(() -> {
-       new HomePage();
-        // new CsvTableDemo().setVisible(true);
+       //new HomePage();
+       // new CsvTableDemo().setVisible(true);
+       new Login();
+       //new Register();
+        
     });
        
          
