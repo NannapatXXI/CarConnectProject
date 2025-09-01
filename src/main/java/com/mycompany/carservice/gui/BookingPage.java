@@ -25,9 +25,10 @@ public class BookingPage extends javax.swing.JFrame {
     private int selectedTime = -1;
     private int selectedService = -1;
     private String name ;
+     private int month;
     // เพิ่มตัวแปรไว้เก็บปุ่มล่าสุดที่เลือก
     private JButton lastSelectedButton = null;
-
+   
     /**
      * Creates new form Book
      */
@@ -48,15 +49,19 @@ public class BookingPage extends javax.swing.JFrame {
         updateCalendar(); // แสดงวันครั้งแรก
     }
     
-     private void SetupUi(){
-        adminBtn.setBorderPainted(false);  // ไม่วาดขอบ
-        
+      private void SetupUi() {
+       
+        homeBtn.setBorderPainted(false); 
+        adminBtn.setBorderPainted(false); 
+        historyBtn.setBorderPainted(false); 
+        profileBtn.setBorderPainted(false); 
+    
     }
      private void updateCalendar() {
         calendarPanel.removeAll(); // เคลียร์ปุ่มเก่า
         selectedDay = -1;
         
-        int month = monthComboBox1.getSelectedIndex(); // 0-11
+            month = monthComboBox1.getSelectedIndex(); // 0-11
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
         Calendar cal = Calendar.getInstance();
@@ -105,17 +110,13 @@ public class BookingPage extends javax.swing.JFrame {
 
         jMenuItem1 = new javax.swing.JMenuItem();
         calendarPanel = new javax.swing.JPanel();
-        btnConfirm = new javax.swing.JButton();
+        confirmBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        home = new javax.swing.JPanel();
-        textInbtnHome = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
-        history = new javax.swing.JPanel();
-        textInbtnHistory = new javax.swing.JLabel();
-        profile = new javax.swing.JPanel();
-        textInbtnProfile = new javax.swing.JLabel();
+        homeBtn = new javax.swing.JButton();
         adminBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
+        historyBtn = new javax.swing.JButton();
+        bookingBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         username = new javax.swing.JLabel();
@@ -139,17 +140,18 @@ public class BookingPage extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
+        setPreferredSize(new java.awt.Dimension(1200, 800));
 
         calendarPanel.setBackground(new java.awt.Color(0, 0, 0));
         calendarPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 10, true));
         calendarPanel.setForeground(new java.awt.Color(51, 51, 0));
         calendarPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        btnConfirm.setText("Confirm");
-        btnConfirm.setToolTipText("");
-        btnConfirm.addActionListener(new java.awt.event.ActionListener() {
+        confirmBtn.setText("Confirm");
+        confirmBtn.setToolTipText("");
+        confirmBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfirmActionPerformed(evt);
+                confirmBtnActionPerformed(evt);
             }
         });
 
@@ -157,133 +159,23 @@ public class BookingPage extends javax.swing.JFrame {
         jPanel2.setForeground(new java.awt.Color(255, 153, 0));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        home.setBackground(new java.awt.Color(255, 255, 255));
-        home.setPreferredSize(new java.awt.Dimension(164, 90));
-        home.addMouseListener(new java.awt.event.MouseAdapter() {
+        homeBtn.setBackground(new java.awt.Color(28, 24, 24));
+        homeBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        homeBtn.setForeground(new java.awt.Color(255, 255, 255));
+        homeBtn.setText("Home");
+        homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        homeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                homeMouseClicked(evt);
+                homeBtnMouseClicked(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                homeMouseEntered(evt);
+                homeBtnMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                homeMouseExited(evt);
+                homeBtnMouseExited(evt);
             }
         });
-
-        textInbtnHome.setBackground(new java.awt.Color(0, 0, 0));
-        textInbtnHome.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
-        textInbtnHome.setText("Home");
-
-        javax.swing.GroupLayout homeLayout = new javax.swing.GroupLayout(home);
-        home.setLayout(homeLayout);
-        homeLayout.setHorizontalGroup(
-            homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homeLayout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(textInbtnHome)
-                .addContainerGap(57, Short.MAX_VALUE))
-        );
-        homeLayout.setVerticalGroup(
-            homeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homeLayout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(textInbtnHome, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
-        );
-
-        jPanel2.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, 164, 90));
-
-        jPanel7.setBackground(new java.awt.Color(255, 157, 0));
-        jPanel7.setPreferredSize(new java.awt.Dimension(164, 90));
-
-        jLabel11.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
-        jLabel11.setText("Booking");
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(jLabel11)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(26, Short.MAX_VALUE))
-        );
-
-        jPanel2.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 164, 90));
-
-        history.setPreferredSize(new java.awt.Dimension(164, 90));
-        history.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                historyMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                historyMouseExited(evt);
-            }
-        });
-
-        textInbtnHistory.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
-        textInbtnHistory.setText("History");
-
-        javax.swing.GroupLayout historyLayout = new javax.swing.GroupLayout(history);
-        history.setLayout(historyLayout);
-        historyLayout.setHorizontalGroup(
-            historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(historyLayout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addComponent(textInbtnHistory)
-                .addContainerGap(58, Short.MAX_VALUE))
-        );
-        historyLayout.setVerticalGroup(
-            historyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historyLayout.createSequentialGroup()
-                .addContainerGap(26, Short.MAX_VALUE)
-                .addComponent(textInbtnHistory, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32))
-        );
-
-        jPanel2.add(history, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, 164, 90));
-
-        profile.setPreferredSize(new java.awt.Dimension(164, 90));
-        profile.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                profileMouseMoved(evt);
-            }
-        });
-        profile.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                profileMouseExited(evt);
-            }
-        });
-
-        textInbtnProfile.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
-        textInbtnProfile.setText("Profile");
-
-        javax.swing.GroupLayout profileLayout = new javax.swing.GroupLayout(profile);
-        profile.setLayout(profileLayout);
-        profileLayout.setHorizontalGroup(
-            profileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(profileLayout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(textInbtnProfile)
-                .addContainerGap(61, Short.MAX_VALUE))
-        );
-        profileLayout.setVerticalGroup(
-            profileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, profileLayout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
-                .addComponent(textInbtnProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28))
-        );
-
-        jPanel2.add(profile, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 440, -1, 90));
+        jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 164, 90));
 
         adminBtn.setBackground(new java.awt.Color(28, 24, 24));
         adminBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
@@ -301,7 +193,49 @@ public class BookingPage extends javax.swing.JFrame {
                 adminBtnMouseExited(evt);
             }
         });
-        jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 560, 164, 90));
+        jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 590, 164, 90));
+
+        profileBtn.setBackground(new java.awt.Color(28, 24, 24));
+        profileBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        profileBtn.setForeground(new java.awt.Color(255, 255, 255));
+        profileBtn.setText("Profile");
+        profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        profileBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profileBtnMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                profileBtnMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                profileBtnMouseExited(evt);
+            }
+        });
+        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 460, 164, 90));
+
+        historyBtn.setBackground(new java.awt.Color(28, 24, 24));
+        historyBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        historyBtn.setForeground(new java.awt.Color(255, 255, 255));
+        historyBtn.setText("History");
+        historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        historyBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                historyBtnMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                historyBtnMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                historyBtnMouseExited(evt);
+            }
+        });
+        jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 164, 90));
+
+        bookingBtn.setBackground(new java.awt.Color(255, 157, 0));
+        bookingBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        bookingBtn.setText("Booking");
+        bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, 164, 90));
 
         jPanel1.setBackground(new java.awt.Color(58, 58, 58));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 104));
@@ -321,18 +255,18 @@ public class BookingPage extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53))
+                .addGap(27, 27, 27))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(20, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29))
+                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15))
         );
 
         monthLabel.setBackground(new java.awt.Color(255, 255, 255));
@@ -408,12 +342,12 @@ public class BookingPage extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1174, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(57, 57, 57)
                         .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -424,26 +358,16 @@ public class BookingPage extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(monthLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(17, 17, 17))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(calendarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())))
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(calendarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(17, 17, 17))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -454,7 +378,7 @@ public class BookingPage extends javax.swing.JFrame {
                         .addGap(36, 36, 36))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(timeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -462,22 +386,22 @@ public class BookingPage extends javax.swing.JFrame {
                             .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(calendarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addComponent(btnConfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25))
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 66, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 734, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
+    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
             
         
             if (selectedDay > 0) {
@@ -486,23 +410,17 @@ public class BookingPage extends javax.swing.JFrame {
                         String monthSelected = (String) monthComboBox1.getSelectedItem();
                         String timeSelected = (String) timeComboBox.getSelectedItem();
                         int daySelected = selectedDay;
+                         String service = (String) serviceComboBox1.getSelectedItem();
+                        System.out.println("คุณเลือกวันที่: " + selectedDay + "/" + (month + 1) +"   "+ timeSelected + " บริการ: " + service);
 
-                         // แปลงเดือนและเวลาเป็น LocalDateTime
-                         Month monthEnum = Month.valueOf(monthSelected.toUpperCase());
-                        int hour = Integer.parseInt(timeSelected.split("\\.")[0]);
-                        LocalDateTime bookingDate = LocalDateTime.of(
-                                Calendar.getInstance().get(Calendar.YEAR),
-                                 monthEnum.getValue(),
-                                daySelected,
-                                 hour,
-                                0
-                        );
+                        // สร้าง Dialog ของเราขึ้นมา
+                        popInBooking dialog = new popInBooking(this, true);
 
-                String service = (String) serviceComboBox1.getSelectedItem();
-                System.out.println("คุณเลือก: " + bookingDate + " บริการ: " + service);
-
-                      
-                      
+                         // ใส่ค่าที่เลือกลงใน Label ของ Dialog
+                        dialog.setDayLabel(daySelected + " " + monthSelected);
+                        dialog.setTimeLabel(timeSelected);
+                        dialog.setServiceLabel(service);
+                        dialog.setVisible(true);
                    }else{
                         System.out.println("ยังไม่ได้เลือกบริการ");
                    }
@@ -514,7 +432,7 @@ public class BookingPage extends javax.swing.JFrame {
             } else {
                 System.out.println("ยังไม่ได้เลือกวัน");
             }
-    }//GEN-LAST:event_btnConfirmActionPerformed
+    }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void timeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timeComboBoxActionPerformed
       
@@ -532,11 +450,6 @@ public class BookingPage extends javax.swing.JFrame {
              updateCalendar();
     }//GEN-LAST:event_monthComboBox1ActionPerformed
 
-    private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
-       dispose();
-       new HomePage();
-    }//GEN-LAST:event_homeMouseClicked
-
     private void serviceComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceComboBox1ActionPerformed
          if( serviceComboBox1.getSelectedItem() != "-- --"){
             selectedService = 1;
@@ -546,61 +459,70 @@ public class BookingPage extends javax.swing.JFrame {
         
     }//GEN-LAST:event_serviceComboBox1ActionPerformed
 
-    private void homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseEntered
-       home.setBackground(Color.GRAY);
-       textInbtnHome.setForeground(Color.WHITE);
-    }//GEN-LAST:event_homeMouseEntered
+    private void homeBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseExited
+        homeBtn.setBackground(new Color(28,24,24));
+    }//GEN-LAST:event_homeBtnMouseExited
 
+    private void homeBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseEntered
+        homeBtn.setBackground(Color.GRAY);
+    }//GEN-LAST:event_homeBtnMouseEntered
 
-    private void homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseExited
-         home.setBackground(Color.WHITE);
-         textInbtnHome.setForeground(Color.BLACK);
-   
-    }//GEN-LAST:event_homeMouseExited
-
-    private void historyMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyMouseEntered
-       history.setBackground(Color.GRAY);
-       textInbtnHistory.setForeground(Color.WHITE);
-    }//GEN-LAST:event_historyMouseEntered
-
-    private void historyMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyMouseExited
-        history.setBackground(Color.WHITE);
-        textInbtnHistory.setForeground(Color.BLACK);
-   
-    }//GEN-LAST:event_historyMouseExited
-
-    private void profileMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseExited
-        profile.setBackground(Color.WHITE);
-        textInbtnProfile.setForeground(Color.BLACK);
-    }//GEN-LAST:event_profileMouseExited
-
-    private void profileMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileMouseMoved
-        profile.setBackground(Color.GRAY);
-       textInbtnProfile.setForeground(Color.WHITE);
-    }//GEN-LAST:event_profileMouseMoved
+    private void homeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseClicked
+        dispose();
+        new HomePage();
+    }//GEN-LAST:event_homeBtnMouseClicked
 
     private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
-        // TODO add your handling code here:
+        dispose();
+        new AdminPage();
     }//GEN-LAST:event_adminBtnMouseClicked
 
     private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
-        // TODO add your handling code here:
+        
+         adminBtn.setBackground(Color.GRAY);
     }//GEN-LAST:event_adminBtnMouseEntered
 
     private void adminBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseExited
-        // TODO add your handling code here:
+       adminBtn.setBackground(new Color(28,24,24));
     }//GEN-LAST:event_adminBtnMouseExited
+
+    private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_profileBtnMouseClicked
+
+    private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
+     
+        profileBtn.setBackground(Color.GRAY);
+    }//GEN-LAST:event_profileBtnMouseEntered
+
+    private void profileBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseExited
+         profileBtn.setBackground(new Color(28,24,24));
+    }//GEN-LAST:event_profileBtnMouseExited
+
+    private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_historyBtnMouseClicked
+
+    private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
+       historyBtn.setBackground(Color.GRAY);
+    }//GEN-LAST:event_historyBtnMouseEntered
+
+    private void historyBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseExited
+      
+       historyBtn.setBackground(new Color(28,24,24));
+    }//GEN-LAST:event_historyBtnMouseExited
+
     
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adminBtn;
-    private javax.swing.JButton btnConfirm;
+    private javax.swing.JButton bookingBtn;
     private javax.swing.JPanel calendarPanel;
-    private javax.swing.JPanel history;
-    private javax.swing.JPanel home;
+    private javax.swing.JButton confirmBtn;
+    private javax.swing.JButton historyBtn;
+    private javax.swing.JButton homeBtn;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -613,16 +535,12 @@ public class BookingPage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JComboBox<String> monthComboBox1;
     private javax.swing.JLabel monthLabel;
     private javax.swing.JLabel monthLabel1;
     private javax.swing.JLabel monthLabel2;
-    private javax.swing.JPanel profile;
+    private javax.swing.JButton profileBtn;
     private javax.swing.JComboBox<String> serviceComboBox1;
-    private javax.swing.JLabel textInbtnHistory;
-    private javax.swing.JLabel textInbtnHome;
-    private javax.swing.JLabel textInbtnProfile;
     private javax.swing.JComboBox<String> timeComboBox;
     private javax.swing.JLabel username;
     // End of variables declaration//GEN-END:variables
