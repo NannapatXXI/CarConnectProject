@@ -11,7 +11,7 @@ import javax.swing.*;
 public class CarService {
 
     public static void main(String[] args) {
-        System.out.println(" V0.6");
+        System.out.println(" V0.7");
         try {
         UIManager.setLookAndFeel(new FlatLightLaf());
         UIManager.put("Button.arc", 20);
