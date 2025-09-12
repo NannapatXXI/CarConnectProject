@@ -10,19 +10,22 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.AbstractCellEditor;
+import javax.swing.border.MatteBorder;
 
 
 public class AdminPage extends javax.swing.JFrame {
     private ArrayList<String[]> users;
-
+    private TableRowSorter<DefaultTableModel> sorter;
     private CSVHandler csvHandler;
 
 
-   public AdminPage() {
+    public AdminPage() {
        
         initComponents();
-         SetupUi();
         csvHandler = new CSVHandler("src/main/data/user.csv");
+        //src/main/data/history_user.csv
+         SetupUi();//src/main/data/user.csv
+      
           getContentPane().setBackground(java.awt.Color.BLACK);
 
          loadCsvData();
@@ -33,8 +36,10 @@ public class AdminPage extends javax.swing.JFrame {
        
       //  addButtonColumn();
 
-}
-   private void SetupUi() {
+    }
+   
+   
+    private void SetupUi() {
         UIManager.put("Table.selectionBackground", new Color(0, 0, 0));
         UIManager.put("Table.selectionForeground", Color.WHITE);
         UIManager.put("Table.alternateRowColor", Color.GRAY);
@@ -45,80 +50,144 @@ public class AdminPage extends javax.swing.JFrame {
         profileBtn.setBorderPainted(false); 
     
     }
-     private void loadCsvData() {
-         
-         
-         
-    // อ่าน CSV ทั้งหมดมาเก็บใน List
-    users = new ArrayList<>(csvHandler.readCSV());
-    if (users.isEmpty()) return;
 
-    // --- สร้าง headers (เพิ่ม Action) ---
-    String[] headers = new String[users.get(0).length + 1];
-    System.arraycopy(users.get(0), 0, headers, 0, users.get(0).length);
-    headers[headers.length - 1] = "Action";
+    private void loadCsvData() {
+        // อ่าน CSV ทั้งหมดมาเก็บใน List
+        users = new ArrayList<>(csvHandler.readCSV());
+        if (users.isEmpty()) return;
 
-    // โมเดลตาราง
+    // --- สร้าง headers (เพิ่ม No และ Action) ---
+    String[] headers = new String[users.get(0).length + 2];
+    headers[0] = "No"; // เพิ่มคอลัมน์แรกเป็นเลขลำดับ
+    System.arraycopy(users.get(0), 0, headers, 1, users.get(0).length);
+    headers[headers.length - 1] = "Action"; // เพิ่มคอลัมน์สุดท้ายเป็นปุ่ม
+
     DefaultTableModel model = new DefaultTableModel(headers, 0);
 
-    // --- เพิ่ม TableRowSorter สำหรับ filter ---
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    jTable1.setRowSorter(sorter);
-    jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-        private void filter() {
-             String text = jTextField1.getText();
-             if (text.trim().length() == 0) {
-             sorter.setRowFilter(null); // แสดงทั้งหมด
-            } else {
-                // 🔹 กรองเฉพาะคอลัมน์ Name (index 1)
-                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, 1));
-            }
-        }
+    // เติมข้อมูลให้ model
+    for (int i = 1; i < users.size(); i++) {
+        String[] userRow = users.get(i);
+        if (userRow == null || userRow.length == 0) continue;
 
-    @Override
-    public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-    @Override
-    public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-    @Override
-    public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-    });
-        // --- เติมข้อมูลแต่ละแถว ---
-        for (int i = 1; i < users.size(); i++) {
-            String[] userRow = users.get(i);
-            if (userRow == null || userRow.length == 0) continue; // ข้ามแถวว่าง
+        String[] row = new String[userRow.length + 2]; // บวก No + Action
+        row[0] = String.valueOf(i); // ช่องแรกเป็นเลขลำดับ
+        System.arraycopy(userRow, 0, row, 1, userRow.length);
+        row[row.length - 1] = "Edit"; // ปุ่ม
 
-             String[] row = new String[userRow.length + 1];
-    
-            
-            for (int j = 0; j < userRow.length; j++) {
-                 row[j] = userRow[j];
-            }
-
-            row[row.length - 1] = "Update"; // ช่อง Action
-             model.addRow(row);
-         }
-
-
+        model.addRow(row);
+    }
 
     jTable1.setModel(model);
+    // สร้าง sorter แล้วผูกกับ JTable
+    sorter = new TableRowSorter<>(model);
+    jTable1.setRowSorter(sorter);
+
+    // --- จัดข้อความให้อยู่ตรงกลางทุก column ยกเว้น Action ---
+    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+    centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+    for (int i = 0; i < jTable1.getColumnCount(); i++) {
+        if (!jTable1.getColumnName(i).equals("Action")) {
+            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+
+    jTable1.setRowHeight(40);
 
     // --- เพิ่ม renderer + editor สำหรับปุ่ม ---
     TableColumn actionColumn = jTable1.getColumn("Action");
     actionColumn.setCellRenderer(new ButtonRenderer());
     actionColumn.setCellEditor(new ButtonEditor(jTable1, csvHandler));
+
+    // --- renderer สำหรับ status ---
+    String selected = chooseTable.getSelectedItem().toString();
+    if (selected.equals("History")) {
+        // เดิม status อยู่ index 5 (UserID...Status)
+        // ตอนนี้มี No แทรกหน้า → ต้องเลื่อนไป +1 = index 6
+        int statusColumnIndex = 8;
+        jTable1.getColumnModel().getColumn(statusColumnIndex).setCellRenderer(new StatusRenderer());
     }
+    setupFilter();
+}
+
+     
+private void setupFilter() {
+    jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        private void filter() {
+            if (sorter == null) return; // ป้องกัน null
+            String text = jTextField1.getText();
+            if (text.trim().isEmpty()) {
+                sorter.setRowFilter(null);
+            } else {
+                // กรองเฉพาะ column Name (index 1)
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, 1));
+            }
+        }
+
+        @Override
+        public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+        @Override
+        public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+        @Override
+        public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+    });
+}
+
+class StatusRenderer extends DefaultTableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, boolean hasFocus,
+                                                   int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+        if (value != null) {
+            String status = value.toString().toLowerCase();
+            if(status.equals("process")) {
+                setBackground(Color.YELLOW);
+            } else if (status.equals("completed")) {
+                setBackground(Color.GREEN);
+            } else {
+                setBackground(table.getBackground());
+            }
+        } else {
+            setBackground(table.getBackground());
+        }
+
+        setForeground(Color.BLACK);
+
+        // สร้างขอบด้านบนและล่าง สีดำ หนา 1 px
+        setBorder(new MatteBorder(1, 0, 1, 0, Color.BLACK));
+
+        setHorizontalAlignment(SwingConstants.CENTER);
+
+        return this;
+    }
+}
 
     // Renderer สำหรับปุ่ม  / Renderer = แสดงผล
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() { setOpaque(true); }//เพื่อให้ปุ่มวาดพื้นหลังของมันเอง
-        @Override //JTable จะเรียกใช้เอง
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            setText("Update");
-            return this ;//คืน JButton ที่เป็น renderer ให้ JTable เอาไปวาดแทน cell 
-        }
+   class ButtonRenderer extends JPanel implements TableCellRenderer {
+    private JButton button;
+
+    public ButtonRenderer() {
+        setOpaque(true);
+        setLayout(new GridBagLayout()); // ใช้จัดกลาง
+        button = new JButton("Edit");
+        button.setMargin(new Insets(5, 15, 5, 15)); // เพิ่ม padding ข้างในปุ่ม
+        add(button);
     }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, boolean hasFocus,
+                                                   int row, int column) {
+        if (isSelected) {
+            setBackground(table.getSelectionBackground());
+        } else {
+            setBackground(table.getBackground());
+        }
+        return this;
+    }
+}
 
     // Editor สำหรับปุ่ม  /Editor = “รับ event คลิก แล้วทำงาน
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor {//TableCellEditor คือ interface ที่ JTable ใช้เมื่อต้องการ component ที่ตอบสนองการแก้ไข
@@ -129,23 +198,35 @@ public class AdminPage extends javax.swing.JFrame {
         public ButtonEditor(JTable table, CSVHandler handler) {
             this.table = table;
             this.csvHandler = handler;
-            button = new JButton("Update");
+            button = new JButton("Edit");
             button.addActionListener(e -> {
                 int row = table.getEditingRow();//แถวที่กดปุ่ม
                 if (row != -1) {
-                    String[] data = users.get(row + 1); // row+1 เพราะ users[0] เป็น header
-                    data[1] = table.getValueAt(row, 1).toString();
-                    data[2] = table.getValueAt(row, 2).toString();
-                    data[3] = table.getValueAt(row, 3).toString();
-                    data[4] = "complete"; // เปลี่ยน status เป็น complete
+                    int colCount = table.getColumnCount() - 2;
+                    String[] data = new String[colCount];
+                    for (int i = 0; i < colCount; i++) {
+                        Object value = table.getValueAt(row, i+1);
+                        data[i] = (value != null) ? value.toString() : "";
+                    }
 
-                   
-                    csvHandler.writeCSV(users);
+                    String selected = chooseTable.getSelectedItem().toString();
+                     if(selected.equals("User")) {
+                           System.out.println("Table User :");
+                           PopInAdiminUser dialog = new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true,row, data, csvHandler);
+                           dialog.setVisible(true);
 
+                     } else if(selected.equals("History")) {
+                             System.out.println("Table History :");
+                           PopInAdiminHistory dialog= new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true,row, data, csvHandler);
+                           dialog.setVisible(true);
+
+                    }
+                    
+                         
                     
                     loadCsvData();
 
-                    System.out.println("Updated row " + row);
+                  
                 }
                 fireEditingStopped();//แจ้ง JTable ว่า editor เสร็จสิ้นแล้ว
             });
@@ -154,15 +235,24 @@ public class AdminPage extends javax.swing.JFrame {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setText("Update");
+           
             return button;
         }
 
         @Override
-        public Object getCellEditorValue() { return "Update"; }
+        public Object getCellEditorValue() { return "Edit"; }
     }
 
-
+    // ฟังก์ชันสลับ CSV
+private void switchTable() {
+    String selected = chooseTable.getSelectedItem().toString();
+    if(selected.equals("User")) {
+        csvHandler = new CSVHandler("src/main/data/user.csv");
+    } else if(selected.equals("History")) {
+        csvHandler = new CSVHandler("src/main/data/history_user.csv");
+    }
+    loadCsvData(); // โหลดข้อมูลใหม่
+}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -174,6 +264,8 @@ public class AdminPage extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        chooseTable = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         homeBtn = new javax.swing.JButton();
         adminBtn = new javax.swing.JButton();
@@ -186,7 +278,6 @@ public class AdminPage extends javax.swing.JFrame {
         username = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1200, 800));
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -201,7 +292,7 @@ public class AdminPage extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTable1);
 
-        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 50, 660, 560));
+        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 50, 740, 560));
 
         jButton1.setText("TestWindow");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -213,8 +304,20 @@ public class AdminPage extends javax.swing.JFrame {
         jPanel3.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 10, 130, -1));
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Search : Name");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, -1, -1));
+        jLabel3.setText("Search : ID");
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 0, -1, 40));
+
+        chooseTable.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "User", "History" }));
+        chooseTable.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseTableActionPerformed(evt);
+            }
+        });
+        jPanel3.add(chooseTable, new org.netbeans.lib.awtextra.AbsoluteConstraints(686, 10, 110, -1));
+
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Table :");
+        jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 10, -1, 20));
 
         jPanel2.setBackground(new java.awt.Color(28, 24, 24));
         jPanel2.setForeground(new java.awt.Color(255, 153, 0));
@@ -338,26 +441,22 @@ public class AdminPage extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1206, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(53, 53, 53)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 825, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 104, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(53, 53, 53)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 825, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(110, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1212, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(25, 25, 25))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 734, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(31, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -417,15 +516,21 @@ public class AdminPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void chooseTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseTableActionPerformed
+        switchTable();
+    }//GEN-LAST:event_chooseTableActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adminBtn;
     private javax.swing.JButton bookingBtn;
+    private javax.swing.JComboBox<String> chooseTable;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -9,10 +9,11 @@ import java.awt.event.*;
 import java.util.Calendar;
 import javax.swing.*;
 import java.awt.Font;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
+
+import java.time.*;
+
 import java.awt.Dimension;
+import java.util.HashSet;
 
 /**
  *
@@ -29,24 +30,27 @@ public class BookingPage extends javax.swing.JFrame {
     // เพิ่มตัวแปรไว้เก็บปุ่มล่าสุดที่เลือก
     private JButton lastSelectedButton = null;
    
-    /**
-     * Creates new form Book
-     */
+ 
     public BookingPage(String name) {
         this.name = name;
+        
         initComponents();
         SetupUi();
        getContentPane().setBackground(java.awt.Color.BLACK);
 
         setSize(1200, 800);        
-        setLocationRelativeTo(null); // จัดกลางหน้าจอ
+        setLocationRelativeTo(null); 
         setVisible(true);
         
-     
-        username.setText(name);
+     LocalDate today = LocalDate.now(); //วันปัจจุบัน
+    int monthValue = today.getMonthValue(); // 1-12
+      System.out.println("เดือนปัจจุบัน :" + monthValue );
+    monthComboBox1.setSelectedIndex(monthValue - 1);
+    
+        userName.setText(name);
        
         calendarPanel.setLayout(new java.awt.GridLayout(0, 7,5, 5));
-        updateCalendar(); // แสดงวันครั้งแรก
+        updateCalendar(); 
     }
     
       private void SetupUi() {
@@ -55,52 +59,76 @@ public class BookingPage extends javax.swing.JFrame {
         adminBtn.setBorderPainted(false); 
         historyBtn.setBorderPainted(false); 
         profileBtn.setBorderPainted(false); 
+        
+        
+        
     
     }
-     private void updateCalendar() {
-        calendarPanel.removeAll(); // เคลียร์ปุ่มเก่า
-        selectedDay = -1;
-        
-            month = monthComboBox1.getSelectedIndex(); // 0-11
-        int year = Calendar.getInstance().get(Calendar.YEAR);
+private void updateCalendar() {
+    calendarPanel.removeAll(); 
+    selectedDay = -1;
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, 1);
-        int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-        
-      for (int i = 1; i <= daysInMonth; i++) {
-            JButton dayButton = new JButton(String.valueOf(i));
-            dayButton.setPreferredSize(new Dimension(20, 20));
-            dayButton.setFont(new Font("Helvetica Neue", Font.PLAIN, 14));
+    LocalDate today = LocalDate.now(); // วันปัจจุบัน
 
-    
-            dayButton.setFocusPainted(false); // ไม่ต้องโชว์เส้นขอบเวลา focus
-            dayButton.setBorderPainted(false); // เอาเส้นขอบ default ออก
-            dayButton.setContentAreaFilled(true);    // บังคับให้ระบายสี
-            dayButton.setOpaque(true);  // ให้ background ที่ set() แสดงจริง
+    // ดึงเดือนจาก monthComboBox (1-12)
+    final int monthIndex = monthComboBox1.getSelectedIndex() + 1; // ทำให้ final
 
-            dayButton.addActionListener((ActionEvent e) -> {
-                    selectedDay = Integer.parseInt(dayButton.getText());
-                    System.out.println("เลือกวันที่: " + selectedDay + "/" + (month + 1));
+    // ดึงปีจาก yearComboBox
+    int yearTemp = 0;
+    try {
+        String yearStr = (String) yearComboBox.getSelectedItem(); // เช่น "2025"
+        yearTemp = Integer.parseInt(yearStr);
+    } catch (Exception e) {
+        yearTemp = today.getYear(); // fallback
+    }
+    final int year = yearTemp; // copy เป็น final
 
-                    // reset ปุ่มเก่า
-                    if (lastSelectedButton != null) {
+    // ใช้ YearMonth หาเดือน/จำนวนวัน
+    YearMonth yearMonth = YearMonth.of(year, monthIndex);
+    int daysInMonth = yearMonth.lengthOfMonth();
+
+    for (int i = 1; i <= daysInMonth; i++) {
+        final int day = i; // copy เป็น final
+        JButton dayButton = new JButton(String.valueOf(day));
+        final JButton currentButton = dayButton; // ต้อง final เพื่อใช้ใน lambda
+
+        dayButton.setPreferredSize(new Dimension(20, 20));
+        dayButton.setFont(new Font("Helvetica Neue", Font.PLAIN, 14));
+        dayButton.setFocusPainted(false);
+        dayButton.setBorderPainted(false);
+        dayButton.setContentAreaFilled(true);
+        dayButton.setOpaque(true);
+
+        LocalDate buttonDate = LocalDate.of(year, monthIndex, day);
+
+        // ถ้าวันนี้ผ่านมาแล้ว
+        if (buttonDate.isBefore(today)) {
+            dayButton.setEnabled(false);
+            dayButton.setBackground(Color.LIGHT_GRAY);
+        } else {
+            dayButton.setForeground(Color.BLACK);
+
+            // Action เมื่อกดเลือกวัน
+            currentButton.addActionListener((ActionEvent e) -> {
+                selectedDay = day;
+                System.out.println("เลือกวันที่: " + selectedDay + "/" + monthIndex + "/" + year);
+
+                if (lastSelectedButton != null) {
                     lastSelectedButton.setBackground(UIManager.getColor("Button.background"));
                     lastSelectedButton.setForeground(Color.BLACK);
-             }
+                }
 
-       
-        dayButton.setBackground(Color.GREEN);
-        lastSelectedButton = dayButton;
-    });
+                currentButton.setBackground(Color.GREEN);
+                lastSelectedButton = currentButton;
+            });
+        }
 
-    calendarPanel.add(dayButton);
-}
-
-
-        calendarPanel.revalidate();
-        calendarPanel.repaint();
+        calendarPanel.add(currentButton);
     }
+
+    calendarPanel.revalidate();
+    calendarPanel.repaint();
+}
 
 
    
@@ -119,7 +147,7 @@ public class BookingPage extends javax.swing.JFrame {
         bookingBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        username = new javax.swing.JLabel();
+        userName = new javax.swing.JLabel();
         monthLabel = new javax.swing.JLabel();
         timeComboBox = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
@@ -135,12 +163,13 @@ public class BookingPage extends javax.swing.JFrame {
         monthComboBox1 = new javax.swing.JComboBox<>();
         monthLabel2 = new javax.swing.JLabel();
         serviceComboBox1 = new javax.swing.JComboBox<>();
+        monthLabel3 = new javax.swing.JLabel();
+        yearComboBox = new javax.swing.JComboBox<>();
 
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
-        setPreferredSize(new java.awt.Dimension(1200, 800));
 
         calendarPanel.setBackground(new java.awt.Color(0, 0, 0));
         calendarPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 10, true));
@@ -175,7 +204,7 @@ public class BookingPage extends javax.swing.JFrame {
                 homeBtnMouseExited(evt);
             }
         });
-        jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 164, 90));
+        jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 164, 90));
 
         adminBtn.setBackground(new java.awt.Color(28, 24, 24));
         adminBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
@@ -193,7 +222,7 @@ public class BookingPage extends javax.swing.JFrame {
                 adminBtnMouseExited(evt);
             }
         });
-        jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 590, 164, 90));
+        jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 560, 164, 90));
 
         profileBtn.setBackground(new java.awt.Color(28, 24, 24));
         profileBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
@@ -211,7 +240,7 @@ public class BookingPage extends javax.swing.JFrame {
                 profileBtnMouseExited(evt);
             }
         });
-        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 460, 164, 90));
+        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 430, 164, 90));
 
         historyBtn.setBackground(new java.awt.Color(28, 24, 24));
         historyBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
@@ -229,13 +258,13 @@ public class BookingPage extends javax.swing.JFrame {
                 historyBtnMouseExited(evt);
             }
         });
-        jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 164, 90));
+        jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, 164, 90));
 
         bookingBtn.setBackground(new java.awt.Color(255, 157, 0));
         bookingBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         bookingBtn.setText("Booking");
         bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
-        jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, 164, 90));
+        jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 164, 90));
 
         jPanel1.setBackground(new java.awt.Color(58, 58, 58));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 104));
@@ -244,9 +273,9 @@ public class BookingPage extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("User :");
 
-        username.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
-        username.setForeground(new java.awt.Color(255, 255, 255));
-        username.setText("....");
+        userName.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        userName.setForeground(new java.awt.Color(255, 255, 255));
+        userName.setText("....");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -256,7 +285,7 @@ public class BookingPage extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(userName, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27))
         );
         jPanel1Layout.setVerticalGroup(
@@ -264,7 +293,7 @@ public class BookingPage extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(20, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(userName, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15))
         );
@@ -272,7 +301,7 @@ public class BookingPage extends javax.swing.JFrame {
         monthLabel.setBackground(new java.awt.Color(255, 255, 255));
         monthLabel.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         monthLabel.setForeground(new java.awt.Color(255, 255, 255));
-        monthLabel.setText("   Month :");
+        monthLabel.setText("Year :");
 
         timeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- -- ", "10.00", "11.00", "12.00", "13.00", "14.00", "15.00", "16.00", "17.00" }));
         timeComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -285,31 +314,31 @@ public class BookingPage extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel2.setText("Monday");
-        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 70, 40));
+        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 70, 40));
 
         jLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel3.setText("Tuesday");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, -1, -1));
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel4.setText("Wednesday");
-        jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 20, -1, -1));
+        jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 10, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel5.setText("Thursday");
-        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 20, -1, -1));
+        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 10, -1, -1));
 
         jLabel6.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel6.setText("Friday");
-        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, -1, -1));
+        jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 10, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel7.setText("Saturday");
-        jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, -1, -1));
+        jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 10, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         jLabel8.setText("Sunday");
-        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 20, -1, -1));
+        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 10, -1, -1));
 
         jPanel4.setBackground(new java.awt.Color(51, 255, 0));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -331,10 +360,22 @@ public class BookingPage extends javax.swing.JFrame {
         monthLabel2.setForeground(new java.awt.Color(255, 255, 255));
         monthLabel2.setText("Service :");
 
-        serviceComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- -- ", "Wash a car", "Repair a car" }));
+        serviceComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- -- ", "Wash a car", "Repair and Check" }));
         serviceComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 serviceComboBox1ActionPerformed(evt);
+            }
+        });
+
+        monthLabel3.setBackground(new java.awt.Color(255, 255, 255));
+        monthLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        monthLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        monthLabel3.setText("   Month :");
+
+        yearComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "2026", "2027", "2028" }));
+        yearComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                yearComboBoxActionPerformed(evt);
             }
         });
 
@@ -342,32 +383,40 @@ public class BookingPage extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1222, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(41, 41, 41)
+                        .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
+                        .addGap(18, 18, 18)
+                        .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                         .addComponent(monthLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(timeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(34, 34, 34)
                         .addComponent(monthLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(69, 69, 69))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(calendarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(17, 17, 17))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(846, 846, 846)
+                                .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -378,23 +427,25 @@ public class BookingPage extends javax.swing.JFrame {
                         .addGap(36, 36, 36))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(timeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(26, 26, 26)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(calendarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
+                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 66, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 734, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -414,13 +465,15 @@ public class BookingPage extends javax.swing.JFrame {
                         System.out.println("คุณเลือกวันที่: " + selectedDay + "/" + (month + 1) +"   "+ timeSelected + " บริการ: " + service);
 
                         // สร้าง Dialog ของเราขึ้นมา
-                        popInBooking dialog = new popInBooking(this, true);
+                        PopInBooking dialog = new PopInBooking(this, true,name);
 
                          // ใส่ค่าที่เลือกลงใน Label ของ Dialog
                         dialog.setDayLabel(daySelected + " " + monthSelected);
                         dialog.setTimeLabel(timeSelected);
                         dialog.setServiceLabel(service);
                         dialog.setVisible(true);
+                        
+                        
                    }else{
                         System.out.println("ยังไม่ได้เลือกบริการ");
                    }
@@ -512,6 +565,10 @@ public class BookingPage extends javax.swing.JFrame {
        historyBtn.setBackground(new Color(28,24,24));
     }//GEN-LAST:event_historyBtnMouseExited
 
+    private void yearComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearComboBoxActionPerformed
+       updateCalendar();
+    }//GEN-LAST:event_yearComboBoxActionPerformed
+
     
    
 
@@ -539,9 +596,11 @@ public class BookingPage extends javax.swing.JFrame {
     private javax.swing.JLabel monthLabel;
     private javax.swing.JLabel monthLabel1;
     private javax.swing.JLabel monthLabel2;
+    private javax.swing.JLabel monthLabel3;
     private javax.swing.JButton profileBtn;
     private javax.swing.JComboBox<String> serviceComboBox1;
     private javax.swing.JComboBox<String> timeComboBox;
-    private javax.swing.JLabel username;
+    private javax.swing.JLabel userName;
+    private javax.swing.JComboBox<String> yearComboBox;
     // End of variables declaration//GEN-END:variables
 }

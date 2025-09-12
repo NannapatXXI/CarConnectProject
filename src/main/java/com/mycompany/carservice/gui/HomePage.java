@@ -249,7 +249,7 @@ public class HomePage extends javax.swing.JFrame {
 
     private void bookingBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseClicked
         dispose();
-        new BookingPage("Test");
+        new BookingPage("อนุชา แก้วใส");
     }//GEN-LAST:event_bookingBtnMouseClicked
 
     private void bookingBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseEntered
