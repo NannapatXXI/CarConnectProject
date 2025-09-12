@@ -1,10 +1,9 @@
 package com.mycompany.carservice;
 
-import com.mycompany.carservice.entity.CSVHandler;
+
 import com.mycompany.carservice.gui.HomePage;
 
-import java.io.InputStream;
-import java.util.List;       // สำหรับ List
+
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 
@@ -12,7 +11,7 @@ import javax.swing.*;
 public class CarService {
 
     public static void main(String[] args) {
-        System.out.println(" V0.3");
+        System.out.println(" V0.6");
         try {
         UIManager.setLookAndFeel(new FlatLightLaf());
         UIManager.put("Button.arc", 20);
