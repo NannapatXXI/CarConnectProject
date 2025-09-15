@@ -51,208 +51,271 @@ public class AdminPage extends javax.swing.JFrame {
     
     }
 
-    private void loadCsvData() {
-        // อ่าน CSV ทั้งหมดมาเก็บใน List
-        users = new ArrayList<>(csvHandler.readCSV());
-        if (users.isEmpty()) return;
+   private void loadCsvData() {
+    users = new ArrayList<>(csvHandler.readCSV());
+    if (users.isEmpty()) return;
 
-    // --- สร้าง headers (เพิ่ม No และ Action) ---
-    String[] headers = new String[users.get(0).length + 2];
-    headers[0] = "No"; // เพิ่มคอลัมน์แรกเป็นเลขลำดับ
-    System.arraycopy(users.get(0), 0, headers, 1, users.get(0).length);
-    headers[headers.length - 1] = "Action"; // เพิ่มคอลัมน์สุดท้ายเป็นปุ่ม
+    // header จากไฟล์จริง
+    String[] fileHeaders = users.get(0); // บรรทัดแรกคือ header
+    String[] headers = new String[fileHeaders.length + 2];
+    headers[0] = "No";
+    System.arraycopy(fileHeaders, 0, headers, 1, fileHeaders.length);
+    headers[headers.length - 1] = "Action";
 
     DefaultTableModel model = new DefaultTableModel(headers, 0);
 
-    // เติมข้อมูลให้ model
+    // เติมข้อมูล (เริ่มจากบรรทัดที่ 2 ของ CSV)
     for (int i = 1; i < users.size(); i++) {
         String[] userRow = users.get(i);
         if (userRow == null || userRow.length == 0) continue;
 
-        String[] row = new String[userRow.length + 2]; // บวก No + Action
-        row[0] = String.valueOf(i); // ช่องแรกเป็นเลขลำดับ
+        String[] row = new String[userRow.length + 2];
+        row[0] = null; // No
         System.arraycopy(userRow, 0, row, 1, userRow.length);
-        row[row.length - 1] = "Edit"; // ปุ่ม
+        row[row.length - 1] = "Edit"; // Action ปุ่ม
 
         model.addRow(row);
     }
 
     jTable1.setModel(model);
-    // สร้าง sorter แล้วผูกกับ JTable
+    jTable1.setRowHeight(50);
+
+    // --- คอลัมน์ No ---
+    jTable1.getColumn("No").setCellRenderer(new RowNumberRenderer());
+
+    // sorter
     sorter = new TableRowSorter<>(model);
     jTable1.setRowSorter(sorter);
 
-    // --- จัดข้อความให้อยู่ตรงกลางทุก column ยกเว้น Action ---
+    // --- จัดกลาง ---
     DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
     centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
     for (int i = 0; i < jTable1.getColumnCount(); i++) {
-        if (!jTable1.getColumnName(i).equals("Action")) {
+        if (!jTable1.getColumnName(i).equals("Action") &&
+            !jTable1.getColumnName(i).equals("No")) {
             jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
 
-    jTable1.setRowHeight(40);
-
-    // --- เพิ่ม renderer + editor สำหรับปุ่ม ---
+    // --- ปุ่ม Action ---
     TableColumn actionColumn = jTable1.getColumn("Action");
     actionColumn.setCellRenderer(new ButtonRenderer());
     actionColumn.setCellEditor(new ButtonEditor(jTable1, csvHandler));
+    actionColumn.setPreferredWidth(120);
 
-    // --- renderer สำหรับ status ---
+    // --- ถ้าเป็น History ให้ใส่ status renderer ---
     String selected = chooseTable.getSelectedItem().toString();
     if (selected.equals("History")) {
-        // เดิม status อยู่ index 5 (UserID...Status)
-        // ตอนนี้มี No แทรกหน้า → ต้องเลื่อนไป +1 = index 6
-        int statusColumnIndex = 8;
+        int statusColumnIndex = headers.length - 2; // Status อยู่ก่อน Action
         jTable1.getColumnModel().getColumn(statusColumnIndex).setCellRenderer(new StatusRenderer());
     }
+
     setupFilter();
 }
 
      
-private void setupFilter() {
-    jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-        private void filter() {
-            if (sorter == null) return; // ป้องกัน null
-            String text = jTextField1.getText();
-            if (text.trim().isEmpty()) {
-                sorter.setRowFilter(null);
-            } else {
-                // กรองเฉพาะ column Name (index 1)
+    private void setupFilter() {
+        jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void filter() {
+                 if (sorter == null) return; // ป้องกัน null
+                    String text = jTextField1.getText();
+                 if (text.trim().isEmpty()) {
+                    sorter.setRowFilter(null);
+                 } else {
+                 // กรองเฉพาะ column Name (index 1)
                 sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, 1));
+                }
             }
-        }
 
-        @Override
-        public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-        @Override
-        public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-        @Override
-        public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-    });
-}
+             @Override
+             public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+             @Override
+             public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+             @Override
+             public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+        });
+    }
 
-class StatusRenderer extends DefaultTableCellRenderer {
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
+    class StatusRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
-        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        if (value != null) {
-            String status = value.toString().toLowerCase();
-            if(status.equals("process")) {
-                setBackground(Color.YELLOW);
-            } else if (status.equals("completed")) {
-                setBackground(Color.GREEN);
+            if (value != null) {
+                
+                 String status = value.toString().toLowerCase();
+                 
+                    if(status.equals("process")) {
+                         setBackground(Color.YELLOW);
+                    } else if (status.equals("completed")) {
+                         setBackground(Color.GREEN);
+                    } else {
+                         setBackground(table.getBackground());
+                    }
             } else {
-                setBackground(table.getBackground());
+                  setBackground(table.getBackground());
             }
-        } else {
-            setBackground(table.getBackground());
+
+            setForeground(Color.BLACK);
+
+             // สร้างขอบด้านบนและล่าง สีดำ หนา 1 px
+             setBorder(new MatteBorder(1, 0, 1, 0, Color.BLACK));
+
+             setHorizontalAlignment(SwingConstants.CENTER);
+
+             return this;
         }
-
-        setForeground(Color.BLACK);
-
-        // สร้างขอบด้านบนและล่าง สีดำ หนา 1 px
-        setBorder(new MatteBorder(1, 0, 1, 0, Color.BLACK));
-
-        setHorizontalAlignment(SwingConstants.CENTER);
-
-        return this;
     }
-}
 
     // Renderer สำหรับปุ่ม  / Renderer = แสดงผล
-   class ButtonRenderer extends JPanel implements TableCellRenderer {
-    private JButton button;
+    class ButtonRenderer extends JPanel implements TableCellRenderer {
+       private final JButton editButton;
+       private final JButton deleteButton;
 
-    public ButtonRenderer() {
-        setOpaque(true);
-        setLayout(new GridBagLayout()); // ใช้จัดกลาง
-        button = new JButton("Edit");
-        button.setMargin(new Insets(5, 15, 5, 15)); // เพิ่ม padding ข้างในปุ่ม
-        add(button);
-    }
+        public ButtonRenderer() {
+            setOpaque(true);
+             editButton = new JButton("Edit");
+            deleteButton = new JButton("Delete");
+            
+            setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+            
+          editButton.setMargin(new Insets(10,10,5,10));
+          deleteButton.setMargin(new Insets(10,10,5,10));
+           
+           
+            add(editButton);
+            add(deleteButton);
+        }
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
-        if (isSelected) {
-            setBackground(table.getSelectionBackground());
-        } else {
-            setBackground(table.getBackground());
+           
+            if (isSelected) {
+               setBackground(table.getSelectionBackground());
+            } else {
+               setBackground(table.getBackground());
+            }
+            
+             return this;
         }
-        return this;
     }
-}
 
     // Editor สำหรับปุ่ม  /Editor = “รับ event คลิก แล้วทำงาน
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor {//TableCellEditor คือ interface ที่ JTable ใช้เมื่อต้องการ component ที่ตอบสนองการแก้ไข
-        private JButton button;
-        private JTable table;
-        private CSVHandler csvHandler;
-        //JTable จะเรียกใช้เอง
-        public ButtonEditor(JTable table, CSVHandler handler) {
-            this.table = table;
-            this.csvHandler = handler;
-            button = new JButton("Edit");
-            button.addActionListener(e -> {
-                int row = table.getEditingRow();//แถวที่กดปุ่ม
-                if (row != -1) {
-                    int colCount = table.getColumnCount() - 2;
-                    String[] data = new String[colCount];
-                    for (int i = 0; i < colCount; i++) {
-                        Object value = table.getValueAt(row, i+1);
-                        data[i] = (value != null) ? value.toString() : "";
-                    }
+        private final JPanel panel;
+    private final JButton editButton;
+    private final JButton deleteButton;
+    private final JTable table;
+    private final CSVHandler csvHandler;
 
-                    String selected = chooseTable.getSelectedItem().toString();
-                     if(selected.equals("User")) {
-                           System.out.println("Table User :");
-                           PopInAdiminUser dialog = new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true,row, data, csvHandler);
-                           dialog.setVisible(true);
+    public ButtonEditor(JTable table, CSVHandler handler) {
+        this.table = table;
+        this.csvHandler = handler;
 
-                     } else if(selected.equals("History")) {
-                             System.out.println("Table History :");
-                           PopInAdiminHistory dialog= new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true,row, data, csvHandler);
-                           dialog.setVisible(true);
+       panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
-                    }
-                    
-                         
-                    
-                    loadCsvData();
+        editButton = new JButton("Edit");
+        deleteButton = new JButton("Delete");
+       
+        editButton.setMargin(new Insets(10,10,5,10));
+        deleteButton.setMargin(new Insets(10,10,5,10));
 
-                  
+        panel.add(editButton);
+        panel.add(deleteButton);
+        // Event Edit
+        editButton.addActionListener(e -> {
+            int row = table.getEditingRow();
+            if(row != -1) openEditDialog(row);
+            fireEditingStopped();
+        });
+
+        // Event Delete
+        deleteButton.addActionListener(e -> {
+            int row = table.getEditingRow();
+            if(row != -1) {
+                int confirm = JOptionPane.showConfirmDialog(
+                        SwingUtilities.getWindowAncestor(table),
+                        "Are you sure you want to delete this row?",
+                        "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                if(confirm == JOptionPane.YES_OPTION) {
+                    deleteRow(row+1);
+                    loadCsvData(); // รีโหลด table หลังลบ
                 }
-                fireEditingStopped();//แจ้ง JTable ว่า editor เสร็จสิ้นแล้ว
-            });
+            }
+            fireEditingStopped();
+            
+        });
+    }
+
+    private void openEditDialog(int row) {
+        int colCount = table.getColumnCount() - 2;
+        String[] data = new String[colCount];
+        for (int i = 0; i < colCount; i++) {
+            Object value = table.getValueAt(row, i + 1);
+            data[i] = value != null ? value.toString() : "";
         }
 
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-           
-            return button;
+        String selected = chooseTable.getSelectedItem().toString();
+        if(selected.equals("User")) {
+            new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true, row, data, csvHandler).setVisible(true);
+        } else if(selected.equals("History")) {
+            new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true, row, data, csvHandler).setVisible(true);
         }
+    }
 
-        @Override
-        public Object getCellEditorValue() { return "Edit"; }
+    private void deleteRow(int row) {
+        try {
+            // ลบจาก CSV
+            csvHandler.deleteRow(row); // ต้องมี method deleteRow ใน CSVHandler
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(table, "Failed to delete row: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+         
+        return panel;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        return null;
+    }
     }
 
     // ฟังก์ชันสลับ CSV
-private void switchTable() {
-    String selected = chooseTable.getSelectedItem().toString();
-    if(selected.equals("User")) {
-        csvHandler = new CSVHandler("src/main/data/user.csv");
-    } else if(selected.equals("History")) {
-        csvHandler = new CSVHandler("src/main/data/history_user.csv");
+    private void switchTable() {
+        String selected = chooseTable.getSelectedItem().toString();
+        if(selected.equals("User")) {
+             csvHandler = new CSVHandler("src/main/data/user.csv");
+        } else if(selected.equals("History")) {
+            csvHandler = new CSVHandler("src/main/data/history_user.csv");
+        }
+        loadCsvData(); // โหลดข้อมูลใหม่
     }
-    loadCsvData(); // โหลดข้อมูลใหม่
-}
+
+    class RowNumberRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, boolean hasFocus,
+                                                   int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            // แสดงหมายเลขลำดับตาม row ที่เห็น (หลัง filter/sort แล้ว)
+            setText(String.valueOf(row + 1));
+            setHorizontalAlignment(SwingConstants.CENTER);
+
+       
+            return this;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -282,7 +345,7 @@ private void switchTable() {
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTable1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTable1.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -293,7 +356,7 @@ private void switchTable() {
         ));
         jScrollPane2.setViewportView(jTable1);
 
-        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 50, 740, 560));
+        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 50, 840, 560));
 
         jButton1.setText("TestWindow");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -412,7 +475,7 @@ private void switchTable() {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("User :");
 
-        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        username.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         username.setForeground(new java.awt.Color(255, 255, 255));
         username.setText("....");
 
@@ -421,7 +484,7 @@ private void switchTable() {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(987, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -430,7 +493,7 @@ private void switchTable() {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(19, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -444,8 +507,8 @@ private void switchTable() {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(53, 53, 53)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 825, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(110, Short.MAX_VALUE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 880, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1212, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -464,7 +527,8 @@ private void switchTable() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
-        // TODO add your handling code here:
+       dispose();
+        new Profile();
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
@@ -476,7 +540,8 @@ private void switchTable() {
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
-        // TODO add your handling code here:
+        dispose();
+        new History();
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered

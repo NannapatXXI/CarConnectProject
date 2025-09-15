@@ -5,10 +5,7 @@
 package com.mycompany.carservice.gui;
 
 import java.awt.*;
-import java.net.URL;
 import javax.swing.*;
-import java.io.*;
-import java.util.*;
 
 /**
  *
@@ -21,32 +18,20 @@ public class Register extends javax.swing.JFrame {
     /**
      * Creates new form Register
      */
-        public Register() {
-                initComponents();
-                        setSize(1200, 800);  
-                        setLocationRelativeTo(null);
-                        setVisible(true);
-                        cautionusername.setVisible(false); 
-                        cautionpass.setVisible(false); 
-                        cautionconfirmpass.setVisible(false); 
-                        cautiontel.setVisible(false); 
-//                        iconusername.setIcon(new ImageIcon(getClass().getResource("/image/user.png")));
-//                        iconpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
-//                        iconconfirmpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
-//                        icontel.setIcon(new ImageIcon(getClass().getResource("/image/phone-call.png")));
-                try {
-                    URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
-                    URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
-                    URL telIconURL = new File("src/main/image/phone-call.png").toURI().toURL();
-                    iconusername.setIcon(new ImageIcon(userIconURL));
-                    iconpassword.setIcon(new ImageIcon(passIconURL));
-                    icontel.setIcon(new ImageIcon(passIconURL));
-                    icontel.setIcon(new ImageIcon(telIconURL));
-                } catch (Exception e) {
-                    System.out.println(e);
-                    logger.severe("Cannot load icon images");
-                }
-        }
+    public Register() {
+        initComponents();
+            setSize(1200, 800);  
+            setLocationRelativeTo(null);
+            setVisible(true);
+            cautionusername.setVisible(false); 
+            cautionpass.setVisible(false); 
+            cautionconfirmpass.setVisible(false); 
+            cautiontel.setVisible(false); 
+            iconusername.setIcon(new ImageIcon(getClass().getResource("/image/user.png")));
+            iconpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
+            iconconfirmpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
+            icontel.setIcon(new ImageIcon(getClass().getResource("/image/phone-call.png")));
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -62,27 +47,24 @@ public class Register extends javax.swing.JFrame {
         registerButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         logButton = new javax.swing.JButton();
+        cautionusername = new javax.swing.JLabel();
+        cautionpass = new javax.swing.JLabel();
         cautionconfirmpass = new javax.swing.JLabel();
+        cautiontel = new javax.swing.JLabel();
         iconusername = new javax.swing.JLabel();
         iconpassword = new javax.swing.JLabel();
-        icontel = new javax.swing.JLabel();
-        iconemail = new javax.swing.JLabel();
         iconconfirmpassword = new javax.swing.JLabel();
+        icontel = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         username = new javax.swing.JTextField();
         password = new javax.swing.JPasswordField();
         confirmPassword = new javax.swing.JPasswordField();
         jLabel6 = new javax.swing.JLabel();
-        registerFinish = new javax.swing.JButton();
-        cautionpass = new javax.swing.JLabel();
-        cautionusername = new javax.swing.JLabel();
-        cautionemail = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        cautiontel = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        tel = new javax.swing.JTextField();
-        email = new javax.swing.JTextField();
+        jTextTel = new javax.swing.JTextField();
+        registerFinish = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -140,7 +122,7 @@ public class Register extends javax.swing.JFrame {
                     .addComponent(registerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(logButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 61, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,74 +133,98 @@ public class Register extends javax.swing.JFrame {
                 .addComponent(logButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36)
                 .addComponent(registerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(339, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 800));
 
+        cautionusername.setForeground(new java.awt.Color(255, 0, 0));
+        cautionusername.setText("Passwords don't match !!! please try again");
+        cautionusername.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautionusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 590, -1, -1));
+
+        cautionpass.setForeground(new java.awt.Color(255, 0, 0));
+        cautionpass.setText("Passwords don't match !!! please try again");
+        cautionpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautionpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 480, -1, -1));
+
         cautionconfirmpass.setForeground(new java.awt.Color(255, 0, 0));
         cautionconfirmpass.setText("Passwords don't match !!! please try again");
         cautionconfirmpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionconfirmpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 420, -1, -1));
-        jPanel1.add(iconusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 160, 50, 60));
-        jPanel1.add(iconpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 260, 50, 60));
-        jPanel1.add(icontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 560, 50, 60));
-        jPanel1.add(iconemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 50, 60));
-        jPanel1.add(iconconfirmpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 360, 50, 60));
+        jPanel1.add(cautionconfirmpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 370, -1, -1));
+
+        cautiontel.setForeground(new java.awt.Color(255, 0, 0));
+        cautiontel.setText("Passwords don't match !!! please try again");
+        cautiontel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautiontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 270, -1, -1));
+        jPanel1.add(iconusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 210, 50, 60));
+        jPanel1.add(iconpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 310, 50, 60));
+        jPanel1.add(iconconfirmpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 420, 50, 60));
+        jPanel1.add(icontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 530, 50, 60));
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Username");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 140, -1, -1));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 190, -1, -1));
+
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel1.setFont(new java.awt.Font("Gadugi", 1, 48)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Register");
+        jLabel1.setToolTipText("");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 110, -1, 62));
 
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Password");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 240, -1, -1));
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 290, -1, -1));
 
-        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        username.setFont(new java.awt.Font("Gadugi", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
         username.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usernameActionPerformed(evt);
             }
         });
-        username.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                usernameKeyTyped(evt);
-            }
-        });
-        jPanel1.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 160, 510, 60));
+        jPanel1.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 210, 510, 60));
 
-        password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        password.setFont(new java.awt.Font("Gadugi", 0, 24)); // NOI18N
         password.setMargin(new java.awt.Insets(2, 55, 2, 6));
         password.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 passwordActionPerformed(evt);
             }
         });
-        password.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                passwordKeyTyped(evt);
-            }
-        });
-        jPanel1.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 260, 510, 60));
+        jPanel1.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 310, 510, 60));
 
-        confirmPassword.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        confirmPassword.setFont(new java.awt.Font("Gadugi", 0, 24)); // NOI18N
         confirmPassword.setMargin(new java.awt.Insets(2, 55, 2, 6));
         confirmPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 confirmPasswordActionPerformed(evt);
             }
         });
-        confirmPassword.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                confirmPasswordKeyTyped(evt);
-            }
-        });
-        jPanel1.add(confirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 360, 510, 60));
+        jPanel1.add(confirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 420, 510, 60));
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Confirm Password");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 340, -1, -1));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 400, -1, -1));
+
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("Tel   000-000-0000");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 510, -1, -1));
+
+        jTextTel.setFont(new java.awt.Font("Gadugi", 0, 24)); // NOI18N
+        jTextTel.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        jTextTel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextTelActionPerformed(evt);
+            }
+        });
+        jTextTel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextTelKeyTyped(evt);
+            }
+        });
+        jPanel1.add(jTextTel, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 530, 510, 60));
 
         registerFinish.setBackground(new java.awt.Color(255, 149, 0));
         registerFinish.setFont(new java.awt.Font("Gadugi", 1, 24)); // NOI18N
@@ -239,314 +245,194 @@ public class Register extends javax.swing.JFrame {
                 registerFinishActionPerformed(evt);
             }
         });
-        jPanel1.add(registerFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 680, 510, 60));
-
-        cautionpass.setForeground(new java.awt.Color(255, 0, 0));
-        cautionpass.setText("Passwords don't match !!! please try again");
-        cautionpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 320, -1, -1));
-
-        cautionusername.setForeground(new java.awt.Color(255, 0, 0));
-        cautionusername.setText("Passwords don't match !!! please try again");
-        cautionusername.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 220, -1, -1));
-
-        cautionemail.setForeground(new java.awt.Color(255, 0, 0));
-        cautionemail.setText("Passwords don't match !!! please try again");
-        cautionemail.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 520, -1, -1));
-
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Email");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 440, -1, -1));
-
-        cautiontel.setForeground(new java.awt.Color(255, 0, 0));
-        cautiontel.setText("Passwords don't match !!! please try again");
-        cautiontel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautiontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 620, -1, -1));
-
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Phone");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 540, -1, -1));
-        jPanel1.add(tel, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 560, 510, 60));
-        jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 460, 510, 60));
+        jPanel1.add(registerFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 640, 510, 60));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1200, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void registerFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerFinishActionPerformed
+    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_registerFinishActionPerformed
-
-    private void registerFinishMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseExited
-        registerFinish.setForeground(Color.BLACK);
-    }//GEN-LAST:event_registerFinishMouseExited
-
-    private void registerFinishMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseEntered
-        registerFinish.setForeground(Color.WHITE);
-    }//GEN-LAST:event_registerFinishMouseEntered
-
-    private void registerFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseClicked
-        String pass = new String(password.getPassword());
-        String confirmpass = new String(confirmPassword.getPassword());
-        int sumuser = 0;
-        int sumpass = 0;
-        int sumconfirm = 0;
-        int sumtel = 0;
-        
-        if (username.getText().isEmpty()) {
-            cautionusername.setText("Need to input username");
-            cautionusername.setVisible(true);
-            sumuser=1;
-        }else{
-            cautionusername.setText("");
-            cautionusername.setVisible(false);
-            sumuser=0;
-        }
-
-        if (pass.isEmpty()) {
-            cautionpass.setText("Need to input password");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (pass.length() < 6) {
-            cautionpass.setText("Password need at least 6 characters");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*\\d.*")) {
-            cautionpass.setText("Password must have at least one number");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*[a-z].*")) {
-            cautionpass.setText("Password must have at least one lowercase letter");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*[A-Z].*")) {
-            cautionpass.setText("Password must have at least one uppercase letter");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*[!@#$%^&*()].*")) {
-            cautionpass.setText("Password must have at least one special character");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else{
-            cautionpass.setText("");
-            cautionpass.setVisible(false);
-            sumpass=0;
-        }
-
-        if (confirmpass.isEmpty()) {
-            cautionconfirmpass.setText("Need to confirm password");
-            cautionconfirmpass.setVisible(true);
-            sumconfirm=1;
-        }else if (!confirmpass.equals(pass)) {
-            cautionconfirmpass.setText("Nah");
-            cautionconfirmpass.setVisible(true);
-            sumpass=1;
-        }else{
-            cautionconfirmpass.setText("");
-            cautionconfirmpass.setVisible(false);
-            sumconfirm=0;
-        }
-
-        if (tel.getText().isEmpty()) {
-            cautiontel.setText("Need to input your tel");
-            cautiontel.setVisible(true);
-            sumtel=1;
-        }else if (tel.getText().length() < 6){
-            cautiontel.setText("Wrong tel !!");
-            cautiontel.setVisible(true);
-            sumtel=1;
-        }else{
-            cautiontel.setText("");
-            cautiontel.setVisible(false);
-            sumtel=0;
-        }
-        
-        /*
-        if (pass.length() < 8) {
-            cautionusername.setText("Password need at least 8 characters");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-        if (pass.contains(" ")) {
-            cautionusername.setText("Password must not contain spaces");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*\\d.*")) {
-            cautionusername.setText("Password must have at least one number");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*[a-z].*")) {
-            cautionusername.setText("Password must have at least one lowercase letter");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*[A-Z].*")) {
-            cautionusername.setText("Password must have at least one uppercase letter");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*[!@#$%^&*()].*")) {
-            cautionusername.setText("Password must have at least one special character (!@#$%^&*())");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-        */
-
-        if (sumpass == 0 && sumuser == 0 && sumconfirm==0 &&  sumtel == 0){
-            cautionusername.setVisible(false);
-            cautionpass.setVisible(false);
-            cautionconfirmpass.setVisible(false);
-            cautiontel.setVisible(false);
-
-            String newUserID = "0001"; // ค่า default
-            File file = new File("src/main/data/user.csv");
-            if (file.exists()) {
-                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    int maxID = 0;
-                    while ((line = br.readLine()) != null) {
-                        if (!line.trim().isEmpty()) {
-                            String[] parts = line.split(",");
-                            if (parts.length > 0) {
-                                String idStr = parts[0];
-                                try {
-                                    int id = Integer.parseInt(idStr);
-                                    if (id > maxID) maxID = id;
-                                } catch (NumberFormatException e) {
-                                    // ข้ามถ้าไม่ใช่เลข
-                                }
-                            }
-                        }
-                    }
-                    maxID++; // เพิ่ม 1 จากเลขสูงสุด
-                    newUserID = String.format("%04d", maxID); // ทำให้เป็น 4 หลัก
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            // อ่านค่าจาก TextField
-            String usernameget = username.getText();
-            String passwordget = new String(password.getPassword());
-            String telget = tel.getText();
-            // เขียนลง CSV
-            try {
-                File f = new File("src/main/data/user.csv");
-                FileWriter fw = new FileWriter(f,true);
-                BufferedWriter bw = new BufferedWriter(fw);
-                System.out.println("Saved successfully!");
-                bw.write("\n"+newUserID+","+usernameget+","+passwordget+","+telget);
-                bw.close();
-                fw.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            password.setText("");
-            System.out.print(username.getText() + "\n" + pass);
-            dispose();
-            new Login();
-
-        }
-    }//GEN-LAST:event_registerFinishMouseClicked
-
-    private void confirmPasswordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_confirmPasswordKeyTyped
-        char c = evt.getKeyChar();
-        if (Character.isWhitespace(c)) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_confirmPasswordKeyTyped
+    }//GEN-LAST:event_passwordActionPerformed
+    
+    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usernameActionPerformed
 
     private void confirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmPasswordActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_confirmPasswordActionPerformed
 
-    private void passwordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyTyped
+    private void jTextTelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextTelActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextTelActionPerformed
+
+    private void jTextTelKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextTelKeyTyped
         char c = evt.getKeyChar();
-        if (Character.isWhitespace(c)) {
+        if (!Character.isDigit(c)) {
             evt.consume();
         }
-    }//GEN-LAST:event_passwordKeyTyped
-
-    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_passwordActionPerformed
-
-    private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
-        char c = evt.getKeyChar();
-        if (!Character.isLetter(c)&!Character.isDigit(c)) {
+        if (jTextTel.getText().length() >= 10) {
             evt.consume();
         }
-    }//GEN-LAST:event_usernameKeyTyped
+    }//GEN-LAST:event_jTextTelKeyTyped
 
-    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_usernameActionPerformed
+    private void registerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseClicked
+        dispose();
+        new Register();
+    }//GEN-LAST:event_registerButtonMouseClicked
 
-    private void logButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_logButtonActionPerformed
+    private void registerButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseEntered
+        
+        registerButton.setForeground(Color.WHITE);
+    }//GEN-LAST:event_registerButtonMouseEntered
 
-    private void logButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseExited
-        logButton.setBackground(Color.WHITE);
-        logButton.setForeground(Color.BLACK);
-    }//GEN-LAST:event_logButtonMouseExited
-
-    private void logButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseEntered
-        logButton.setBackground(Color.GRAY);
-        logButton.setForeground(Color.WHITE);
-    }//GEN-LAST:event_logButtonMouseEntered
+    private void registerButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseExited
+        
+        registerButton.setForeground(Color.BLACK);
+    }//GEN-LAST:event_registerButtonMouseExited
 
     private void logButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseClicked
         dispose();
         new Login();
     }//GEN-LAST:event_logButtonMouseClicked
 
-    private void registerButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseExited
+    private void logButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseEntered
+        logButton.setBackground(Color.GRAY);
+        logButton.setForeground(Color.WHITE);
+    }//GEN-LAST:event_logButtonMouseEntered
 
-        registerButton.setForeground(Color.BLACK);
-    }//GEN-LAST:event_registerButtonMouseExited
+    private void logButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseExited
+        logButton.setBackground(Color.WHITE);
+        logButton.setForeground(Color.BLACK);
+    }//GEN-LAST:event_logButtonMouseExited
 
-    private void registerButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseEntered
+    private void logButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_logButtonActionPerformed
 
-        registerButton.setForeground(Color.WHITE);
-    }//GEN-LAST:event_registerButtonMouseEntered
+    private void registerFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseClicked
+        String pass = new String(password.getPassword());
+        int sumuser = 0;
+        int sumpass = 0;
+        int sumconfirm = 0;
+        int sumtel = 0;
+            if (pass.isEmpty()) {
+                cautionusername.setText("Need to input username");
+                cautionusername.setVisible(true);
+                sumuser=1;
+            }else{
+                cautionusername.setVisible(false);
+                sumuser=0;
+            }
+            if (pass.isEmpty()) {
+                cautionpass.setText("Need to input password");
+                cautionpass.setVisible(true);
+                sumpass=1;
+            }else{
+                cautionpass.setVisible(false);
+                sumpass=0;
+            }
+            if (pass.isEmpty()) {
+                cautionconfirmpass.setText("Need to confirm password");
+                cautionconfirmpass.setVisible(true);
+                sumconfirm=1;
+            }else{
+                cautionconfirmpass.setVisible(false);
+                sumconfirm=0;
+            }
+            if (pass.isEmpty()) {
+                cautiontel.setText("Need to input your tel");
+                cautiontel.setVisible(true);
+                sumtel=1;
+            }else{
+                cautiontel.setVisible(false);
+                sumtel=0;
+            }
+            /*
+            if (pass.length() < 8) {
+                cautionusername.setText("Password need at least 8 characters");
+                cautionusername.setVisible(true);
+                sumpass=1;
+            }else{
+                sumpass=0;
+            }
+            if (pass.contains(" ")) {
+                cautionusername.setText("Password must not contain spaces");
+                cautionusername.setVisible(true);
+                sumpass=1;
+            }else{
+                sumpass=0;
+            }
 
-    private void registerButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerButtonMouseClicked
-        dispose();
-        new Register();
-    }//GEN-LAST:event_registerButtonMouseClicked
-    
+            if (!pass.matches(".*\\d.*")) {
+                cautionusername.setText("Password must have at least one number");
+                cautionusername.setVisible(true);
+                sumpass=1;
+            }else{
+                sumpass=0;
+            }
+
+            if (!pass.matches(".*[a-z].*")) {
+                cautionusername.setText("Password must have at least one lowercase letter");
+                cautionusername.setVisible(true);
+                sumpass=1;
+            }else{
+                sumpass=0;
+            }
+
+            if (!pass.matches(".*[A-Z].*")) {
+                cautionusername.setText("Password must have at least one uppercase letter");
+                cautionusername.setVisible(true);
+                sumpass=1;
+            }else{
+                sumpass=0;
+            }
+
+            if (!pass.matches(".*[!@#$%^&*()].*")) {
+                cautionusername.setText("Password must have at least one special character (!@#$%^&*())");
+                cautionusername.setVisible(true);
+                sumpass=1;
+            }else{
+                sumpass=0;
+            }
+            */
+
+            if (sumpass != 1&& sumuser != 1&&sumconfirm!=1&&sumtel != 1){
+                cautionusername.setVisible(false); 
+                cautionpass.setVisible(false); 
+                cautionconfirmpass.setVisible(false); 
+                cautiontel.setVisible(false); 
+                password.setText(""); 
+                System.out.print(username.getText() + "\n" + pass);
+                dispose();
+            }
+    }//GEN-LAST:event_registerFinishMouseClicked
+
+    private void registerFinishMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseEntered
+        registerFinish.setForeground(Color.WHITE);
+    }//GEN-LAST:event_registerFinishMouseEntered
+
+    private void registerFinishMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseExited
+        registerFinish.setForeground(Color.BLACK);
+    }//GEN-LAST:event_registerFinishMouseExited
+
+    private void registerFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerFinishActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_registerFinishActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -574,30 +460,27 @@ public class Register extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel cautionconfirmpass;
-    private javax.swing.JLabel cautionemail;
     private javax.swing.JLabel cautionpass;
     private javax.swing.JLabel cautiontel;
     private javax.swing.JLabel cautionusername;
     private javax.swing.JPasswordField confirmPassword;
-    private javax.swing.JTextField email;
     private javax.swing.JLabel iconconfirmpassword;
-    private javax.swing.JLabel iconemail;
     private javax.swing.JLabel iconpassword;
     private javax.swing.JLabel icontel;
     private javax.swing.JLabel iconusername;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JTextField jTextTel;
     private javax.swing.JButton logButton;
     private javax.swing.JPasswordField password;
     private javax.swing.JButton registerButton;
     private javax.swing.JButton registerFinish;
-    private javax.swing.JTextField tel;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
 }

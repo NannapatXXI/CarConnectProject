@@ -1,7 +1,12 @@
 package com.mycompany.carservice;
-import com.mycompany.carservice.gui.*;
+
+
+import com.mycompany.carservice.gui.HomePage;
+
+
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
+
 
 public class CarService {
 
@@ -16,16 +21,11 @@ public class CarService {
     } catch (Exception e) {
         e.printStackTrace();
     }
-    java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                //new BookingPage("สมหญิง สวยมาก");
-                // Profile();
-                // new CsvTableDemo().setVisible(true);
-                new Login();
-                //new Register();
-            }
-        });
+    java.awt.EventQueue.invokeLater(() -> {
+       new HomePage();
+       // Profile();
+        // new CsvTableDemo().setVisible(true);
+    });
        
          
     }

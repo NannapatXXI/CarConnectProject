@@ -59,7 +59,6 @@ public class HomePage extends javax.swing.JFrame {
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1200, 800));
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -69,13 +68,13 @@ public class HomePage extends javax.swing.JFrame {
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         homeBtn.setBackground(new java.awt.Color(255, 157, 0));
-        homeBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        homeBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         homeBtn.setText("Home");
         homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 164, 90));
 
         adminBtn.setBackground(new java.awt.Color(28, 24, 24));
-        adminBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        adminBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         adminBtn.setForeground(new java.awt.Color(255, 255, 255));
         adminBtn.setText("Admin");
         adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -93,7 +92,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 560, 164, 90));
 
         profileBtn.setBackground(new java.awt.Color(28, 24, 24));
-        profileBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         profileBtn.setForeground(new java.awt.Color(255, 255, 255));
         profileBtn.setText("Profile");
         profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -111,7 +110,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 430, 164, 90));
 
         historyBtn.setBackground(new java.awt.Color(28, 24, 24));
-        historyBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         historyBtn.setForeground(new java.awt.Color(255, 255, 255));
         historyBtn.setText("History");
         historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -129,7 +128,7 @@ public class HomePage extends javax.swing.JFrame {
         jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, 164, 90));
 
         bookingBtn.setBackground(new java.awt.Color(28, 24, 24));
-        bookingBtn.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        bookingBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         bookingBtn.setForeground(new java.awt.Color(255, 255, 255));
         bookingBtn.setText("Booking");
         bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -149,11 +148,11 @@ public class HomePage extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(58, 58, 58));
         jPanel1.setPreferredSize(new java.awt.Dimension(1200, 104));
 
-        jLabel1.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("User :");
 
-        username.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setForeground(new java.awt.Color(255, 255, 255));
         username.setText("....");
 
@@ -224,7 +223,8 @@ public class HomePage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
-        // TODO add your handling code here:
+       dispose();
+        new Profile();
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
@@ -236,7 +236,8 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
-        // TODO add your handling code here:
+       dispose();
+        new History();
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
