@@ -282,6 +282,7 @@ private void switchTable() {
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jTable1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -411,7 +412,7 @@ private void switchTable() {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("User :");
 
-        username.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setForeground(new java.awt.Color(255, 255, 255));
         username.setText("....");
 
@@ -429,7 +430,7 @@ private void switchTable() {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))

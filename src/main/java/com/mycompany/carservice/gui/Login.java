@@ -7,9 +7,11 @@ package com.mycompany.carservice.gui;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.*;
+import java.io.File;
 import java.net.*;
 import javax.swing.*;
-
+import java.net.URL;
+import java.io.*;
 
 
 /**
@@ -30,10 +32,17 @@ public class Login extends javax.swing.JFrame {
             setLocationRelativeTo(null);
             setVisible(true);
             cautionusername.setVisible(false);cautionpass.setVisible(false);
-            iconusername.setIcon(new ImageIcon(getClass().getResource("/main/image/user.png")));
-            iconpassword.setIcon(new ImageIcon(getClass().getResource("/main/image/padlock.png")));
-            
-
+//            iconusername.setIcon(new ImageIcon(getClass().getResource("src/main/image/user.png")));
+//            iconpassword.setIcon(new ImageIcon(getClass().getResource("src/main/image/padlock.png")));
+            try {
+                URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
+                URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
+                iconusername.setIcon(new ImageIcon(userIconURL));
+                iconpassword.setIcon(new ImageIcon(passIconURL));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                logger.severe("Cannot load icon images");
+            }
             
     }
     private void setupComponent(){
@@ -233,8 +242,7 @@ public class Login extends javax.swing.JFrame {
         jLabel1.setToolTipText("");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 135, -1, 62));
 
-        password.setFont(new java.awt.Font("Gadugi", 0, 24)); // NOI18N
-        password.setForeground(new java.awt.Color(51, 255, 204));
+        password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         password.setMargin(new java.awt.Insets(2, 55, 2, 6));
         password.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -302,11 +310,16 @@ public class Login extends javax.swing.JFrame {
         });
         jPanel3.add(loginFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 510, 530, 60));
 
-        username.setFont(new java.awt.Font("Gadugi", 0, 24)); // NOI18N
+        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
         username.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usernameActionPerformed(evt);
+            }
+        });
+        username.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                usernameKeyTyped(evt);
             }
         });
         jPanel3.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 260, 530, 60));
@@ -382,73 +395,61 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_loginFinishMouseEntered
 
     private void loginFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginFinishMouseClicked
-        String pass = new String(password.getPassword());
-        int sumpass = 0;
-            if (pass.isEmpty()) {
-                cautionusername.setText("Need to input password");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-            if (pass.length() < 8) {
-                cautionusername.setText("Password need at least 8 characters");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-            if (pass.contains(" ")) {
-                cautionusername.setText("Password must not contain spaces");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-
-            if (!pass.matches(".*\\d.*")) {
-                cautionusername.setText("Password must have at least one number");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-
-            if (!pass.matches(".*[a-z].*")) {
-                cautionusername.setText("Password must have at least one lowercase letter");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-
-            if (!pass.matches(".*[A-Z].*")) {
-                cautionusername.setText("Password must have at least one uppercase letter");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-
-            if (!pass.matches(".*[!@#$%^&*()].*")) {
-                cautionusername.setText("Password must have at least one special character (!@#$%^&*())");
-                cautionusername.setVisible(true);
-                sumpass=1;
-            }else{
-                sumpass=0;
-            }
-
-            if (sumpass != 1){
-                cautionusername.setVisible(false); 
-                password.setText(""); 
-                System.out.print(username.getText() + "\n" + pass);
-                dispose();
-            }
+                String getUsername = username.getText();
+                String getPass = new String(password.getPassword());
+                String getBoth = getUsername+","+getPass;
+                File file = new File("src/main/data/user.csv");
+                if (!file.exists()) {
+                    System.out.println("User file not found!");
+                    return; // หยุดการทำงานถ้าไฟล์ไม่เจอ
+                }
+                boolean loginSuccess = false; // ตัวแปรเก็บสถานะ login
+                try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        if (!line.trim().isEmpty()) {
+                            String[] parts = line.split(","); // userID,username,password,tel
+                            if (parts.length >= 3) {
+                                String fileUsername = parts[1];
+                                String filePassword = parts[2];
+                                String confirmlogin = (fileUsername+","+filePassword);
+                                if (getBoth.equals(confirmlogin)) {
+                                    loginSuccess = true; // login สำเร็จ
+                                    break; // เจอแล้วก็หยุด loop
+                                
+                                }
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // ตรวจสอบผลลัพธ์ login
+                if (loginSuccess) {
+                    cautionusername.setVisible(false);
+                    cautionpass.setVisible(false);
+                    password.setText(""); 
+                    dispose();
+                    new HomePage();
+                    //new BookingPage(getUsername);
+                } else {
+                    cautionusername.setText("U R Username not equal in database just register");
+                    cautionpass.setText("U R Password not equal in database just input true password");
+                    cautionusername.setVisible(true); // แสดงข้อความผิดพลาด
+                    cautionpass.setVisible(true);
+                    password.setText(""); // ล้าง password
+                    System.out.println("false");
+                }
     }//GEN-LAST:event_loginFinishMouseClicked
 
     private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameActionPerformed
+
+    private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
+        
+    }//GEN-LAST:event_usernameKeyTyped
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel anotherRegister;
