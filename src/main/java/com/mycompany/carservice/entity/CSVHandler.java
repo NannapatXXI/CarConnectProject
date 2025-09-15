@@ -40,4 +40,13 @@ public class CSVHandler {
             e.printStackTrace();
         }
     }
+    public void deleteRow(int rowIndex) {
+    ArrayList<String[]> data = readCSV(); // อ่านข้อมูลทั้งหมด
+    if(rowIndex < 0 || rowIndex >= data.size()) {
+        throw new IndexOutOfBoundsException("Invalid row index: " + rowIndex);
+    }
+    
+    data.remove(rowIndex); // ลบแถว
+    writeCSV(data);       // เขียนทับไฟล์ CSV
+}
 }

@@ -110,7 +110,6 @@ public class PopInBooking extends javax.swing.JDialog {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Service :");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("ทะเบียนรถ :");
 
@@ -242,7 +241,7 @@ public class PopInBooking extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backBtnMouseClicked
-        // TODO add your handling code here:
+        dispose(); 
     }//GEN-LAST:event_backBtnMouseClicked
 
     private void okBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okBtnMouseClicked

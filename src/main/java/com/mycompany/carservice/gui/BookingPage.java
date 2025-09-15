@@ -4,6 +4,7 @@
  */
 package com.mycompany.carservice.gui;
 
+import com.mycompany.carservice.entity.CSVHandler;
 import java.awt.Color;
 import java.awt.event.*;
 import java.util.Calendar;
@@ -13,6 +14,8 @@ import java.awt.Font;
 import java.time.*;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -22,6 +25,7 @@ import java.util.HashSet;
 public class BookingPage extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BookingPage.class.getName());
+    private HashMap<LocalDate, Integer> bookingCountMap = new HashMap<>();
     private int selectedDay = -1;
     private int selectedTime = -1;
     private int selectedService = -1;
@@ -42,14 +46,20 @@ public class BookingPage extends javax.swing.JFrame {
         setLocationRelativeTo(null); 
         setVisible(true);
         
-     LocalDate today = LocalDate.now(); //วันปัจจุบัน
-    int monthValue = today.getMonthValue(); // 1-12
-      System.out.println("เดือนปัจจุบัน :" + monthValue );
-    monthComboBox1.setSelectedIndex(monthValue - 1);
-    
+        LocalDate today = LocalDate.now();
+        int monthValue = today.getMonthValue();
+        int yearValue = today.getYear();
+        int dayValue = today.getDayOfMonth();
+
+        monthComboBox1.setSelectedIndex(monthValue - 1);
+        yearComboBox.setSelectedItem(String.valueOf(yearValue));
+
+        // อัปเดตเวลาตามวันปัจจุบัน
+        updateTimeComboBox(dayValue, monthValue, yearValue);
         userName.setText(name);
        
         calendarPanel.setLayout(new java.awt.GridLayout(0, 7,5, 5));
+        loadBookingCount();
         updateCalendar(); 
     }
     
@@ -64,71 +74,145 @@ public class BookingPage extends javax.swing.JFrame {
         
     
     }
-private void updateCalendar() {
-    calendarPanel.removeAll(); 
-    selectedDay = -1;
+      private void loadBookingCount() {
+    CSVHandler handler = new CSVHandler("src/main/data/booking_count.csv");
+    ArrayList<String[]> data = handler.readCSV();
 
-    LocalDate today = LocalDate.now(); // วันปัจจุบัน
+    bookingCountMap.clear();
+    for(int i=1; i<data.size(); i++){ // ข้าม header
+        String[] row = data.get(i);
+        if(row.length < 2) continue;
 
-    // ดึงเดือนจาก monthComboBox (1-12)
-    final int monthIndex = monthComboBox1.getSelectedIndex() + 1; // ทำให้ final
+        String dateStr = row[0].trim();
+        String countStr = row[1].trim();
 
-    // ดึงปีจาก yearComboBox
-    int yearTemp = 0;
-    try {
-        String yearStr = (String) yearComboBox.getSelectedItem(); // เช่น "2025"
-        yearTemp = Integer.parseInt(yearStr);
-    } catch (Exception e) {
-        yearTemp = today.getYear(); // fallback
+            try {
+                    LocalDate date = LocalDate.parse(dateStr); // YYYY-MM-DD เท่านั้น
+                    int count = Integer.parseInt(countStr);
+                    bookingCountMap.put(date, count);
+            } catch(Exception e){
+            // ข้ามวันที่ไม่ใช่รูปแบบ YYYY-MM-DD
+            }
+        }
     }
-    final int year = yearTemp; // copy เป็น final
+      
+    private void saveBookingCount() {
+    CSVHandler handler = new CSVHandler("src/main/data/booking_count.csv");
+    ArrayList<String[]> data = new ArrayList<>();
 
-    // ใช้ YearMonth หาเดือน/จำนวนวัน
-    YearMonth yearMonth = YearMonth.of(year, monthIndex);
-    int daysInMonth = yearMonth.lengthOfMonth();
+    // เพิ่ม header
+    data.add(new String[] { "date", "count" });
 
-    for (int i = 1; i <= daysInMonth; i++) {
-        final int day = i; // copy เป็น final
-        JButton dayButton = new JButton(String.valueOf(day));
-        final JButton currentButton = dayButton; // ต้อง final เพื่อใช้ใน lambda
+    // เพิ่มข้อมูลทั้งหมดจาก bookingCountMap
+    for (LocalDate date : bookingCountMap.keySet()) {
+        int count = bookingCountMap.get(date);
+        data.add(new String[] { date.toString(), String.valueOf(count) });
+    }
 
-        dayButton.setPreferredSize(new Dimension(20, 20));
-        dayButton.setFont(new Font("Helvetica Neue", Font.PLAIN, 14));
-        dayButton.setFocusPainted(false);
-        dayButton.setBorderPainted(false);
-        dayButton.setContentAreaFilled(true);
-        dayButton.setOpaque(true);
+    handler.writeCSV(data); // สมมติว่า CSVHandler มี method writeCSV
+}
+    
+    
+    private void updateCalendar() {
+        calendarPanel.removeAll(); 
+        selectedDay = -1;
 
-        LocalDate buttonDate = LocalDate.of(year, monthIndex, day);
+        LocalDate today = LocalDate.now(); // วันปัจจุบัน
+    
+        // ดึงเดือนจาก monthComboBox (1-12)
+        final int monthIndex = monthComboBox1.getSelectedIndex() + 1; // ทำให้ final
 
-        // ถ้าวันนี้ผ่านมาแล้ว
-        if (buttonDate.isBefore(today)) {
-            dayButton.setEnabled(false);
-            dayButton.setBackground(Color.LIGHT_GRAY);
-        } else {
-            dayButton.setForeground(Color.BLACK);
+        // ดึงปีจาก yearComboBox
+        int yearTemp = 0;
+        try {
+            String yearStr = (String) yearComboBox.getSelectedItem(); // เช่น "2025"
+            yearTemp = Integer.parseInt(yearStr);
+        } catch (Exception e) {
+            yearTemp = today.getYear(); // fallback
+        }
+        final int year = yearTemp; // copy เป็น final
 
-            // Action เมื่อกดเลือกวัน
-            currentButton.addActionListener((ActionEvent e) -> {
-                selectedDay = day;
-                System.out.println("เลือกวันที่: " + selectedDay + "/" + monthIndex + "/" + year);
+        // ใช้ YearMonth หาเดือน/จำนวนวัน
+        YearMonth yearMonth = YearMonth.of(year, monthIndex);
+        int daysInMonth = yearMonth.lengthOfMonth();
 
-                if (lastSelectedButton != null) {
-                    lastSelectedButton.setBackground(UIManager.getColor("Button.background"));
-                    lastSelectedButton.setForeground(Color.BLACK);
-                }
+        for (int i = 1; i <= daysInMonth; i++) {
+            final int day = i; // copy เป็น final
+            JButton dayButton = new JButton(String.valueOf(day));
+            
+            dayButton.setPreferredSize(new Dimension(20, 20));
+            dayButton.setFont(new Font("Helvetica Neue", Font.PLAIN, 14));
+            dayButton.setFocusPainted(false);
+            dayButton.setBorderPainted(false);
+            dayButton.setContentAreaFilled(true);
+            dayButton.setOpaque(true);
 
-                currentButton.setBackground(Color.GREEN);
-                lastSelectedButton = currentButton;
-            });
+            LocalDate buttonDate = LocalDate.of(year, monthIndex, day);
+            int booked = bookingCountMap.getOrDefault(buttonDate, 0); // จำนวนจองวันนั้น
+
+            // ถ้าวันนี้ผ่านมาแล้ว
+            if (buttonDate.isBefore(today)) {
+   
+                dayButton.setBackground(Color.LIGHT_GRAY);
+                dayButton.setForeground(Color.BLACK);
+
+                dayButton.addActionListener(e -> {
+                // ป้องกันไม่ให้เลือกวันเก่า
+                JOptionPane.showMessageDialog(this, "ไม่สามารถจองวันผ่านมาแล้วได้");
+                });
+            } else if (booked >= 10) {
+                // dayButton.setEnabled(false); // ลบออก
+                dayButton.setBackground(Color.RED);
+                dayButton.setForeground(Color.WHITE);
+
+                dayButton.addActionListener(e -> {
+                JOptionPane.showMessageDialog(this, "วันนี้จองเต็มแล้ว");
+                 });
+            } else {
+                dayButton.setBackground(Color.WHITE);
+                dayButton.setForeground(Color.BLACK);
+
+                dayButton.addActionListener(e -> {
+                    selectedDay = day;
+                    if (lastSelectedButton != null) {
+                        lastSelectedButton.setBackground(Color.WHITE);
+                        lastSelectedButton.setForeground(Color.BLACK);
+                    }
+                
+                dayButton.setBackground(Color.GREEN);
+                lastSelectedButton = dayButton;
+
+                updateTimeComboBox(selectedDay, monthIndex, year);
+                });
+            }
+
+       
+            calendarPanel.add(dayButton);
+        
         }
 
-        calendarPanel.add(currentButton);
+        calendarPanel.revalidate();
+        calendarPanel.repaint();
     }
+    private void updateTimeComboBox(int selectedDay, int selectedMonth, int selectedYear){
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("----"); // ค่าเริ่มต้น
 
-    calendarPanel.revalidate();
-    calendarPanel.repaint();
-}
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+    
+        for(int h=10; h<=17; h++){
+            if(selectedDay==today.getDayOfMonth() && selectedMonth==today.getMonthValue() && selectedYear==today.getYear()){
+                if(h>now.getHour()){ // เพิ่มเฉพาะเวลาหลังจากตอนนี้
+                    model.addElement(h + ".00");
+                }
+            } else {
+                model.addElement(h + ".00"); // วันอื่น ๆ เพิ่มหมด
+            }
+        }
+
+        timeComboBox.setModel(model);
+    }
 
 
    
@@ -303,7 +387,6 @@ private void updateCalendar() {
         monthLabel.setForeground(new java.awt.Color(255, 255, 255));
         monthLabel.setText("Year :");
 
-        timeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- -- ", "10.00", "11.00", "12.00", "13.00", "14.00", "15.00", "16.00", "17.00" }));
         timeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 timeComboBoxActionPerformed(evt);
@@ -360,7 +443,7 @@ private void updateCalendar() {
         monthLabel2.setForeground(new java.awt.Color(255, 255, 255));
         monthLabel2.setText("Service :");
 
-        serviceComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- -- ", "Wash a car", "Repair and Check" }));
+        serviceComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---- ", "Wash a car", "Repair and Check" }));
         serviceComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 serviceComboBox1ActionPerformed(evt);
@@ -472,44 +555,63 @@ private void updateCalendar() {
                         dialog.setTimeLabel(timeSelected);
                         dialog.setServiceLabel(service);
                         dialog.setVisible(true);
-                        
+                         LocalDate selectedDate = LocalDate.of(
+                             Integer.parseInt(yearComboBox.getSelectedItem().toString()),
+                             monthComboBox1.getSelectedIndex() + 1,
+                             selectedDay
+                        );
+
+                         // เพิ่มจำนวนจอง
+                        int currentCount = bookingCountMap.getOrDefault(selectedDate, 0);
+                         bookingCountMap.put(selectedDate, currentCount + 1);
+
+                        // บันทึกลงไฟล์ CSV
+                        saveBookingCount();
+
+                        // รีเฟรชปฏิทินให้สีปุ่มอัปเดต
+                        updateCalendar();
                         
                    }else{
                         System.out.println("ยังไม่ได้เลือกบริการ");
+                        new PopAlert(this,true,"ยังไม่ได้เลือกบริการ");
                    }
                      
                 }else{
                      System.out.println("ยังไม่ได้เลือกเวลา");
+                      new PopAlert(this,true,"ยังไม่ได้เลือกเวลา");
                 }
               
             } else {
                 System.out.println("ยังไม่ได้เลือกวัน");
+                 new PopAlert(this,true,"ยังไม่ได้เลือกวัน");
             }
     }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void timeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timeComboBoxActionPerformed
       
-        if( timeComboBox.getSelectedItem() != "-- --"){
-            
+        if( !timeComboBox.getSelectedItem().toString().trim().equals("----")){
+            System.out.println("เวลาที่เลือก"+  timeComboBox.getSelectedItem());
             selectedTime = 1;
            
-        }else{ 
-            System.out.println("เลือกวันก่อนสิ");
+        }else{
+             selectedTime = 0;
         }
         
     }//GEN-LAST:event_timeComboBoxActionPerformed
 
     private void monthComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthComboBox1ActionPerformed
              updateCalendar();
+             // ยังไม่ได้เลือกวัน -> ส่ง -1
+            updateTimeComboBox(-1, monthComboBox1.getSelectedIndex() + 1,Integer.parseInt(yearComboBox.getSelectedItem().toString()));
     }//GEN-LAST:event_monthComboBox1ActionPerformed
 
     private void serviceComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceComboBox1ActionPerformed
-         if( serviceComboBox1.getSelectedItem() != "-- --"){
+         if( !serviceComboBox1.getSelectedItem().toString().trim().equals("----")){
+              System.out.println("บริการที่เลือก"+  serviceComboBox1.getSelectedItem());
             selectedService = 1;
-        }else{ 
-            System.out.println("เลือกบริการ");
-        }
-        
+        }else{
+              selectedService = 0;
+         }
     }//GEN-LAST:event_serviceComboBox1ActionPerformed
 
     private void homeBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseExited
@@ -540,7 +642,8 @@ private void updateCalendar() {
     }//GEN-LAST:event_adminBtnMouseExited
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
-        // TODO add your handling code here:
+         dispose();
+        new Profile();
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
@@ -553,7 +656,8 @@ private void updateCalendar() {
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
-        // TODO add your handling code here:
+        dispose();
+        new History();
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
@@ -567,6 +671,8 @@ private void updateCalendar() {
 
     private void yearComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearComboBoxActionPerformed
        updateCalendar();
+       // ยังไม่ได้เลือกวัน -> ส่ง -1
+        updateTimeComboBox(-1, monthComboBox1.getSelectedIndex() + 1,Integer.parseInt(yearComboBox.getSelectedItem().toString()));
     }//GEN-LAST:event_yearComboBoxActionPerformed
 
     
