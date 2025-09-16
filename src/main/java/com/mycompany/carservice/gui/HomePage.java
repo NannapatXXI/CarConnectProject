@@ -13,11 +13,15 @@ import java.awt.Color;
 public class HomePage extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomePage.class.getName());
-
+    
+    private String user;
+    private String role;
     /**
      * Creates new form mainPage
      */
-    public HomePage() {
+    public HomePage(String user,String role) {
+        this.role = role;
+         this.user = user;
         initComponents();
         SetupUi();
         setSize(1200, 800);        
@@ -25,6 +29,8 @@ public class HomePage extends javax.swing.JFrame {
         setVisible(true);
         
         getContentPane().setBackground(java.awt.Color.BLACK);
+        
+         username.setText(user);
         
     }
 
@@ -35,6 +41,15 @@ public class HomePage extends javax.swing.JFrame {
         bookingBtn.setBorderPainted(false); 
         historyBtn.setBorderPainted(false); 
         profileBtn.setBorderPainted(false); 
+        
+        if(role.equals("admin")){
+             System.out.println("Admin !!!!");
+        }else{
+             System.out.println("User !!!!");
+             adminBtn.setVisible(false);  // user ซ่อนปุ่ม
+
+        }
+       
     
     }
   
@@ -250,7 +265,7 @@ public class HomePage extends javax.swing.JFrame {
 
     private void bookingBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseClicked
         dispose();
-        new BookingPage("อนุชา แก้วใส");
+        new BookingPage(user,role);
     }//GEN-LAST:event_bookingBtnMouseClicked
 
     private void bookingBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseEntered
@@ -263,7 +278,7 @@ public class HomePage extends javax.swing.JFrame {
 
     private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
         dispose();
-        new AdminPage();
+        new AdminPage(user,role);
     }//GEN-LAST:event_adminBtnMouseClicked
 
     private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered

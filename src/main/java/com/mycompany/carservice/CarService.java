@@ -1,7 +1,7 @@
 package com.mycompany.carservice;
 
 
-import com.mycompany.carservice.gui.Login;
+import com.mycompany.carservice.gui.HomePage;
 
 
 import com.formdev.flatlaf.FlatLightLaf;
@@ -22,8 +22,8 @@ public class CarService {
         e.printStackTrace();
     }
     java.awt.EventQueue.invokeLater(() -> {
-       new Login();
-       // Profile();
+      new HomePage("Admin","admin");
+     
         // new CsvTableDemo().setVisible(true);
     });
        

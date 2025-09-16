@@ -4,6 +4,7 @@
  */
 package com.mycompany.carservice.gui;
 
+import com.mycompany.carservice.entity.RoundedPanel;
 import com.mycompany.carservice.entity.CSVHandler;
 import java.awt.Color;
 import java.awt.event.*;
@@ -29,14 +30,16 @@ public class BookingPage extends javax.swing.JFrame {
     private int selectedDay = -1;
     private int selectedTime = -1;
     private int selectedService = -1;
-    private String name ;
+    private String user ;
+     private String role ;
      private int month;
     // เพิ่มตัวแปรไว้เก็บปุ่มล่าสุดที่เลือก
     private JButton lastSelectedButton = null;
    
  
-    public BookingPage(String name) {
-        this.name = name;
+    public BookingPage(String user,String role) {
+        this.user = user;
+         this.role = role;
         
         initComponents();
         SetupUi();
@@ -45,6 +48,8 @@ public class BookingPage extends javax.swing.JFrame {
         setSize(1200, 800);        
         setLocationRelativeTo(null); 
         setVisible(true);
+        
+        userName.setText(user);
         
         LocalDate today = LocalDate.now();
         int monthValue = today.getMonthValue();
@@ -56,7 +61,7 @@ public class BookingPage extends javax.swing.JFrame {
 
         // อัปเดตเวลาตามวันปัจจุบัน
         updateTimeComboBox(dayValue, monthValue, yearValue);
-        userName.setText(name);
+       
        
         calendarPanel.setLayout(new java.awt.GridLayout(0, 7,5, 5));
         loadBookingCount();
@@ -69,7 +74,13 @@ public class BookingPage extends javax.swing.JFrame {
         adminBtn.setBorderPainted(false); 
         historyBtn.setBorderPainted(false); 
         profileBtn.setBorderPainted(false); 
-        
+         if(role.equals("admin")){
+             System.out.println("Admin !!!!");
+        }else{
+             System.out.println("User !!!!");
+             adminBtn.setVisible(false);  // user ซ่อนปุ่ม
+
+        }
         
         
     
@@ -114,6 +125,7 @@ public class BookingPage extends javax.swing.JFrame {
     
     
     private void updateCalendar() {
+        
         calendarPanel.removeAll(); 
         selectedDay = -1;
 
@@ -141,7 +153,7 @@ public class BookingPage extends javax.swing.JFrame {
             JButton dayButton = new JButton(String.valueOf(day));
             
             dayButton.setPreferredSize(new Dimension(20, 20));
-            dayButton.setFont(new Font("Helvetica Neue", Font.PLAIN, 14));
+            dayButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
             dayButton.setFocusPainted(false);
             dayButton.setBorderPainted(false);
             dayButton.setContentAreaFilled(true);
@@ -197,7 +209,7 @@ public class BookingPage extends javax.swing.JFrame {
     private void updateTimeComboBox(int selectedDay, int selectedMonth, int selectedYear){
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("----"); // ค่าเริ่มต้น
-
+         selectedTime = 0;
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
     
@@ -234,7 +246,7 @@ public class BookingPage extends javax.swing.JFrame {
         userName = new javax.swing.JLabel();
         monthLabel = new javax.swing.JLabel();
         timeComboBox = new javax.swing.JComboBox<>();
-        jPanel3 = new javax.swing.JPanel();
+        jPanel3 = new RoundedPanel(30); // 30 radius;
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -395,27 +407,27 @@ public class BookingPage extends javax.swing.JFrame {
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setText("Monday");
         jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, 70, 40));
 
-        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("Tuesday");
         jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, -1, -1));
 
-        jLabel4.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel4.setText("Wednesday");
         jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 10, -1, -1));
 
-        jLabel5.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel5.setText("Thursday");
         jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 10, -1, -1));
 
-        jLabel6.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel6.setText("Friday");
         jPanel3.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 10, -1, -1));
 
-        jLabel7.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel7.setText("Saturday");
         jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 10, -1, -1));
 
@@ -548,7 +560,7 @@ public class BookingPage extends javax.swing.JFrame {
                         System.out.println("คุณเลือกวันที่: " + selectedDay + "/" + (month + 1) +"   "+ timeSelected + " บริการ: " + service);
 
                         // สร้าง Dialog ของเราขึ้นมา
-                        PopInBooking dialog = new PopInBooking(this, true,name);
+                        PopInBooking dialog = new PopInBooking(this, true,user);
 
                          // ใส่ค่าที่เลือกลงใน Label ของ Dialog
                         dialog.setDayLabel(daySelected + " " + monthSelected);
@@ -624,12 +636,12 @@ public class BookingPage extends javax.swing.JFrame {
 
     private void homeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseClicked
         dispose();
-        new HomePage();
+        new HomePage(user,role);
     }//GEN-LAST:event_homeBtnMouseClicked
 
     private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
         dispose();
-        new AdminPage();
+        new AdminPage(user,role);
     }//GEN-LAST:event_adminBtnMouseClicked
 
     private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
