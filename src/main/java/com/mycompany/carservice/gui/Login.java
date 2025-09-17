@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.net.URL;
 import java.io.*;
 import com.mycompany.carservice.entity.CSVHandler;
+import com.mycompany.carservice.entity.RoundedPanel;
 import java.util.ArrayList;
 
 
@@ -49,50 +50,74 @@ public class Login extends javax.swing.JFrame {
             
     }
     private void CompleteLogin(){
-              String getUsername = username.getText().trim();
-            String getPass = new String(password.getPassword()).trim();
-            String getBoth = getUsername + "," + getPass;
-            String role = null;
+                String getUsername = username.getText().trim();
+                String getPass = new String(password.getPassword()).trim();
+                String getBoth = getUsername + "," + getPass;
+                String role = null;
 
-            // สร้าง object CSVHandler
-            CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
+                // สร้าง object CSVHandler
+                CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
 
-            // อ่านข้อมูลทั้งหมดจาก CSV
-            ArrayList<String[]> users = csvHandler.readCSV();
+                // อ่านข้อมูลทั้งหมดจาก CSV
+                ArrayList<String[]> users = csvHandler.readCSV();
 
-            boolean loginSuccess = false;
+                boolean loginSuccess = false;
+                boolean checkedUsername = false;
+                boolean checkedPassword = false;
 
-            for (String[] parts : users) {
-                // parts[0] = userID, parts[1] = username, parts[2] = password
-                if (parts.length >= 3) {
-                    String fileUsername = parts[1];
-                    String filePassword = parts[2];
-                    role = parts[5];
-                    String confirmlogin = fileUsername + "," + filePassword;
-
-                    if (getBoth.equals(confirmlogin)) {
-                        loginSuccess = true;
-                        break;
+                for (String[] parts : users) {
+                    // parts[0] = userID, parts[1] = username, parts[2] = password
+                    if (parts.length >= 6) {
+                        String fileUsername = parts[1];
+                        String filePassword = parts[2];
+                        role = parts[5];
+                        String confirmlogin = fileUsername + "," + filePassword;
+                        if(getUsername.equals(fileUsername)){
+                            checkedUsername = true ;
+                        }
+                        if(getPass.equals(filePassword)){
+                            checkedUsername = true ;
+                        }
+                        if (getBoth.equals(confirmlogin)) {
+                            loginSuccess = true;
+                            break;
+                        }
                     }
                 }
-            }
+                if (getUsername.trim().isEmpty()) {
+                    cautionusername.setText("Need to input username");
+                    cautionusername.setVisible(true);
+                }else if(checkedUsername) {
+                    cautionusername.setText("");
+                    cautionusername.setVisible(false);
+                }else{
+                    cautionusername.setText("Username not found. Please register.");
+                    cautionusername.setVisible(true);
+                }
+                
+                if (getPass.trim().isEmpty()) {
+                    cautionpass.setText("Need to input password");
+                    cautionpass.setVisible(true);
+                }else if(checkedPassword) {
+                    cautionpass.setText("");
+                    cautionpass.setVisible(false);
+                }else{
+                    cautionpass.setText("Incorrect password. Please try again.");
+                    cautionpass.setVisible(true);
+                }
 
             // ตรวจสอบผลลัพธ์ login
-            if (loginSuccess) {
-                cautionusername.setVisible(false);
-                cautionpass.setVisible(false);
-                password.setText(""); 
-                dispose();
-                new HomePage(getUsername,role);
-                //new BookingPage(getUsername);
-            } else {
-                cautionusername.setText("U R Username not equal in database just register");
-                cautionpass.setText("U R Password not equal in database just input true password");
-                cautionusername.setVisible(true);
-                cautionpass.setVisible(true);
-                password.setText("");
-                System.out.println("false");
-            }
+                if (loginSuccess) {
+                    cautionusername.setVisible(false);
+                    cautionpass.setVisible(false);
+                    password.setText(""); 
+                    dispose();
+                    new HomePage(getUsername,role);
+                    //new BookingPage(getUsername);
+                } else {
+                    System.out.println("false");
+                }
+                
     }
     
    
@@ -112,16 +137,17 @@ public class Login extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         logButton = new javax.swing.JButton();
         registerButton = new javax.swing.JButton();
-        iconusername = new javax.swing.JLabel();
+        jPanel2 = new RoundedPanel(30); // 30 radius;
         iconpassword = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        iconusername = new javax.swing.JLabel();
+        loginFinish = new javax.swing.JButton();
         password = new javax.swing.JPasswordField();
-        jLabel3 = new javax.swing.JLabel();
+        cautionpass = new javax.swing.JLabel();
         anotherRegister = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         cautionusername = new javax.swing.JLabel();
-        cautionpass = new javax.swing.JLabel();
-        loginFinish = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         username = new javax.swing.JTextField();
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 255));
@@ -206,10 +232,10 @@ public class Login extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel3.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel4.setBackground(new java.awt.Color(58, 58, 58));
+        jPanel4.setBackground(new java.awt.Color(43, 43, 43));
 
         jLabel2.setFont(new java.awt.Font("Gadugi", 1, 48)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -275,57 +301,10 @@ public class Login extends javax.swing.JFrame {
         );
 
         jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 368, 800));
-        jPanel3.add(iconusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 260, 50, 60));
-        jPanel3.add(iconpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 370, 50, 60));
 
-        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel1.setFont(new java.awt.Font("Gadugi", 1, 48)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Login");
-        jLabel1.setToolTipText("");
-        jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 135, -1, 62));
-
-        password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        password.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        password.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordActionPerformed(evt);
-            }
-        });
-        jPanel3.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 370, 530, 60));
-
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Username");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(517, 238, -1, -1));
-
-        anotherRegister.setForeground(new java.awt.Color(255, 255, 255));
-        anotherRegister.setText("have an account? Register");
-        anotherRegister.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                anotherRegisterMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                anotherRegisterMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                anotherRegisterMouseExited(evt);
-            }
-        });
-        jPanel3.add(anotherRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 570, -1, -1));
-
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Password");
-        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(517, 346, -1, -1));
-
-        cautionusername.setForeground(new java.awt.Color(255, 0, 51));
-        cautionusername.setText("can't use this password it's less than 8 charactor");
-        cautionusername.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel3.add(cautionusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 320, -1, -1));
-
-        cautionpass.setForeground(new java.awt.Color(255, 0, 51));
-        cautionpass.setText("can't use this password it's less than 8 charactor");
-        cautionpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel3.add(cautionpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 430, -1, -1));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel2.add(iconpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 290, 50, 60));
+        jPanel2.add(iconusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 180, 50, 60));
 
         loginFinish.setBackground(new java.awt.Color(255, 149, 0));
         loginFinish.setFont(new java.awt.Font("Gadugi", 1, 24)); // NOI18N
@@ -346,7 +325,52 @@ public class Login extends javax.swing.JFrame {
                 loginFinishActionPerformed(evt);
             }
         });
-        jPanel3.add(loginFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 510, 530, 60));
+        jPanel2.add(loginFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 430, 530, 60));
+
+        password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        password.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        password.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordActionPerformed(evt);
+            }
+        });
+        jPanel2.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, 530, 60));
+
+        cautionpass.setForeground(new java.awt.Color(255, 0, 51));
+        cautionpass.setText("can't use this password it's less than 8 charactor");
+        cautionpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel2.add(cautionpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 350, -1, -1));
+
+        anotherRegister.setText("have an account? Register");
+        anotherRegister.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                anotherRegisterMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                anotherRegisterMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                anotherRegisterMouseExited(evt);
+            }
+        });
+        jPanel2.add(anotherRegister, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 490, -1, -1));
+
+        jLabel5.setText("Password");
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 260, -1, -1));
+
+        cautionusername.setForeground(new java.awt.Color(255, 0, 51));
+        cautionusername.setText("can't use this password it's less than 8 charactor");
+        cautionusername.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel2.add(cautionusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 240, -1, -1));
+
+        jLabel3.setText("Username");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 150, -1, -1));
+
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel1.setFont(new java.awt.Font("Gadugi", 1, 48)); // NOI18N
+        jLabel1.setText("Login");
+        jLabel1.setToolTipText("");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 50, -1, 62));
 
         username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
@@ -360,7 +384,9 @@ public class Login extends javax.swing.JFrame {
                 usernameKeyTyped(evt);
             }
         });
-        jPanel3.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 260, 530, 60));
+        jPanel2.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, 530, 60));
+
+        jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 680, 580));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 800));
 
@@ -460,6 +486,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JButton logButton;

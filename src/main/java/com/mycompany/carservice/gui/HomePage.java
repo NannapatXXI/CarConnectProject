@@ -12,6 +12,8 @@ import javax.swing.*;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.mycompany.carservice.entity.CSVHandler;
 import com.mycompany.carservice.entity.RoundedPanel;
+import java.awt.Font;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -39,21 +41,47 @@ public class HomePage extends javax.swing.JFrame {
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
         welcomeUser.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        bookingAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        completedAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        pendingAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        announcements.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        shortcuts.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
         username.setText("User : "+userName);
         welcomeUser.setText(userName+" ");
         SetupIcon();
         
+        String announcement = loadAnnouncementForLabel();   // เพิ่ม
+        announcementsLabel.setText(announcement);   // เพิ่ม
+        announcementsLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
+        announcementsLabel.setForeground(Color.BLACK);
+        announcementsLabel.setOpaque(false);
+
+        if ("admin".equalsIgnoreCase(role)) {   
+            fixAnnouncement.setVisible(true); 
+            adminBtn.setVisible(true);
+            iconAdmin.setVisible(true); // แสดงเฉพาะ Admin
+        } else {
+            fixAnnouncement.setVisible(false);
+            adminBtn.setVisible(false);
+            iconAdmin.setVisible(false);// ซ่อนสำหรับ User ปกติ
+        }
     }
     
 
     
     private void SetupUi() {
-       
         bookingBtn.setContentAreaFilled(false);
+        bookingBtn.setBorderPainted(false);
+
         historyBtn.setContentAreaFilled(false);
+        historyBtn.setBorderPainted(false);
+
         profileBtn.setContentAreaFilled(false);
+        profileBtn.setBorderPainted(false);
+
         adminBtn.setContentAreaFilled(false);
-    
+        adminBtn.setBorderPainted(false);
+
     }
     private void SetupIcon() {
         try {
@@ -65,6 +93,12 @@ public class HomePage extends javax.swing.JFrame {
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
                     URL profileUserIconURL = new File("src/main/image/profileuser.png").toURI().toURL();
                     URL welcomeIconURL = new File("src/main/image/wavinghand.png").toURI().toURL();
+                    URL fixIconURL = new File("src/main/image/settings.png").toURI().toURL();
+                    URL bookingannIconURL = new File("src/main/image/bookingann.png").toURI().toURL();
+                    URL completedURL = new File("src/main/image/checked.png").toURI().toURL();
+                    URL pendingIconURL = new File("src/main/image/file.png").toURI().toURL();
+                    URL announcementIconURL = new File("src/main/image/megaphone.png").toURI().toURL();
+                    URL shortcutsIconURL = new File("src/main/image/export.png").toURI().toURL();
                     logo.setIcon(new ImageIcon(logoIconURL));
                     iconHome.setIcon(new ImageIcon(homeIconURL));
                     iconBooking.setIcon(new ImageIcon(bookingIconURL));
@@ -73,6 +107,12 @@ public class HomePage extends javax.swing.JFrame {
                     iconAdmin.setIcon(new ImageIcon(adminIconURL));
                     iconUserProfile.setIcon(new ImageIcon(profileUserIconURL));
                     welcomeUser.setIcon(new ImageIcon(welcomeIconURL));
+                    fixAnnouncement.setIcon(new ImageIcon(fixIconURL));
+                    bookingAn.setIcon(new ImageIcon(bookingannIconURL));
+                    completedAn.setIcon(new ImageIcon(completedURL));
+                    pendingAn.setIcon(new ImageIcon(pendingIconURL));
+                    announcements.setIcon(new ImageIcon(announcementIconURL));
+                    shortcuts.setIcon(new ImageIcon(shortcutsIconURL));
                     
                 } catch (Exception e) {
                     System.out.println(e);
@@ -108,21 +148,70 @@ public class HomePage extends javax.swing.JFrame {
                 pendinginfo.setText(processCount+"");
                 completedinfo.setText(completedCount+"");
                 userBookingInfo.setText(userBookingCount+"");
-                
-//                JTextArea announcementsArea = new JTextArea();
-//                announcementsArea.setOpaque(false);
-//                announcementsArea.setLineWrap(true);
-//                announcementsArea.setWrapStyleWord(true);
-//
-//                String role = currentUserRole; // Admin / User
-//                announcementsArea.setEditable(role.equals("Admin"));
-//
-//                JScrollPane scrollPane = new JScrollPane(announcementsArea);
-//                scrollPane.setOpaque(false);
-//                scrollPane.getViewport().setOpaque(false);
+
         }
+        private String loadAnnouncementForLabel() {
+                StringBuilder announcement = new StringBuilder();
+                try (BufferedReader br = new BufferedReader(new FileReader("src/main/data/announcement.csv"))) {
+                    String line = br.readLine(); // ข้าม header
+                    while ((line = br.readLine()) != null) {
+                        if (announcement.length() > 0) {
+                            announcement.append("<br>"); // ใช้ <br> แทน \n
+                        }
+                        announcement.append(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String result = announcement.length() > 0 ? announcement.toString() : "ยังไม่มีประกาศ";
+                return "<html>" + result + "</html>"; // เพิ่ม <html> ให้ JLabel แสดงหลายบรรทัด
+        }
+
+
+    // ✅ เซฟข้อความใหม่ลง CSV
+    private void saveAnnouncement(String newMessage) {   // เพิ่ม
+        try (PrintWriter pw = new PrintWriter(new FileWriter("src/main/data/announcement.csv"))) {
+            pw.println("message");
+            pw.println(newMessage);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // ✅ Dialog สำหรับแก้ไขประกาศ
+
+        private void openEditAnnouncementDialog() {
+    // ลบ <html> และ <br> ออก เพื่อได้ข้อความดิบ
+        String currentMessage = announcementsLabel.getText()
+                .replaceAll("(?i)<html>", "")
+                .replaceAll("(?i)</html>", "")
+                .replaceAll("(?i)<br>", "\n");
+
+        JTextArea textArea = new JTextArea(currentMessage, 5, 30);
+        textArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                scrollPane,
+                "Edit announcement",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+                String newMessage = textArea.getText();
+                if (newMessage != null && !newMessage.trim().isEmpty()) {
+                    // แสดงใน JLabel แบบหลายบรรทัด
+                    announcementsLabel.setText("<html>" + newMessage.replaceAll("\n", "<br>") + "</html>");
+                    saveAnnouncement(newMessage);
+                }
+        }
+}
     
-  
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -146,19 +235,20 @@ public class HomePage extends javax.swing.JFrame {
         welcomeUser = new javax.swing.JLabel();
         jPanel1 = new RoundedPanel(30);
         // 30 radius;
-        jLabel6 = new javax.swing.JLabel();
+        bookingAn = new javax.swing.JLabel();
         userBookingInfo = new javax.swing.JLabel();
         jPanel4 = new RoundedPanel(30);// 30 radius;
-        jLabel5 = new javax.swing.JLabel();
+        completedAn = new javax.swing.JLabel();
         completedinfo = new javax.swing.JLabel();
         jPanel5 = new RoundedPanel(30); // 30 radius;
-        jLabel7 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
+        fixAnnouncement = new javax.swing.JLabel();
+        announcements = new javax.swing.JLabel();
+        announcementsLabel = new javax.swing.JLabel();
         jPanel6 = new RoundedPanel(30); // 30 radius;
-        jLabel4 = new javax.swing.JLabel();
+        pendingAn = new javax.swing.JLabel();
         pendinginfo = new javax.swing.JLabel();
         jPanel7 = new RoundedPanel(30); // 30 radius;
-        jLabel8 = new javax.swing.JLabel();
+        shortcuts = new javax.swing.JLabel();
         newBooking = new javax.swing.JButton();
         viewHistory = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
@@ -298,12 +388,12 @@ public class HomePage extends javax.swing.JFrame {
                 iconUserProfileMouseClicked(evt);
             }
         });
-        jPanel3.add(iconUserProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 30, 40, 50));
+        jPanel3.add(iconUserProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 40, 40, 40));
 
         username.setBackground(new java.awt.Color(0, 0, 0));
         username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
         username.setText("..");
-        jPanel3.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 40, 180, 40));
+        jPanel3.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 820, 40));
 
         welcomeUser.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         welcomeUser.setText("\"\"");
@@ -312,9 +402,9 @@ public class HomePage extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel6.setText("Bookings");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
+        bookingAn.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        bookingAn.setText("Bookings ");
+        jPanel1.add(bookingAn, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
 
         userBookingInfo.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         userBookingInfo.setText("2");
@@ -324,9 +414,9 @@ public class HomePage extends javax.swing.JFrame {
 
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel5.setText("Completed");
-        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
+        completedAn.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        completedAn.setText("Completed ");
+        jPanel4.add(completedAn, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
 
         completedinfo.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         completedinfo.setText("2");
@@ -336,18 +426,29 @@ public class HomePage extends javax.swing.JFrame {
 
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel7.setText("Announcements");
-        jPanel5.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
-        jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, 450, 20));
+        fixAnnouncement.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fixAnnouncementMouseClicked(evt);
+            }
+        });
+        jPanel5.add(fixAnnouncement, new org.netbeans.lib.awtextra.AbsoluteConstraints(467, 10, 40, 40));
+
+        announcements.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        announcements.setText("Announcements");
+        jPanel5.add(announcements, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
+
+        announcementsLabel.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        announcementsLabel.setText(".");
+        announcementsLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel5.add(announcementsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 450, 170));
 
         jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 220, 510, 260));
 
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel4.setText("Pending");
-        jPanel6.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
+        pendingAn.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        pendingAn.setText("Pending ");
+        jPanel6.add(pendingAn, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
 
         pendinginfo.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         pendinginfo.setText("2");
@@ -357,9 +458,9 @@ public class HomePage extends javax.swing.JFrame {
 
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel8.setText("Shortcuts");
-        jPanel7.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
+        shortcuts.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        shortcuts.setText("Shortcuts ");
+        jPanel7.add(shortcuts, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
 
         newBooking.setBackground(new java.awt.Color(255, 157, 0));
         newBooking.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -406,11 +507,13 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
-        profileBtn.setBackground(Color.GRAY);
+        //profileBtn.setBackground(Color.GRAY);
+        profileBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_profileBtnMouseEntered
 
     private void profileBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseExited
-        profileBtn.setBackground(new Color(28,24,24));
+        //profileBtn.setBackground(new Color(28,24,24));
+        profileBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
@@ -419,11 +522,13 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
-        historyBtn.setBackground(Color.GRAY);
+        //historyBtn.setBackground(Color.GRAY);
+        historyBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_historyBtnMouseEntered
 
     private void historyBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseExited
-        historyBtn.setBackground(new Color(28,24,24));
+        //historyBtn.setBackground(new Color(204,204,204));
+        historyBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_historyBtnMouseExited
 
     private void bookingBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseClicked
@@ -432,11 +537,13 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_bookingBtnMouseClicked
 
     private void bookingBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseEntered
-        bookingBtn.setBackground(Color.GRAY);
+        //bookingBtn.setBackground(Color.GRAY);
+        bookingBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_bookingBtnMouseEntered
 
     private void bookingBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseExited
-        bookingBtn.setBackground(new Color(28,24,24));
+        //bookingBtn.setBackground(new Color(28,24,24));
+        bookingBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_bookingBtnMouseExited
 
     private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
@@ -445,11 +552,13 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_adminBtnMouseClicked
 
     private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
-        adminBtn.setBackground(Color.GRAY);
+        //adminBtn.setBackground(Color.GRAY);
+        adminBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_adminBtnMouseEntered
 
     private void adminBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseExited
-        adminBtn.setBackground(new Color(28,24,24));
+        //adminBtn.setBackground(new Color(28,24,24));
+        adminBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_adminBtnMouseExited
 
     private void homeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBtnActionPerformed
@@ -465,7 +574,8 @@ public class HomePage extends javax.swing.JFrame {
     }//GEN-LAST:event_adminBtnActionPerformed
 
     private void iconUserProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconUserProfileMouseClicked
-        // TODO add your handling code here:
+        dispose();
+        new Profile();
     }//GEN-LAST:event_iconUserProfileMouseClicked
 
     private void newBookingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newBookingMouseClicked
@@ -482,11 +592,20 @@ public class HomePage extends javax.swing.JFrame {
         new BookingPage(userName,role);
     }//GEN-LAST:event_newBookingActionPerformed
 
+    private void fixAnnouncementMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fixAnnouncementMouseClicked
+        openEditAnnouncementDialog();
+    }//GEN-LAST:event_fixAnnouncementMouseClicked
+
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adminBtn;
+    private javax.swing.JLabel announcements;
+    private javax.swing.JLabel announcementsLabel;
+    private javax.swing.JLabel bookingAn;
     private javax.swing.JButton bookingBtn;
+    private javax.swing.JLabel completedAn;
     private javax.swing.JLabel completedinfo;
+    private javax.swing.JLabel fixAnnouncement;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
@@ -495,13 +614,7 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
     private javax.swing.JLabel iconUserProfile;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -512,8 +625,10 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JLabel logo;
     private javax.swing.JButton newBooking;
+    private javax.swing.JLabel pendingAn;
     private javax.swing.JLabel pendinginfo;
     private javax.swing.JButton profileBtn;
+    private javax.swing.JLabel shortcuts;
     private javax.swing.JLabel userBookingInfo;
     private javax.swing.JLabel username;
     private javax.swing.JButton viewHistory;

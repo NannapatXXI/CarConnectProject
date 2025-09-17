@@ -9,6 +9,7 @@ import java.net.URL;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import com.mycompany.carservice.entity.RoundedPanel;
 
 /**
  *
@@ -30,6 +31,7 @@ public class Register extends javax.swing.JFrame {
                         cautionpass.setVisible(false); 
                         cautionconfirmpass.setVisible(false); 
                         cautiontel.setVisible(false); 
+                        cautionemail.setVisible(false);
 //                        iconusername.setIcon(new ImageIcon(getClass().getResource("/image/user.png")));
 //                        iconpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
 //                        iconconfirmpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
@@ -37,10 +39,12 @@ public class Register extends javax.swing.JFrame {
                 try {
                     URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
                     URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
+                    URL emailIconURL = new File("src/main/image/email.png").toURI().toURL();
                     URL telIconURL = new File("src/main/image/phone-call.png").toURI().toURL();
                     iconusername.setIcon(new ImageIcon(userIconURL));
                     iconpassword.setIcon(new ImageIcon(passIconURL));
-                    icontel.setIcon(new ImageIcon(passIconURL));
+                    iconconfirmpassword.setIcon(new ImageIcon(passIconURL));
+                    iconemail.setIcon(new ImageIcon(emailIconURL));
                     icontel.setIcon(new ImageIcon(telIconURL));
                 } catch (Exception e) {
                     System.out.println(e);
@@ -62,6 +66,7 @@ public class Register extends javax.swing.JFrame {
         registerButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         logButton = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
         cautionconfirmpass = new javax.swing.JLabel();
         iconusername = new javax.swing.JLabel();
         iconpassword = new javax.swing.JLabel();
@@ -74,7 +79,6 @@ public class Register extends javax.swing.JFrame {
         password = new javax.swing.JPasswordField();
         confirmPassword = new javax.swing.JPasswordField();
         jLabel6 = new javax.swing.JLabel();
-        registerFinish = new javax.swing.JButton();
         cautionpass = new javax.swing.JLabel();
         cautionusername = new javax.swing.JLabel();
         cautionemail = new javax.swing.JLabel();
@@ -83,13 +87,16 @@ public class Register extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         tel = new javax.swing.JTextField();
         email = new javax.swing.JTextField();
+        jPanel2 = new RoundedPanel(30); // 30 radius;
+        registerFinish = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel4.setBackground(new java.awt.Color(58, 58, 58));
+        jPanel4.setBackground(new java.awt.Color(43, 43, 43));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         registerButton.setBackground(new java.awt.Color(255, 149, 0));
         registerButton.setFont(new java.awt.Font("Gadugi", 1, 24)); // NOI18N
@@ -105,11 +112,13 @@ public class Register extends javax.swing.JFrame {
                 registerButtonMouseExited(evt);
             }
         });
+        jPanel4.add(registerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(72, 401, 237, 60));
 
         jLabel2.setFont(new java.awt.Font("Gadugi", 1, 48)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("WELCOME");
         jLabel2.setToolTipText("");
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(72, 161, -1, 62));
 
         logButton.setFont(new java.awt.Font("Gadugi", 1, 24)); // NOI18N
         logButton.setText("Login");
@@ -129,32 +138,14 @@ public class Register extends javax.swing.JFrame {
                 logButtonActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(72, 72, 72)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(registerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(logButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 61, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(161, 161, 161)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(82, 82, 82)
-                .addComponent(logButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
-                .addComponent(registerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(339, Short.MAX_VALUE))
-        );
+        jPanel4.add(logButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(72, 305, 237, 60));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 800));
+
+        jLabel4.setFont(new java.awt.Font("Gadugi", 1, 48)); // NOI18N
+        jLabel4.setText("Register");
+        jLabel4.setToolTipText("");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 70, -1, -1));
 
         cautionconfirmpass.setForeground(new java.awt.Color(255, 0, 0));
         cautionconfirmpass.setText("Passwords don't match !!! please try again");
@@ -164,13 +155,11 @@ public class Register extends javax.swing.JFrame {
         jPanel1.add(iconpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 260, 50, 60));
         jPanel1.add(icontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 560, 50, 60));
         jPanel1.add(iconemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 50, 60));
-        jPanel1.add(iconconfirmpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 360, 50, 60));
+        jPanel1.add(iconconfirmpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 360, 50, 60));
 
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Username");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 140, -1, -1));
 
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Password");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 240, -1, -1));
 
@@ -216,9 +205,52 @@ public class Register extends javax.swing.JFrame {
         });
         jPanel1.add(confirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 360, 510, 60));
 
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Confirm Password");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 340, -1, -1));
+
+        cautionpass.setForeground(new java.awt.Color(255, 0, 0));
+        cautionpass.setText("Passwords don't match !!! please try again");
+        cautionpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautionpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 320, -1, -1));
+
+        cautionusername.setForeground(new java.awt.Color(255, 0, 0));
+        cautionusername.setText("Passwords don't match !!! please try again");
+        cautionusername.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautionusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 220, -1, -1));
+
+        cautionemail.setForeground(new java.awt.Color(255, 0, 0));
+        cautionemail.setText("Passwords don't match !!! please try again");
+        cautionemail.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautionemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 520, -1, -1));
+
+        jLabel7.setText("Email");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 440, -1, -1));
+
+        cautiontel.setForeground(new java.awt.Color(255, 0, 0));
+        cautiontel.setText("Passwords don't match !!! please try again");
+        cautiontel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel1.add(cautiontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 620, -1, -1));
+
+        jLabel8.setText("Phone");
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 540, -1, -1));
+
+        tel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        tel.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        tel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                telKeyTyped(evt);
+            }
+        });
+        jPanel1.add(tel, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 560, 510, 60));
+
+        email.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        email.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        email.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                emailKeyTyped(evt);
+            }
+        });
+        jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 460, 510, 60));
 
         registerFinish.setBackground(new java.awt.Color(255, 149, 0));
         registerFinish.setFont(new java.awt.Font("Gadugi", 1, 24)); // NOI18N
@@ -239,37 +271,25 @@ public class Register extends javax.swing.JFrame {
                 registerFinishActionPerformed(evt);
             }
         });
-        jPanel1.add(registerFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 680, 510, 60));
 
-        cautionpass.setForeground(new java.awt.Color(255, 0, 0));
-        cautionpass.setText("Passwords don't match !!! please try again");
-        cautionpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionpass, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 320, -1, -1));
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(119, Short.MAX_VALUE)
+                .addComponent(registerFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(101, 101, 101))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(617, Short.MAX_VALUE)
+                .addComponent(registerFinish, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33))
+        );
 
-        cautionusername.setForeground(new java.awt.Color(255, 0, 0));
-        cautionusername.setText("Passwords don't match !!! please try again");
-        cautionusername.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 220, -1, -1));
-
-        cautionemail.setForeground(new java.awt.Color(255, 0, 0));
-        cautionemail.setText("Passwords don't match !!! please try again");
-        cautionemail.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautionemail, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 520, -1, -1));
-
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Email");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 440, -1, -1));
-
-        cautiontel.setForeground(new java.awt.Color(255, 0, 0));
-        cautiontel.setText("Passwords don't match !!! please try again");
-        cautiontel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel1.add(cautiontel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 620, -1, -1));
-
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Phone");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 540, -1, -1));
-        jPanel1.add(tel, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 560, 510, 60));
-        jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 460, 510, 60));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 40, 730, 710));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -279,7 +299,7 @@ public class Register extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -298,14 +318,15 @@ public class Register extends javax.swing.JFrame {
     }//GEN-LAST:event_registerFinishMouseEntered
 
     private void registerFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseClicked
-        String pass = new String(password.getPassword());
-        String confirmpass = new String(confirmPassword.getPassword());
+        String pass = new String(password.getPassword()).trim();
+        String confirmpass = new String(confirmPassword.getPassword()).trim();
         int sumuser = 0;
         int sumpass = 0;
         int sumconfirm = 0;
         int sumtel = 0;
+        int sumemail = 0;
         
-        if (username.getText().isEmpty()) {
+        if (username.getText().trim().isEmpty()) {
             cautionusername.setText("Need to input username");
             cautionusername.setVisible(true);
             sumuser=1;
@@ -359,12 +380,12 @@ public class Register extends javax.swing.JFrame {
             sumconfirm=0;
         }
 
-        if (tel.getText().isEmpty()) {
-            cautiontel.setText("Need to input your tel");
+        if (tel.getText().trim().isEmpty()) {
+            cautiontel.setText("Need to input your Phone number");
             cautiontel.setVisible(true);
             sumtel=1;
-        }else if (tel.getText().length() < 6){
-            cautiontel.setText("Wrong tel !!");
+        }else if (tel.getText().length() < 10 || tel.getText().length() > 10 ){
+            cautiontel.setText("Wrong phone number !!");
             cautiontel.setVisible(true);
             sumtel=1;
         }else{
@@ -373,60 +394,29 @@ public class Register extends javax.swing.JFrame {
             sumtel=0;
         }
         
-        /*
-        if (pass.length() < 8) {
-            cautionusername.setText("Password need at least 8 characters");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-        if (pass.contains(" ")) {
-            cautionusername.setText("Password must not contain spaces");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
+        String emailText = email.getText().trim();
+        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.(com|co\\.th)$";
+
+        if (emailText.isEmpty()) {
+            cautionemail.setText("Need to input your email");
+            cautionemail.setVisible(true);
+            sumemail = 1;
+        } else if (!emailText.matches(emailPattern)) {
+            cautionemail.setText("Invalid email format (must end with .com, or .co.th)");
+            cautionemail.setVisible(true);
+            sumemail = 1;
+        } else {
+            cautionemail.setText("");
+            cautionemail.setVisible(false);
+            sumemail = 0;
         }
 
-        if (!pass.matches(".*\\d.*")) {
-            cautionusername.setText("Password must have at least one number");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*[a-z].*")) {
-            cautionusername.setText("Password must have at least one lowercase letter");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*[A-Z].*")) {
-            cautionusername.setText("Password must have at least one uppercase letter");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-
-        if (!pass.matches(".*[!@#$%^&*()].*")) {
-            cautionusername.setText("Password must have at least one special character (!@#$%^&*())");
-            cautionusername.setVisible(true);
-            sumpass=1;
-        }else{
-            sumpass=0;
-        }
-        */
-
-        if (sumpass == 0 && sumuser == 0 && sumconfirm==0 &&  sumtel == 0){
+        if (sumpass == 0 && sumuser == 0 && sumconfirm==0 &&  sumtel == 0 &&  sumtel == 0){
             cautionusername.setVisible(false);
             cautionpass.setVisible(false);
             cautionconfirmpass.setVisible(false);
             cautiontel.setVisible(false);
+            cautionemail.setVisible(false);
 
             String newUserID = "0001"; // ค่า default
             File file = new File("src/main/data/user.csv");
@@ -456,16 +446,17 @@ public class Register extends javax.swing.JFrame {
             }
 
             // อ่านค่าจาก TextField
-            String usernameget = username.getText();
-            String passwordget = new String(password.getPassword());
-            String telget = tel.getText();
+            String usernameget = username.getText().trim();
+            String passwordget = new String(password.getPassword()).trim();
+            String telget = tel.getText().trim();
+            String emailget = email.getText().trim();
             // เขียนลง CSV
             try {
                 File f = new File("src/main/data/user.csv");
                 FileWriter fw = new FileWriter(f,true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 System.out.println("Saved successfully!");
-                bw.write("\n"+newUserID+","+usernameget+","+passwordget+","+telget);
+                bw.write("\n"+newUserID+","+usernameget+","+passwordget+","+emailget+","+telget+",user");
                 bw.close();
                 fw.close();
             } catch (Exception e) {
@@ -546,6 +537,23 @@ public class Register extends javax.swing.JFrame {
         dispose();
         new Register();
     }//GEN-LAST:event_registerButtonMouseClicked
+
+    private void telKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_telKeyTyped
+        char c = evt.getKeyChar();
+        if (!Character.isDigit(c)) {
+            evt.consume();
+        }
+        if (tel.getText().length() >= 10) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_telKeyTyped
+
+    private void emailKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_emailKeyTyped
+        char c = evt.getKeyChar();
+        if (c == ' ') {
+            evt.consume();
+        }
+    }//GEN-LAST:event_emailKeyTyped
     
     /**
      * @param args the command line arguments
@@ -587,11 +595,13 @@ public class Register extends javax.swing.JFrame {
     private javax.swing.JLabel iconusername;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JButton logButton;
     private javax.swing.JPasswordField password;
