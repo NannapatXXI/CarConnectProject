@@ -1,37 +1,35 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package com.mycompany.carservice.gui;
 
 
 import com.mycompany.carservice.entity.RoundedPanel;
+
+import com.mycompany.carservice.entity.Observer;
+
 /**
  *
  * @author nannapat
  */
-public class PopAlert extends javax.swing.JDialog {
+public class PopAlert extends javax.swing.JDialog implements Observer {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PopAlert.class.getName());
 
-    
-    
     /**
      * Creates new form PopAlert
      */
-    public PopAlert(java.awt.Frame parent, boolean modal , String alert) {
+    public PopAlert(java.awt.Frame parent, boolean modal ) {
         super(parent, modal);
-       
         initComponents();
-         SetTextAlert(alert);
-         setLocationRelativeTo(null);
-        setVisible(true);
-
+        setLocationRelativeTo(null);
+        
     }
     
-    private void SetTextAlert(String alert){
-        alertLabel.setText(alert);
+       
+    @Override
+    public void update(String message) {
+        alertLabel.setText(message);
+        setVisible(true);  // โผล่ขึ้นมาเมื่อมีข้อความใหม่
     }
+ 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -164,4 +162,7 @@ public class PopAlert extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     // End of variables declaration//GEN-END:variables
+
+
+    
 }
