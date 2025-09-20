@@ -51,6 +51,10 @@ public class PopInBooking extends javax.swing.JDialog {
     public void setServiceLabel(String text) {
      serviceLabel.setText(text);
     }
+    public void setYearLabel(String text){
+        yearLabel.setText(text);
+    }
+            
     public void cheackuser(){
        
        for(String[] data : users){
@@ -101,10 +105,11 @@ public class PopInBooking extends javax.swing.JDialog {
         textFieldCar = new javax.swing.JTextField();
         timeLabel1 = new javax.swing.JLabel();
         serviceLabel = new javax.swing.JLabel();
+        yearLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         backBtn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         backBtn.setText("Back");
@@ -145,7 +150,7 @@ public class PopInBooking extends javax.swing.JDialog {
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(48, 47, 46));
+        jPanel3.setBackground(new java.awt.Color(240, 240, 240));
 
         textDetail.setColumns(20);
         textDetail.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -153,46 +158,39 @@ public class PopInBooking extends javax.swing.JDialog {
         jScrollPane1.setViewportView(textDetail);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Detail :");
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("User :");
 
         userLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        userLabel.setForeground(new java.awt.Color(255, 255, 255));
         userLabel.setText("....");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Day :");
 
         dayLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        dayLabel.setForeground(new java.awt.Color(255, 255, 255));
         dayLabel.setText("....");
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Service :");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Time :");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("ทะเบียนรถ :");
 
         textFieldCar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         timeLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        timeLabel1.setForeground(new java.awt.Color(255, 255, 255));
         timeLabel1.setText("jLabel8");
 
         serviceLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        serviceLabel.setForeground(new java.awt.Color(255, 255, 255));
         serviceLabel.setText("jLabel8");
+
+        yearLabel.setFont(new java.awt.Font("Helvetica Neue", 0, 14)); // NOI18N
+        yearLabel.setText("jLabel8");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -220,11 +218,14 @@ public class PopInBooking extends javax.swing.JDialog {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(userLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(textFieldCar, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(serviceLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
-                        .addComponent(timeLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(timeLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(dayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(yearLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -237,7 +238,8 @@ public class PopInBooking extends javax.swing.JDialog {
                 .addGap(9, 9, 9)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(dayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(yearLabel))
                 .addGap(20, 20, 20)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -315,6 +317,7 @@ public class PopInBooking extends javax.swing.JDialog {
             System.out.println("UserID: " + userId);
 
             // ดึงข้อมูลจาก GUI
+            String year =  yearLabel.getText().trim();
             String service = serviceLabel.getText().trim();
             String date = dayLabel.getText().trim();
             String time = timeLabel1.getText().trim();
@@ -323,7 +326,7 @@ public class PopInBooking extends javax.swing.JDialog {
             String status = "process"; // หรือค่าอื่นตามต้องการ
 
             // สร้าง array ตามลำดับที่ต้องการ
-            String[] userData = {userId, data[1], service, date, time, note, carReg, status};
+            String[] userData = {userId, data[1], service, date +" " + year, time, note, carReg, status};
 
             // เขียนข้อมูลต่อจาก CSV เดิม
             saveBooking(userData); // ต้องสร้างฟังก์ชัน appendCSV ใน CSVHandler
@@ -357,5 +360,6 @@ public class PopInBooking extends javax.swing.JDialog {
     private javax.swing.JTextField textFieldCar;
     private javax.swing.JLabel timeLabel1;
     private javax.swing.JLabel userLabel;
+    private javax.swing.JLabel yearLabel;
     // End of variables declaration//GEN-END:variables
 }

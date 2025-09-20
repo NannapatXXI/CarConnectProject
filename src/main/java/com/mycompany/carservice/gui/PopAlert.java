@@ -44,7 +44,7 @@ public class PopAlert extends javax.swing.JDialog implements Observer {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         closeBtn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         closeBtn.setText("Close");
