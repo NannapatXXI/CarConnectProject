@@ -47,13 +47,17 @@ public class AdminPage extends javax.swing.JFrame {
       //  addButtonColumn();
 
     }
+    
    
    
     private void SetupUi() {
         UIManager.put("Table.selectionBackground", new Color(60, 60, 60));
         UIManager.put("Table.selectionForeground",new Color(255, 255, 255));
         UIManager.put("Table.alternateRowColor", new Color(240, 240, 240));
-       
+        totaluser.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        complete.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        inprocess.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        task.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
         homeBtn.setBorderPainted(false); 
         bookingBtn.setBorderPainted(false); 
         historyBtn.setBorderPainted(false); 
@@ -68,7 +72,14 @@ public class AdminPage extends javax.swing.JFrame {
                     URL historyIconURL = new File("src/main/image/history.png").toURI().toURL();
                     URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
-                    URL profileUserIconURL = new File("src/main/image/profileuser.png").toURI().toURL();
+                    URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
+                    
+                    URL totaluserIconURL = new File("src/main/image/user.png").toURI().toURL();
+                    URL completeIconURL = new File("src/main/image/checked.png").toURI().toURL();
+                    URL inprocessIconURL = new File("src/main/image/iteration.png").toURI().toURL();
+                    URL taskIconURL = new File("src/main/image/file.png").toURI().toURL();
+                    
+                    URL adduserIconURL = new File("src/main/image/adduser.png").toURI().toURL();
                    
                     logo.setIcon(new ImageIcon(logoIconURL));
                     iconHome.setIcon(new ImageIcon(homeIconURL));
@@ -76,8 +87,14 @@ public class AdminPage extends javax.swing.JFrame {
                     iconHistory.setIcon(new ImageIcon(historyIconURL));
                     iconProfile.setIcon(new ImageIcon(profileIconURL));
                     iconAdmin.setIcon(new ImageIcon(adminIconURL));
-                    iconUserProfile.setIcon(new ImageIcon(profileUserIconURL));
-                   
+                    iconExit.setIcon(new ImageIcon(exitIconURL));
+                    
+                    totaluser.setIcon(new ImageIcon(totaluserIconURL));
+                    complete.setIcon(new ImageIcon(completeIconURL));
+                    inprocess.setIcon(new ImageIcon(inprocessIconURL));
+                    task.setIcon(new ImageIcon(taskIconURL));
+                    
+                    adduserLable.setIcon(new ImageIcon(adduserIconURL));
                     
                 } catch (Exception e) {
                     System.out.println(e);
@@ -454,17 +471,16 @@ public class AdminPage extends javax.swing.JFrame {
         adduserLable = new javax.swing.JLabel();
         jPanel4 = new RoundedPanel(30); // 30 radius;
         totalUserLable = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        username = new javax.swing.JLabel();
+        totaluser = new javax.swing.JLabel();
         jPanel7 = new RoundedPanel(30); // 30 radius;
         completedLable = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        complete = new javax.swing.JLabel();
         jPanel8 = new RoundedPanel(30); // 30 radius;
         processLable = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
+        inprocess = new javax.swing.JLabel();
         jPanel9 = new RoundedPanel(30); // 30 radius;
         taskLable = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
+        task = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         iconHome = new javax.swing.JLabel();
         iconBooking = new javax.swing.JLabel();
@@ -477,7 +493,8 @@ public class AdminPage extends javax.swing.JFrame {
         historyBtn = new javax.swing.JButton();
         bookingBtn = new javax.swing.JButton();
         logo = new javax.swing.JLabel();
-        iconUserProfile = new javax.swing.JLabel();
+        iconExit = new javax.swing.JLabel();
+        username = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -513,6 +530,7 @@ public class AdminPage extends javax.swing.JFrame {
         jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 30, -1, 30));
 
         addUserBtn.setBackground(new java.awt.Color(255, 255, 255));
+        addUserBtn.setForeground(new java.awt.Color(216, 216, 216));
         addUserBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 addUserBtnMouseClicked(evt);
@@ -528,7 +546,7 @@ public class AdminPage extends javax.swing.JFrame {
 
         adduserLable.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         adduserLable.setText("Add user");
-        addUserBtn.add(adduserLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 60, 40));
+        addUserBtn.add(adduserLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 90, 40));
 
         jPanel3.add(addUserBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 20, 130, 40));
 
@@ -538,12 +556,9 @@ public class AdminPage extends javax.swing.JFrame {
         totalUserLable.setText("jLabel5");
         jPanel4.add(totalUserLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, 46));
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel6.setText("Total users");
-        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
-
-        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        username.setText("....");
+        totaluser.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        totaluser.setText("Total users  ");
+        jPanel4.add(totaluser, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
 
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -551,9 +566,9 @@ public class AdminPage extends javax.swing.JFrame {
         completedLable.setText("jLabel5");
         jPanel7.add(completedLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, 46));
 
-        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel12.setText("Competed");
-        jPanel7.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
+        complete.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        complete.setText("Competed  ");
+        jPanel7.add(complete, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
 
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -561,9 +576,9 @@ public class AdminPage extends javax.swing.JFrame {
         processLable.setText("jLabel5");
         jPanel8.add(processLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, 46));
 
-        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel14.setText("In process");
-        jPanel8.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
+        inprocess.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        inprocess.setText("In process  ");
+        jPanel8.add(inprocess, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
 
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -571,9 +586,9 @@ public class AdminPage extends javax.swing.JFrame {
         taskLable.setText("jLabel5");
         jPanel9.add(taskLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, 46));
 
-        jLabel16.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel16.setText("Today tasks");
-        jPanel9.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
+        task.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        task.setText("Today tasks  ");
+        jPanel9.add(task, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
         jPanel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -598,6 +613,7 @@ public class AdminPage extends javax.swing.JFrame {
         homeBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         homeBtn.setForeground(new java.awt.Color(255, 255, 255));
         homeBtn.setText(" Home    ");
+        homeBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         homeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -624,6 +640,7 @@ public class AdminPage extends javax.swing.JFrame {
         profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         profileBtn.setForeground(new java.awt.Color(255, 255, 255));
         profileBtn.setText("Profile  ");
+        profileBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         profileBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -642,6 +659,7 @@ public class AdminPage extends javax.swing.JFrame {
         historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         historyBtn.setForeground(new java.awt.Color(255, 255, 255));
         historyBtn.setText("History ");
+        historyBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         historyBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -665,6 +683,7 @@ public class AdminPage extends javax.swing.JFrame {
         bookingBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         bookingBtn.setForeground(new java.awt.Color(255, 255, 255));
         bookingBtn.setText("Booking");
+        bookingBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         bookingBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -682,6 +701,16 @@ public class AdminPage extends javax.swing.JFrame {
         logo.setForeground(new java.awt.Color(255, 255, 255));
         jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
 
+        iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                iconExitMouseClicked(evt);
+            }
+        });
+
+        username.setBackground(new java.awt.Color(0, 0, 0));
+        username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        username.setText("..");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -691,10 +720,9 @@ public class AdminPage extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(iconUserProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(104, 104, 104))
+                        .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(iconExit, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -706,17 +734,17 @@ public class AdminPage extends javax.swing.JFrame {
                                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 896, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(61, Short.MAX_VALUE))))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 896, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(username, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(iconUserProfile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(41, 41, 41)
+                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(iconExit, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -739,8 +767,8 @@ public class AdminPage extends javax.swing.JFrame {
     }//GEN-LAST:event_chooseTableActionPerformed
 
     private void addUserBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserBtnMouseEntered
-        addUserBtn.setBackground(new Color(28,24,24));
-        adduserLable.setForeground(Color.WHITE);
+        addUserBtn.setBackground(new Color(216,216,216));
+
     }//GEN-LAST:event_addUserBtnMouseEntered
 
     private void addUserBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserBtnMouseExited
@@ -755,7 +783,7 @@ public class AdminPage extends javax.swing.JFrame {
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
         dispose();
-        new Profile();
+        new Profile(userName,role);
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
@@ -768,7 +796,7 @@ public class AdminPage extends javax.swing.JFrame {
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
         dispose();
-        new History();
+        new History(userName,role);
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
@@ -808,27 +836,30 @@ public class AdminPage extends javax.swing.JFrame {
        new AddUser();
     }//GEN-LAST:event_addUserBtnMouseClicked
 
+    private void iconExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconExitMouseClicked
+        dispose();
+        new Login();
+    }//GEN-LAST:event_iconExitMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addUserBtn;
     private javax.swing.JLabel adduserLable;
     private javax.swing.JButton adminBtn;
     private javax.swing.JButton bookingBtn;
     private javax.swing.JComboBox<String> chooseTable;
+    private javax.swing.JLabel complete;
     private javax.swing.JLabel completedLable;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
     private javax.swing.JLabel iconBooking;
+    private javax.swing.JLabel iconExit;
     private javax.swing.JLabel iconHistory;
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
-    private javax.swing.JLabel iconUserProfile;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel inprocess;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -841,8 +872,10 @@ public class AdminPage extends javax.swing.JFrame {
     private javax.swing.JLabel processLable;
     private javax.swing.JButton profileBtn;
     private javax.swing.JTextField searchField;
+    private javax.swing.JLabel task;
     private javax.swing.JLabel taskLable;
     private javax.swing.JLabel totalUserLable;
+    private javax.swing.JLabel totaluser;
     private javax.swing.JLabel username;
     // End of variables declaration//GEN-END:variables
 }

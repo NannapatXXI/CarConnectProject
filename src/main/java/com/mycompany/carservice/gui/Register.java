@@ -4,6 +4,7 @@
  */
 package com.mycompany.carservice.gui;
 
+import com.mycompany.carservice.entity.CSVHandler;
 import java.awt.*;
 import java.net.URL;
 import javax.swing.*;
@@ -50,6 +51,27 @@ public class Register extends javax.swing.JFrame {
                     System.out.println(e);
                     logger.severe("Cannot load icon images");
                 }
+        }
+        private String generateNewUserID() {
+            CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
+            ArrayList<String[]> data = csvHandler.readCSV();
+
+            int maxID = 0;
+
+            for (String[] row : data) {
+                if (row.length > 0) {
+                    String idStr = row[0];
+                    try {
+                        int id = Integer.parseInt(idStr);
+                        if (id > maxID) maxID = id;
+                    } catch (NumberFormatException e) {
+                        // ข้ามถ้าไม่ใช่เลข
+                    }
+                }
+            }
+
+            maxID++;
+            return String.format("%04d", maxID);
         }
 
     /**
@@ -418,33 +440,6 @@ public class Register extends javax.swing.JFrame {
             cautiontel.setVisible(false);
             cautionemail.setVisible(false);
 
-            String newUserID = "0001"; // ค่า default
-            File file = new File("src/main/data/user.csv");
-            if (file.exists()) {
-                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    int maxID = 0;
-                    while ((line = br.readLine()) != null) {
-                        if (!line.trim().isEmpty()) {
-                            String[] parts = line.split(",");
-                            if (parts.length > 0) {
-                                String idStr = parts[0];
-                                try {
-                                    int id = Integer.parseInt(idStr);
-                                    if (id > maxID) maxID = id;
-                                } catch (NumberFormatException e) {
-                                    // ข้ามถ้าไม่ใช่เลข
-                                }
-                            }
-                        }
-                    }
-                    maxID++; // เพิ่ม 1 จากเลขสูงสุด
-                    newUserID = String.format("%04d", maxID); // ทำให้เป็น 4 หลัก
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
             // อ่านค่าจาก TextField
             String usernameget = username.getText().trim();
             String passwordget = new String(password.getPassword()).trim();
@@ -456,7 +451,7 @@ public class Register extends javax.swing.JFrame {
                 FileWriter fw = new FileWriter(f,true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 System.out.println("Saved successfully!");
-                bw.write("\n"+newUserID+","+usernameget+","+passwordget+","+emailget+","+telget+",user");
+                bw.write("\n"+ generateNewUserID() +","+usernameget+","+passwordget+","+emailget+","+telget+",user");
                 bw.close();
                 fw.close();
             } catch (Exception e) {
@@ -469,6 +464,7 @@ public class Register extends javax.swing.JFrame {
             new Login();
 
         }
+        
     }//GEN-LAST:event_registerFinishMouseClicked
 
     private void confirmPasswordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_confirmPasswordKeyTyped

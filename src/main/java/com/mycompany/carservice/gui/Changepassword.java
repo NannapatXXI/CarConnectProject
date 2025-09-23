@@ -20,15 +20,17 @@ import com.mycompany.carservice.gui.*;
 public class Changepassword extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Changepassword.class.getName());
-    private String currentUserName;
+    private String userName;
+    private String role;
 
     
-    public Changepassword(String currentUserName) {
+    public Changepassword(String userName,String role) {
         initComponents();
         setSize(500, 452);  
         setLocationRelativeTo(null);
         setVisible(true);
-        this.currentUserName = currentUserName;
+        this.userName = userName;
+        this.role = role;
         save.addActionListener(evt -> handleChangePassword());
     }
     private String validatePassword(String password) {
@@ -80,7 +82,7 @@ public class Changepassword extends javax.swing.JFrame {
 
     for (int i = 1; i < lines.size(); i++) { // ข้าม header
         String[] values = lines.get(i).split(","); // ✅ ประกาศที่นี่
-        if (values[1].equals(currentUserName)) {
+        if (values[1].equals(userName)) {
             if (!values[2].equals(oldPass)) {
                 JOptionPane.showMessageDialog(this, "รหัสเก่าไม่ถูกต้อง", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -114,7 +116,7 @@ public class Changepassword extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "เปลี่ยนรหัสผ่านสำเร็จ", "Success", JOptionPane.INFORMATION_MESSAGE);
 
         this.dispose();
-        new Profile();
+        new Profile(userName,role);
     }
 }
 
@@ -230,7 +232,7 @@ public class Changepassword extends javax.swing.JFrame {
 
     private void backMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backMouseClicked
         dispose();
-        new Profile();
+        new Profile(userName,role);
     }//GEN-LAST:event_backMouseClicked
 
     private void saveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMouseClicked

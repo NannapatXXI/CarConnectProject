@@ -16,12 +16,15 @@ import com.mycompany.carservice.gui.Changepassword;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import com.mycompany.carservice.entity.RoundedPanel;
 /**
  *
  * @author User
  */
 public class Profile extends javax.swing.JFrame {
-    
+    private final String userName;
+    private final String role;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Profile.class.getName());
     private String user;
     private String Tell;
@@ -33,9 +36,13 @@ public class Profile extends javax.swing.JFrame {
     /**
      * Creates new form Profile
      */
-    public Profile() {
-        
+    public Profile(String userName,String role) {
         initComponents();
+        this.userName = userName ;
+        this.role = role;
+        username.setHorizontalAlignment(JLabel.RIGHT);
+        username.setText(userName);
+        
         ((AbstractDocument) phoneText.getDocument()).setDocumentFilter(new NumberDocumentFilter(10));
         setupui();
         /*homebutton.putClientProperty("JButton.buttonType", "roundRect");
@@ -44,45 +51,60 @@ public class Profile extends javax.swing.JFrame {
         historybutton.putClientProperty("arc",5);
         bookingbutton.putClientProperty("JButton.buttonType", "roundRect");
         bookingbutton.putClientProperty("arc", 5);*/
-         setSize(1280, 800);  
-         setLocationRelativeTo(null); // จัดตรงกลางจอ
-         setVisible(true);
-         loadUserProfile(currentUserName);
+        setSize(1200, 800);        
+        setLocationRelativeTo(null); // จัดกลางหน้าจอ
+        setVisible(true);
+        loadUserProfile(currentUserName);
+         
+         if ("admin".equalsIgnoreCase(role)) {   
+            adminBtn.setVisible(true);
+            iconAdmin.setVisible(true); // แสดงเฉพาะ Admin
+        } else {
+            adminBtn.setVisible(false);
+            iconAdmin.setVisible(false);// ซ่อนสำหรับ User ปกติ
+        }
        
          try {
+                URL logoIconURL = new File("src/main/image/logoCarConnect.png").toURI().toURL();
                 URL homeIconURL = new File("src/main/image/home.png").toURI().toURL();
                 URL bookingIconURL = new File("src/main/image/booking.png").toURI().toURL();
                 URL historyIconURL = new File("src/main/image/history.png").toURI().toURL();
                 URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
-                URL carconnectIconURL = new File("src/main/image/logoCarConnect.png").toURI().toURL();
+                URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
                 URL changepasswordIconURL = new File("src/main/image/Pofilepassword.png").toURI().toURL();
+                URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
                 
                 changepasswordicon.setIcon(new ImageIcon(changepasswordIconURL));
-                homeicon.setIcon(new ImageIcon(homeIconURL));
-                bookingicon.setIcon(new ImageIcon(bookingIconURL));
-                historyicon.setIcon(new ImageIcon(historyIconURL));
-                profileicon.setIcon(new ImageIcon(profileIconURL));
-                carconnecticon.setIcon(new ImageIcon(carconnectIconURL));
-                
-                changepasswordicon.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dispose();
-                new Changepassword(currentUserName); // ส่งค่า currentUserName ไป
-            }
-        });
-                
-                
-                
+                logo.setIcon(new ImageIcon(logoIconURL));
+                iconHome.setIcon(new ImageIcon(homeIconURL));
+                iconBooking.setIcon(new ImageIcon(bookingIconURL));
+                iconHistory.setIcon(new ImageIcon(historyIconURL));
+                iconProfile.setIcon(new ImageIcon(profileIconURL));
+                iconAdmin.setIcon(new ImageIcon(adminIconURL));
+                iconExit.setIcon(new ImageIcon(exitIconURL));
+
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                System.out.println(e);
+                logger.severe("Cannot load icon images");
             }
     }
+
     private void setupui(){
-        homebutton.setBorderPainted(false);
-        historybutton.setBorderPainted(false);
-        bookingbutton.setBorderPainted(false);
-        profilebutton.setBorderPainted(false);
+        homeBtn.setContentAreaFilled(false);
+        homeBtn.setBorderPainted(false);
+        
+        bookingBtn.setContentAreaFilled(false);
+        bookingBtn.setBorderPainted(false);
+
+        historyBtn.setContentAreaFilled(false);
+        historyBtn.setBorderPainted(false);
+
+        adminBtn.setContentAreaFilled(false);
+        adminBtn.setBorderPainted(false);
+
     }
+    
+    
     private void loadFromCSV() {
     String filePath = "src/main/data/user.csv"; // ตำแหน่งไฟล์
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -112,7 +134,7 @@ public class Profile extends javax.swing.JFrame {
 // โหลดข้อมูลโปรไฟล์ของผู้ใช้จากไฟล์ user.csv
 private void loadUserProfile(String name) {
     // แสดงชื่อผู้ใช้ปัจจุบันบน label
-    userlabel.setText("" + currentUserName);
+    //username.setText(userName);
     String filePath = "src/main/data/user.csv";
     // ใช้ BufferedReader อ่านไฟล์ทีละบรรทัด
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -220,7 +242,7 @@ class NumberDocumentFilter extends DocumentFilter {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel6 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        jPanel4 = new RoundedPanel(30); // 30 radius;
         usernameText = new javax.swing.JTextField();
         changepasswordicon = new javax.swing.JLabel();
         passwordText = new javax.swing.JTextField();
@@ -235,38 +257,39 @@ class NumberDocumentFilter extends DocumentFilter {
         emailText = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        homeicon = new javax.swing.JLabel();
-        bookingicon = new javax.swing.JLabel();
-        historyicon = new javax.swing.JLabel();
-        profileicon = new javax.swing.JLabel();
-        profilebutton = new javax.swing.JButton();
-        homebutton = new javax.swing.JButton();
-        historybutton = new javax.swing.JButton();
-        bookingbutton = new javax.swing.JButton();
-        homeicon1 = new javax.swing.JLabel();
-        carconnecticon = new javax.swing.JLabel();
-        userlabel = new javax.swing.JLabel();
+        iconHome = new javax.swing.JLabel();
+        iconBooking = new javax.swing.JLabel();
+        iconHistory = new javax.swing.JLabel();
+        iconProfile = new javax.swing.JLabel();
+        iconAdmin = new javax.swing.JLabel();
+        homeBtn = new javax.swing.JButton();
+        adminBtn = new javax.swing.JButton();
+        profileBtn = new javax.swing.JButton();
+        historyBtn = new javax.swing.JButton();
+        bookingBtn = new javax.swing.JButton();
+        logo = new javax.swing.JLabel();
+        username = new javax.swing.JLabel();
+        iconExit = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel4.setBackground(new java.awt.Color(228, 224, 224));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        usernameText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        usernameText.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         usernameText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         usernameText.setActionCommand("<Not Set>");
         usernameText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        jPanel4.add(usernameText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 190, 646, 63));
+        jPanel4.add(usernameText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 130, 646, 63));
 
         changepasswordicon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 changepasswordiconMouseClicked(evt);
             }
         });
-        jPanel4.add(changepasswordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 280, 80, 60));
+        jPanel4.add(changepasswordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 230, 60, 40));
 
         passwordText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         passwordText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
@@ -275,7 +298,7 @@ class NumberDocumentFilter extends DocumentFilter {
                 passwordTextActionPerformed(evt);
             }
         });
-        jPanel4.add(passwordText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 280, 646, 63));
+        jPanel4.add(passwordText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 223, 646, 60));
 
         phoneText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         phoneText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
@@ -284,28 +307,28 @@ class NumberDocumentFilter extends DocumentFilter {
                 phoneTextActionPerformed(evt);
             }
         });
-        jPanel4.add(phoneText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 490, 646, 63));
+        jPanel4.add(phoneText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 400, 646, 60));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Username :");
-        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 210, -1, -1));
+        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 110, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("password :");
-        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, -1, -1));
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, 100, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("phone :");
-        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 510, -1, -1));
+        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, 60, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Profile");
         jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 100, -1, -1));
+        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 50, -1, -1));
 
         texttInbtnEdittext.setBackground(new java.awt.Color(0, 0, 0));
         texttInbtnEdittext.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
@@ -316,15 +339,15 @@ class NumberDocumentFilter extends DocumentFilter {
                 texttInbtnEdittextMouseClicked(evt);
             }
         });
-        jPanel4.add(texttInbtnEdittext, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 620, -1, -1));
+        jPanel4.add(texttInbtnEdittext, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 552, 60, 40));
 
         jButton1.setBackground(new java.awt.Color(255, 149, 0));
-        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 610, 140, 50));
+        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 550, 140, 50));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Email :");
-        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, -1, -1));
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 330, -1, -1));
 
         emailText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         emailText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
@@ -333,93 +356,147 @@ class NumberDocumentFilter extends DocumentFilter {
                 emailTextActionPerformed(evt);
             }
         });
-        jPanel4.add(emailText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 380, 646, 63));
+        jPanel4.add(emailText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 646, 63));
 
         jLabel8.setText("jLabel8");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 300, -1, -1));
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 240, -1, -1));
 
-        jPanel6.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 80, 970, 680));
+        jPanel6.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 130, 900, 610));
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
+        jPanel2.setForeground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel2.add(homeicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, 40, 50));
-        jPanel2.add(bookingicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 320, 40, 50));
-        jPanel2.add(historyicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 410, 40, 50));
-        jPanel2.add(profileicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 500, 50, 50));
 
-        profilebutton.setBackground(new java.awt.Color(255, 149, 0));
-        profilebutton.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
-        profilebutton.setText("Profile");
-        profilebutton.addMouseListener(new java.awt.event.MouseAdapter() {
+        iconHome.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(iconHome, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 220, 40, 30));
+
+        iconBooking.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(iconBooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, 40, 30));
+
+        iconHistory.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(iconHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 360, 40, 30));
+
+        iconProfile.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(iconProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 430, 40, 30));
+
+        iconAdmin.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(iconAdmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 500, 40, 30));
+
+        homeBtn.setBackground(new java.awt.Color(43, 43, 43));
+        homeBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        homeBtn.setForeground(new java.awt.Color(204, 204, 204));
+        homeBtn.setText(" Home    ");
+        homeBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        homeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                homeBtnMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                profilebuttonMouseEntered(evt);
+                homeBtnMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                profilebuttonMouseExited(evt);
+                homeBtnMouseExited(evt);
             }
         });
-        jPanel2.add(profilebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 480, 210, 90));
+        jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 260, 70));
 
-        homebutton.setBackground(new java.awt.Color(43, 43, 43));
-        homebutton.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
-        homebutton.setForeground(new java.awt.Color(255, 255, 255));
-        homebutton.setText("Home");
-        homebutton.addMouseListener(new java.awt.event.MouseAdapter() {
+        adminBtn.setBackground(new java.awt.Color(43, 43, 43));
+        adminBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        adminBtn.setForeground(new java.awt.Color(204, 204, 204));
+        adminBtn.setText("Admin   ");
+        adminBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        adminBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                adminBtnMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                homebuttonMouseEntered(evt);
+                adminBtnMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                homebuttonMouseExited(evt);
+                adminBtnMouseExited(evt);
             }
         });
-        jPanel2.add(homebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 210, 200, 90));
-
-        historybutton.setBackground(new java.awt.Color(28, 24, 24));
-        historybutton.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
-        historybutton.setForeground(new java.awt.Color(255, 255, 255));
-        historybutton.setText("History");
-        historybutton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                historybuttonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                historybuttonMouseExited(evt);
-            }
-        });
-        jPanel2.add(historybutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 390, 190, 90));
-
-        bookingbutton.setBackground(new java.awt.Color(28, 24, 24));
-        bookingbutton.setFont(new java.awt.Font("Helvetica Neue", 1, 24)); // NOI18N
-        bookingbutton.setForeground(new java.awt.Color(255, 255, 255));
-        bookingbutton.setText("Booking");
-        bookingbutton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        bookingbutton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                bookingbuttonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                bookingbuttonMouseExited(evt);
-            }
-        });
-        bookingbutton.addActionListener(new java.awt.event.ActionListener() {
+        adminBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bookingbuttonActionPerformed(evt);
+                adminBtnActionPerformed(evt);
             }
         });
-        jPanel2.add(bookingbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 210, 90));
-        jPanel2.add(homeicon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, 40, 50));
-        jPanel2.add(carconnecticon, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 210, 180));
+        jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 270, 70));
 
-        jPanel6.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 225, 800));
+        profileBtn.setBackground(new java.awt.Color(255, 157, 0));
+        profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        profileBtn.setForeground(new java.awt.Color(255, 255, 255));
+        profileBtn.setText("Profile  ");
+        profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 410, 260, 70));
 
-        userlabel.setFont(new java.awt.Font("Helvetica Neue", 0, 36)); // NOI18N
-        jPanel6.add(userlabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 20, 310, 40));
+        historyBtn.setBackground(new java.awt.Color(43, 43, 43));
+        historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        historyBtn.setForeground(new java.awt.Color(204, 204, 204));
+        historyBtn.setText("History ");
+        historyBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        historyBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                historyBtnMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                historyBtnMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                historyBtnMouseExited(evt);
+            }
+        });
+        historyBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                historyBtnActionPerformed(evt);
+            }
+        });
+        jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 260, 70));
+
+        bookingBtn.setBackground(new java.awt.Color(43, 43, 43));
+        bookingBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        bookingBtn.setForeground(new java.awt.Color(204, 204, 204));
+        bookingBtn.setText("Booking");
+        bookingBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
+        bookingBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bookingBtnMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                bookingBtnMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                bookingBtnMouseExited(evt);
+            }
+        });
+        jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 260, 70));
+
+        logo.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
+
+        jPanel6.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
+
+        username.setBackground(new java.awt.Color(0, 0, 0));
+        username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        username.setText("..");
+        jPanel6.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 40, 660, 40));
+
+        iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                iconExitMouseClicked(evt);
+            }
+        });
+        jPanel6.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 40, 40, 40));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -457,30 +534,6 @@ class NumberDocumentFilter extends DocumentFilter {
             System.out.println("experience : "+ experience);
     }//GEN-LAST:event_texttInbtnEdittextMouseClicked
 
-    private void homebuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homebuttonMouseEntered
-        homebutton.setBackground(Color.GRAY);
-        //texttInbtnHome.setForeground(Color.WHITE);
-    }//GEN-LAST:event_homebuttonMouseEntered
-
-    private void homebuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homebuttonMouseExited
-       homebutton.setBackground(new Color(28,24,24));
-       //texttInbtnHome.setForeground(Color.WHITE);
-    }//GEN-LAST:event_homebuttonMouseExited
-
-    private void bookingbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookingbuttonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bookingbuttonActionPerformed
-
-    private void bookingbuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingbuttonMouseEntered
-        bookingbutton.setBackground(Color.GRAY);
-        
-    }//GEN-LAST:event_bookingbuttonMouseEntered
-
-    private void bookingbuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingbuttonMouseExited
-        bookingbutton.setBackground(new Color(28,24,24));
-        
-    }//GEN-LAST:event_bookingbuttonMouseExited
-
     private void passwordTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordTextActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordTextActionPerformed
@@ -489,45 +542,101 @@ class NumberDocumentFilter extends DocumentFilter {
         // TODO add your handling code here:
     }//GEN-LAST:event_emailTextActionPerformed
 
-    private void historybuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historybuttonMouseExited
-        historybutton.setBackground(new Color(28,24,24));
-        //historybutton.setForeground(Color.WHITE);
-    }//GEN-LAST:event_historybuttonMouseExited
-
-    private void historybuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historybuttonMouseEntered
-        historybutton.setBackground(Color.GRAY);
-        //historybutton.setForeground(Color.BLACK);
-    }//GEN-LAST:event_historybuttonMouseEntered
-
-    private void profilebuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profilebuttonMouseEntered
-        profilebutton.setForeground(Color.WHITE);
-    }//GEN-LAST:event_profilebuttonMouseEntered
-
-    private void profilebuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profilebuttonMouseExited
-        profilebutton.setForeground(Color.BLACK);
-    }//GEN-LAST:event_profilebuttonMouseExited
-
     private void changepasswordiconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changepasswordiconMouseClicked
-        dispose();
-    new Changepassword(currentUserName);
+        new Changepassword(userName,role);
     }//GEN-LAST:event_changepasswordiconMouseClicked
+
+    private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
+        dispose();
+        new AdminPage(userName,role);
+    }//GEN-LAST:event_adminBtnMouseClicked
+
+    private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
+        //adminBtn.setBackground(Color.GRAY);
+        adminBtn.setForeground(Color.WHITE);
+    }//GEN-LAST:event_adminBtnMouseEntered
+
+    private void adminBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseExited
+        //adminBtn.setBackground(new Color(28,24,24));
+        adminBtn.setForeground(new Color(204,204,204));
+    }//GEN-LAST:event_adminBtnMouseExited
+
+    private void adminBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adminBtnActionPerformed
+
+    private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
+        dispose();
+        new History(userName,role);
+    }//GEN-LAST:event_historyBtnMouseClicked
+
+    private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
+        //historyBtn.setBackground(Color.GRAY);
+        historyBtn.setForeground(Color.WHITE);
+    }//GEN-LAST:event_historyBtnMouseEntered
+
+    private void historyBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseExited
+        //historyBtn.setBackground(new Color(204,204,204));
+        historyBtn.setForeground(new Color(204,204,204));
+    }//GEN-LAST:event_historyBtnMouseExited
+
+    private void historyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_historyBtnActionPerformed
+
+    private void bookingBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseClicked
+        dispose();
+        new BookingPage(userName,role);
+    }//GEN-LAST:event_bookingBtnMouseClicked
+
+    private void bookingBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseEntered
+        //bookingBtn.setBackground(Color.GRAY);
+        bookingBtn.setForeground(Color.WHITE);
+    }//GEN-LAST:event_bookingBtnMouseEntered
+
+    private void bookingBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseExited
+        //bookingBtn.setBackground(new Color(28,24,24));
+        bookingBtn.setForeground(new Color(204,204,204));
+    }//GEN-LAST:event_bookingBtnMouseExited
+
+    private void homeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseClicked
+        dispose();
+        new HomePage(userName,role);
+    }//GEN-LAST:event_homeBtnMouseClicked
+
+    private void homeBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseEntered
+        //profileBtn.setBackground(Color.GRAY);
+        homeBtn.setForeground(Color.WHITE);
+    }//GEN-LAST:event_homeBtnMouseEntered
+
+    private void homeBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseExited
+        //profileBtn.setBackground(new Color(28,24,24));
+        homeBtn.setForeground(new Color(204,204,204));
+    }//GEN-LAST:event_homeBtnMouseExited
+
+    private void iconExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconExitMouseClicked
+        dispose();
+        new Login();
+    }//GEN-LAST:event_iconExitMouseClicked
 
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bookingbutton;
-    private javax.swing.JLabel bookingicon;
+    private javax.swing.JButton adminBtn;
+    private javax.swing.JButton bookingBtn;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JLabel carconnecticon;
     private javax.swing.JLabel changepasswordicon;
     private javax.swing.JTextField emailText;
-    private javax.swing.JButton historybutton;
-    private javax.swing.JLabel historyicon;
-    private javax.swing.JButton homebutton;
-    private javax.swing.JLabel homeicon;
-    private javax.swing.JLabel homeicon1;
+    private javax.swing.JButton historyBtn;
+    private javax.swing.JButton homeBtn;
+    private javax.swing.JLabel iconAdmin;
+    private javax.swing.JLabel iconBooking;
+    private javax.swing.JLabel iconExit;
+    private javax.swing.JLabel iconHistory;
+    private javax.swing.JLabel iconHome;
+    private javax.swing.JLabel iconProfile;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -538,12 +647,12 @@ class NumberDocumentFilter extends DocumentFilter {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JLabel logo;
     private javax.swing.JTextField passwordText;
     private javax.swing.JTextField phoneText;
-    private javax.swing.JButton profilebutton;
-    private javax.swing.JLabel profileicon;
+    private javax.swing.JButton profileBtn;
     private javax.swing.JLabel texttInbtnEdittext;
-    private javax.swing.JLabel userlabel;
+    private javax.swing.JLabel username;
     private javax.swing.JTextField usernameText;
     // End of variables declaration//GEN-END:variables
 }

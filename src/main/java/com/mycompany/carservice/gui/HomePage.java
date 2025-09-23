@@ -40,14 +40,6 @@ public class HomePage extends javax.swing.JFrame {
         setSize(1200, 800);        
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
-        welcomeUser.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        bookingAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        completedAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        pendingAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        announcements.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        shortcuts.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        username.setText("User : "+userName);
-        welcomeUser.setText(userName+" ");
         SetupIcon();
         
         String announcement = loadAnnouncementForLabel();   // เพิ่ม
@@ -55,13 +47,21 @@ public class HomePage extends javax.swing.JFrame {
         announcementsLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
         announcementsLabel.setForeground(Color.BLACK);
         announcementsLabel.setOpaque(false);
+        
+        String announcementPromotion = loadAnnouncementPromotion();   // เพิ่ม
+        announcementsPromotion.setText(announcementPromotion);   // เพิ่ม
+        announcementsPromotion.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
+        announcementsPromotion.setForeground(Color.BLACK);
+        announcementsPromotion.setOpaque(false);
 
         if ("admin".equalsIgnoreCase(role)) {   
             fixAnnouncement.setVisible(true); 
+            fixAnnouncement1.setVisible(true); 
             adminBtn.setVisible(true);
             iconAdmin.setVisible(true); // แสดงเฉพาะ Admin
         } else {
-            fixAnnouncement.setVisible(false);
+            fixAnnouncement.setVisible(true); 
+            fixAnnouncement1.setVisible(true);
             adminBtn.setVisible(false);
             iconAdmin.setVisible(false);// ซ่อนสำหรับ User ปกติ
         }
@@ -70,6 +70,15 @@ public class HomePage extends javax.swing.JFrame {
 
     
     private void SetupUi() {
+        welcomeUser.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        bookingAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        completedAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        pendingAn.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        announcements.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        promotioin.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
+        username.setText(userName);
+        welcomeUser.setText(userName+" ");
+        
         bookingBtn.setContentAreaFilled(false);
         bookingBtn.setBorderPainted(false);
 
@@ -91,28 +100,33 @@ public class HomePage extends javax.swing.JFrame {
                     URL historyIconURL = new File("src/main/image/history.png").toURI().toURL();
                     URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
-                    URL profileUserIconURL = new File("src/main/image/profileuser.png").toURI().toURL();
+                    
+                    URL profileUserIconURL = new File("src/main/image/logout.png").toURI().toURL();
+                    
                     URL welcomeIconURL = new File("src/main/image/wavinghand.png").toURI().toURL();
                     URL fixIconURL = new File("src/main/image/settings.png").toURI().toURL();
                     URL bookingannIconURL = new File("src/main/image/bookingann.png").toURI().toURL();
                     URL completedURL = new File("src/main/image/checked.png").toURI().toURL();
                     URL pendingIconURL = new File("src/main/image/file.png").toURI().toURL();
                     URL announcementIconURL = new File("src/main/image/megaphone.png").toURI().toURL();
-                    URL shortcutsIconURL = new File("src/main/image/export.png").toURI().toURL();
+                    URL promotionURL = new File("src/main/image/discounttag.png").toURI().toURL();
                     logo.setIcon(new ImageIcon(logoIconURL));
                     iconHome.setIcon(new ImageIcon(homeIconURL));
                     iconBooking.setIcon(new ImageIcon(bookingIconURL));
                     iconHistory.setIcon(new ImageIcon(historyIconURL));
                     iconProfile.setIcon(new ImageIcon(profileIconURL));
                     iconAdmin.setIcon(new ImageIcon(adminIconURL));
-                    iconUserProfile.setIcon(new ImageIcon(profileUserIconURL));
+                    
+                    iconExit.setIcon(new ImageIcon(profileUserIconURL));
+                    
                     welcomeUser.setIcon(new ImageIcon(welcomeIconURL));
                     fixAnnouncement.setIcon(new ImageIcon(fixIconURL));
+                    fixAnnouncement1.setIcon(new ImageIcon(fixIconURL));
                     bookingAn.setIcon(new ImageIcon(bookingannIconURL));
                     completedAn.setIcon(new ImageIcon(completedURL));
                     pendingAn.setIcon(new ImageIcon(pendingIconURL));
                     announcements.setIcon(new ImageIcon(announcementIconURL));
-                    shortcuts.setIcon(new ImageIcon(shortcutsIconURL));
+                    promotioin.setIcon(new ImageIcon(promotionURL));
                     
                 } catch (Exception e) {
                     System.out.println(e);
@@ -121,95 +135,143 @@ public class HomePage extends javax.swing.JFrame {
     
     }
         private void Announcements() {
-                // สร้าง object CSVHandler
                 CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
-                // อ่านข้อมูลทั้งหมดจาก CSV
                 ArrayList<String[]> users = csvHandler.readCSV();
-                int processCount = 0, completedCount = 0, userBookingCount =0; // ตัวนับ
+                int processCount = 0, completedCount = 0, userBookingCount = 0; // ตัวนับ
                 for (String[] parts : users) {
-                        // ตรวจสอบว่ามี index หรือไม่
-                        if (parts.length >= 8) {
-                                String fileProcess = parts[7];
-                                String fileUsername = parts[1];
-                                System.out.println(fileUsername);
-                                if (fileProcess.toLowerCase().contains("process")) {
-                                        processCount++;
-                                }
-                                else if (fileProcess.toLowerCase().contains("completed")) {
-                                        completedCount++;
-                                }
-                                
-                                if (fileUsername.toLowerCase().contains(userName.toLowerCase())) {
-                                        userBookingCount++;
-                                }
+                    if (parts.length >= 8) {
+                        String fileUsername = parts[1]; // สมมติ column 1 คือชื่อผู้ใช้
+                        if (fileUsername.equalsIgnoreCase(userName)) { // นับเฉพาะ user ที่ล็อคอิน
+                            String fileProcess = parts[7]; // สมมติ column 7 คือสถานะ
+                            if (fileProcess.toLowerCase().contains("process")) {
+                                processCount++;
+                            } else if (fileProcess.toLowerCase().contains("complete")) {
+                                completedCount++;
+                            }
+                            userBookingCount++; // ทุกแถวของ user ที่ล็อคอินถือเป็น booking
                         }
-                }
-                System.out.println(userName);
-                pendinginfo.setText(processCount+"");
-                completedinfo.setText(completedCount+"");
-                userBookingInfo.setText(userBookingCount+"");
-
-        }
-        private String loadAnnouncementForLabel() {
-                StringBuilder announcement = new StringBuilder();
-                try (BufferedReader br = new BufferedReader(new FileReader("src/main/data/announcement.csv"))) {
-                    String line = br.readLine(); // ข้าม header
-                    while ((line = br.readLine()) != null) {
-                        if (announcement.length() > 0) {
-                            announcement.append("<br>"); // ใช้ <br> แทน \n
-                        }
-                        announcement.append(line);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                pendinginfo.setText(String.valueOf(processCount));
+                completedinfo.setText(String.valueOf(completedCount));
+                userBookingInfo.setText(String.valueOf(userBookingCount));
+        }
+        
+        private String loadAnnouncementForLabel() {
+                CSVHandler csvHandler = new CSVHandler("src/main/data/announcement.csv");
+                ArrayList<String[]> data = csvHandler.readCSV();
+                StringBuilder announcement = new StringBuilder();
+                // ข้าม header (index 0) ถ้ามี
+                for (int i = 1; i < data.size(); i++) {
+                    String[] row = data.get(i);
+                    if (row.length > 0) {
+                        if (announcement.length() > 0) {
+                            announcement.append("<br>");
+                        }
+                        announcement.append(row[0]); // สมมติว่า column แรกคือข้อความ
+                    }
+                }
+                //ถ้ามีข้อความใน CSV → result = ข้อความที่อ่านมา ถ้าไม่มีข้อความ → result = "ยังไม่มีประกาศ"
                 String result = announcement.length() > 0 ? announcement.toString() : "ยังไม่มีประกาศ";
-                return "<html>" + result + "</html>"; // เพิ่ม <html> ให้ JLabel แสดงหลายบรรทัด
+                return "<html>" + result + "</html>";
         }
-
-
-    // ✅ เซฟข้อความใหม่ลง CSV
-    private void saveAnnouncement(String newMessage) {   // เพิ่ม
-        try (PrintWriter pw = new PrintWriter(new FileWriter("src/main/data/announcement.csv"))) {
-            pw.println("message");
-            pw.println(newMessage);
-        } catch (Exception e) {
-            System.out.println(e);
+        
+        private void saveAnnouncement(String newMessage) {   // เพิ่ม
+                CSVHandler csvHandler = new CSVHandler("src/main/data/announcement.csv");
+                ArrayList<String[]> data = new ArrayList<>();// สร้างข้อมูลใหม่ทับไฟล์เดิม
+                data.add(new String[]{"message"});// ใส่ header
+                data.add(new String[]{newMessage});// ใส่ข้อความใหม่
+                csvHandler.writeCSV(data);// เขียนทับไฟล์
         }
-    }
-
-    // ✅ Dialog สำหรับแก้ไขประกาศ
-
+    
         private void openEditAnnouncementDialog() {
-    // ลบ <html> และ <br> ออก เพื่อได้ข้อความดิบ
-        String currentMessage = announcementsLabel.getText()
-                .replaceAll("(?i)<html>", "")
-                .replaceAll("(?i)</html>", "")
-                .replaceAll("(?i)<br>", "\n");
+            String currentMessage = announcementsLabel.getText()
+                        .replaceAll("(?i)<html>", "")
+                        .replaceAll("(?i)</html>", "")
+                        .replaceAll("(?i)<br>", "\n");
 
-        JTextArea textArea = new JTextArea(currentMessage, 5, 30);
-        textArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+                JTextArea textArea = new JTextArea(currentMessage, 5, 30);
+                textArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                JScrollPane scrollPane = new JScrollPane(textArea);
 
-        int option = JOptionPane.showConfirmDialog(
-                this,
-                scrollPane,
-                "Edit announcement",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (option == JOptionPane.OK_OPTION) {
-                String newMessage = textArea.getText();
-                if (newMessage != null && !newMessage.trim().isEmpty()) {
-                    // แสดงใน JLabel แบบหลายบรรทัด
-                    announcementsLabel.setText("<html>" + newMessage.replaceAll("\n", "<br>") + "</html>");
-                    saveAnnouncement(newMessage);
+                int option = JOptionPane.showConfirmDialog(
+                        this,
+                        scrollPane,
+                        "Edit promotion",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                
+                if (option == JOptionPane.OK_OPTION) {
+                    String newMessage = textArea.getText();
+                    if (newMessage != null && !newMessage.trim().isEmpty()) {
+                        announcementsLabel.setText("<html>" + newMessage.replaceAll("\n", "<br>") + "</html>");
+                        saveAnnouncement(newMessage);
+                    }
+            }
+        }
+        
+        
+        private String loadAnnouncementPromotion() {
+                CSVHandler csvHandler = new CSVHandler("src/main/data/promotions.csv");
+                ArrayList<String[]> data = csvHandler.readCSV();
+                StringBuilder announcementPromo = new StringBuilder();
+                // ข้าม header (index 0) ถ้ามี
+                for (int i = 1; i < data.size(); i++) {
+                    String[] row = data.get(i);
+                    if (row.length > 0) {
+                        if (announcementPromo.length() > 0) {
+                            announcementPromo.append("<br>");
+                        }
+                        announcementPromo.append(row[0]); // สมมติว่า column แรกคือข้อความ
+                    }
                 }
+                //ถ้ามีข้อความใน CSV → result = ข้อความที่อ่านมา ถ้าไม่มีข้อความ → result = "ยังไม่มีประกาศ"
+                String result = announcementPromo.length() > 0 ? announcementPromo.toString() : "ยังไม่มีประกาศ";
+                return "<html>" + result + "</html>";
+        }
+        
+        private void saveAnnouncementPromotion(String Message) {
+                CSVHandler csvHandler = new CSVHandler("src/main/data/promotions.csv");
+                ArrayList<String[]> data = new ArrayList<>();// สร้างข้อมูลใหม่ทับไฟล์เดิม
+                data.add(new String[]{"message"});// ใส่ header
+                data.add(new String[]{Message});// ใส่ข้อความใหม่
+                csvHandler.writeCSV(data);// เขียนทับไฟล์
+        }
+        
+        //ใช้ "<html> ... </html>" ตอน setText ให้กับ JLabel เพราะว่า JLabel ไม่รองรับการขึ้นบรรทัด (\n) โดยตรง ถ้าใส่ \n จะไม่ขึ้นบรรทัดใหม่ ต้องใช้ HTML <br> เป็นตัวช่วย
+        private void openEditAnnouncementDialogPromotion() {
+            String currMessage = announcementsPromotion.getText()
+                        .replaceAll("(?i)<html>", "")
+                        .replaceAll("(?i)</html>", "")
+                        .replaceAll("(?i)<br>", "\n");
+
+                JTextArea textArea = new JTextArea(currMessage, 5, 30);
+                textArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                JScrollPane scrollPane = new JScrollPane(textArea);
+
+                int option = JOptionPane.showConfirmDialog(
+                        this,
+                        scrollPane,
+                        "Edit promotions",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+            if (option == JOptionPane.OK_OPTION) {
+                    String Message = textArea.getText();
+                    if (Message != null && !Message.trim().isEmpty()) {
+                        // แสดงใน JLabel แบบหลายบรรทัด
+                        announcementsPromotion.setText("<html>" + Message.replaceAll("\n", "<br>") + "</html>");
+                        saveAnnouncementPromotion(Message);
+             }
         }
 }
+   
     
 
     @SuppressWarnings("unchecked")
@@ -230,7 +292,7 @@ public class HomePage extends javax.swing.JFrame {
         bookingBtn = new javax.swing.JButton();
         logo = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        iconUserProfile = new javax.swing.JLabel();
+        iconExit = new javax.swing.JLabel();
         username = new javax.swing.JLabel();
         welcomeUser = new javax.swing.JLabel();
         jPanel1 = new RoundedPanel(30);
@@ -248,9 +310,9 @@ public class HomePage extends javax.swing.JFrame {
         pendingAn = new javax.swing.JLabel();
         pendinginfo = new javax.swing.JLabel();
         jPanel7 = new RoundedPanel(30); // 30 radius;
-        shortcuts = new javax.swing.JLabel();
-        newBooking = new javax.swing.JButton();
-        viewHistory = new javax.swing.JButton();
+        promotioin = new javax.swing.JLabel();
+        fixAnnouncement1 = new javax.swing.JLabel();
+        announcementsPromotion = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
 
         jLabel3.setText("jLabel3");
@@ -259,6 +321,7 @@ public class HomePage extends javax.swing.JFrame {
         setBackground(new java.awt.Color(255, 255, 255));
         setForeground(java.awt.Color.white);
         setLocation(new java.awt.Point(0, 0));
+        setPreferredSize(new java.awt.Dimension(1200, 800));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
@@ -292,10 +355,11 @@ public class HomePage extends javax.swing.JFrame {
         });
         jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 260, 70));
 
-        adminBtn.setBackground(new java.awt.Color(28, 24, 24));
+        adminBtn.setBackground(new java.awt.Color(43, 43, 43));
         adminBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         adminBtn.setForeground(new java.awt.Color(204, 204, 204));
         adminBtn.setText("Admin   ");
+        adminBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         adminBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -315,10 +379,11 @@ public class HomePage extends javax.swing.JFrame {
         });
         jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 270, 70));
 
-        profileBtn.setBackground(new java.awt.Color(28, 24, 24));
+        profileBtn.setBackground(new java.awt.Color(43, 43, 43));
         profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         profileBtn.setForeground(new java.awt.Color(204, 204, 204));
         profileBtn.setText("Profile  ");
+        profileBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         profileBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -333,10 +398,11 @@ public class HomePage extends javax.swing.JFrame {
         });
         jPanel2.add(profileBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 410, 260, 70));
 
-        historyBtn.setBackground(new java.awt.Color(28, 24, 24));
+        historyBtn.setBackground(new java.awt.Color(43, 43, 43));
         historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         historyBtn.setForeground(new java.awt.Color(204, 204, 204));
         historyBtn.setText("History ");
+        historyBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         historyBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -356,10 +422,11 @@ public class HomePage extends javax.swing.JFrame {
         });
         jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 260, 70));
 
-        bookingBtn.setBackground(new java.awt.Color(28, 24, 24));
+        bookingBtn.setBackground(new java.awt.Color(43, 43, 43));
         bookingBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         bookingBtn.setForeground(new java.awt.Color(204, 204, 204));
         bookingBtn.setText("Booking");
+        bookingBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         bookingBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -383,17 +450,17 @@ public class HomePage extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        iconUserProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+        iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                iconUserProfileMouseClicked(evt);
+                iconExitMouseClicked(evt);
             }
         });
-        jPanel3.add(iconUserProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 40, 40, 40));
+        jPanel3.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 40, 40, 40));
 
         username.setBackground(new java.awt.Color(0, 0, 0));
         username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
         username.setText("..");
-        jPanel3.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 820, 40));
+        jPanel3.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 40, 660, 40));
 
         welcomeUser.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         welcomeUser.setText("\"\"");
@@ -431,7 +498,7 @@ public class HomePage extends javax.swing.JFrame {
                 fixAnnouncementMouseClicked(evt);
             }
         });
-        jPanel5.add(fixAnnouncement, new org.netbeans.lib.awtextra.AbsoluteConstraints(467, 10, 40, 40));
+        jPanel5.add(fixAnnouncement, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 10, 40, 40));
 
         announcements.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         announcements.setText("Announcements");
@@ -440,9 +507,9 @@ public class HomePage extends javax.swing.JFrame {
         announcementsLabel.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         announcementsLabel.setText(".");
         announcementsLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel5.add(announcementsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 450, 170));
+        jPanel5.add(announcementsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 450, 190));
 
-        jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 220, 510, 260));
+        jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 220, 510, 280));
 
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -458,52 +525,37 @@ public class HomePage extends javax.swing.JFrame {
 
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        shortcuts.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        shortcuts.setText("Shortcuts ");
-        jPanel7.add(shortcuts, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
+        promotioin.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        promotioin.setText("Promotion");
+        jPanel7.add(promotioin, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
 
-        newBooking.setBackground(new java.awt.Color(255, 157, 0));
-        newBooking.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        newBooking.setForeground(new java.awt.Color(255, 255, 255));
-        newBooking.setText("New Booking");
-        newBooking.addMouseListener(new java.awt.event.MouseAdapter() {
+        fixAnnouncement1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                newBookingMouseClicked(evt);
+                fixAnnouncement1MouseClicked(evt);
             }
         });
-        newBooking.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newBookingActionPerformed(evt);
-            }
-        });
-        jPanel7.add(newBooking, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 440, 40));
+        jPanel7.add(fixAnnouncement1, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 10, 40, 40));
 
-        viewHistory.setBackground(new java.awt.Color(255, 157, 0));
-        viewHistory.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        viewHistory.setForeground(new java.awt.Color(255, 255, 255));
-        viewHistory.setText("View History");
-        viewHistory.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                viewHistoryMouseClicked(evt);
-            }
-        });
-        jPanel7.add(viewHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, 440, 40));
+        announcementsPromotion.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        announcementsPromotion.setText(".");
+        announcementsPromotion.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel7.add(announcementsPromotion, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 450, 110));
 
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 500, 509, 220));
+        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 520, 510, 200));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         jLabel9.setText("WELCOME,");
         jLabel9.setToolTipText("");
         jPanel3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 110, -1, -1));
 
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 0, 980, 800));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 0, 990, 810));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
         dispose();
-        new Profile();
+        new Profile(userName,role);
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
@@ -518,7 +570,7 @@ public class HomePage extends javax.swing.JFrame {
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
         dispose();
-        new History();
+        new History(userName,role);
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
@@ -573,47 +625,39 @@ public class HomePage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_adminBtnActionPerformed
 
-    private void iconUserProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconUserProfileMouseClicked
+    private void iconExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconExitMouseClicked
         dispose();
-        new Profile();
-    }//GEN-LAST:event_iconUserProfileMouseClicked
-
-    private void newBookingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newBookingMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_newBookingMouseClicked
-
-    private void viewHistoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewHistoryMouseClicked
-        dispose();
-        new History();
-    }//GEN-LAST:event_viewHistoryMouseClicked
-
-    private void newBookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newBookingActionPerformed
-        dispose();
-        new BookingPage(userName,role);
-    }//GEN-LAST:event_newBookingActionPerformed
+        new Login();
+    }//GEN-LAST:event_iconExitMouseClicked
 
     private void fixAnnouncementMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fixAnnouncementMouseClicked
         openEditAnnouncementDialog();
     }//GEN-LAST:event_fixAnnouncementMouseClicked
+
+    private void fixAnnouncement1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fixAnnouncement1MouseClicked
+        openEditAnnouncementDialogPromotion();
+    }//GEN-LAST:event_fixAnnouncement1MouseClicked
 
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adminBtn;
     private javax.swing.JLabel announcements;
     private javax.swing.JLabel announcementsLabel;
+    private javax.swing.JLabel announcementsPromotion;
     private javax.swing.JLabel bookingAn;
     private javax.swing.JButton bookingBtn;
     private javax.swing.JLabel completedAn;
     private javax.swing.JLabel completedinfo;
     private javax.swing.JLabel fixAnnouncement;
+    private javax.swing.JLabel fixAnnouncement1;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
     private javax.swing.JLabel iconBooking;
+    private javax.swing.JLabel iconExit;
     private javax.swing.JLabel iconHistory;
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
-    private javax.swing.JLabel iconUserProfile;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -624,14 +668,12 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JLabel logo;
-    private javax.swing.JButton newBooking;
     private javax.swing.JLabel pendingAn;
     private javax.swing.JLabel pendinginfo;
     private javax.swing.JButton profileBtn;
-    private javax.swing.JLabel shortcuts;
+    private javax.swing.JLabel promotioin;
     private javax.swing.JLabel userBookingInfo;
     private javax.swing.JLabel username;
-    private javax.swing.JButton viewHistory;
     private javax.swing.JLabel welcomeUser;
     // End of variables declaration//GEN-END:variables
 }

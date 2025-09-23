@@ -48,10 +48,11 @@ public class BookingPage extends javax.swing.JFrame  {
         SetupIcon();
        getContentPane().setBackground(java.awt.Color.WHITE);
 
-        setSize(1200, 825);        
+        setSize(1210, 830);        
         setLocationRelativeTo(null); 
         setVisible(true);
         
+        username.setHorizontalAlignment(JLabel.RIGHT);
         username.setText(user);
         
         LocalDate today = LocalDate.now();
@@ -74,12 +75,12 @@ public class BookingPage extends javax.swing.JFrame  {
         adminBtn.setBorderPainted(false); 
         historyBtn.setBorderPainted(false); 
         profileBtn.setBorderPainted(false); 
+        
          if(role.equals("admin")){
              System.out.println("Admin !!!!");
         }else{
              System.out.println("User !!!!");
              adminBtn.setVisible(false);  // user ซ่อนปุ่ม
-
         }
         
         
@@ -94,7 +95,7 @@ public class BookingPage extends javax.swing.JFrame  {
                     URL historyIconURL = new File("src/main/image/history.png").toURI().toURL();
                     URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
-                    URL profileUserIconURL = new File("src/main/image/profileuser.png").toURI().toURL();
+                    URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
                    
                     logo.setIcon(new ImageIcon(logoIconURL));
                     iconHome.setIcon(new ImageIcon(homeIconURL));
@@ -102,7 +103,7 @@ public class BookingPage extends javax.swing.JFrame  {
                     iconHistory.setIcon(new ImageIcon(historyIconURL));
                     iconProfile.setIcon(new ImageIcon(profileIconURL));
                     iconAdmin.setIcon(new ImageIcon(adminIconURL));
-                    iconUserProfile.setIcon(new ImageIcon(profileUserIconURL));
+                    iconExit.setIcon(new ImageIcon(exitIconURL));
                    
                     
                 } catch (Exception e) {
@@ -111,9 +112,6 @@ public class BookingPage extends javax.swing.JFrame  {
                 }
     
     }
-    
-    
- 
     
     private void loadBookingCount() {
         CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
@@ -342,8 +340,6 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         historyBtn = new javax.swing.JButton();
         bookingBtn = new javax.swing.JButton();
         logo = new javax.swing.JLabel();
-        username = new javax.swing.JLabel();
-        iconUserProfile = new javax.swing.JLabel();
         jPanel1 = new RoundedPanel(30); // 30 radius;
         calendarPanel = new javax.swing.JPanel();
         afterMonth = new javax.swing.JButton();
@@ -358,16 +354,20 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
+        username = new javax.swing.JLabel();
+        iconExit = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setPreferredSize(new java.awt.Dimension(1200, 800));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         monthLabel.setBackground(new java.awt.Color(255, 255, 255));
         monthLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         monthLabel.setText("Year :");
+        getContentPane().add(monthLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(541, 118, 56, 35));
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -399,8 +399,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         jLabel8.setText("Sunday");
         jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 10, -1, -1));
 
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(258, 178, 928, -1));
+
         jPanel4.setBackground(new java.awt.Color(51, 255, 0));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 800, -1, -1));
 
         monthComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
         monthComboBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -408,10 +411,12 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 monthComboBox1ActionPerformed(evt);
             }
         });
+        getContentPane().add(monthComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(364, 120, 133, 35));
 
         monthLabel3.setBackground(new java.awt.Color(255, 255, 255));
         monthLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         monthLabel3.setText("   Month :");
+        getContentPane().add(monthLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(272, 118, -1, 35));
 
         yearComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2025", "2026", "2027", "2028" }));
         yearComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -419,6 +424,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 yearComboBoxActionPerformed(evt);
             }
         });
+        getContentPane().add(yearComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(603, 120, 133, 35));
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
         jPanel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -443,6 +449,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         homeBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         homeBtn.setForeground(new java.awt.Color(255, 255, 255));
         homeBtn.setText(" Home    ");
+        homeBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         homeBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -463,6 +470,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         adminBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         adminBtn.setForeground(new java.awt.Color(255, 255, 255));
         adminBtn.setText("Admin   ");
+        adminBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         adminBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -481,6 +489,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         profileBtn.setForeground(new java.awt.Color(255, 255, 255));
         profileBtn.setText("Profile  ");
+        profileBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         profileBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -499,6 +508,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         historyBtn.setForeground(new java.awt.Color(255, 255, 255));
         historyBtn.setText("History ");
+        historyBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         historyBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -533,8 +543,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         logo.setForeground(new java.awt.Color(255, 255, 255));
         jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
 
-        username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        username.setText("....");
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
 
         jPanel1.setBackground(new java.awt.Color(240, 240, 240));
 
@@ -559,12 +568,15 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 .addContainerGap(10, Short.MAX_VALUE))
         );
 
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(258, 241, -1, -1));
+
         afterMonth.setText(">");
         afterMonth.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 afterMonthMouseClicked(evt);
             }
         });
+        getContentPane().add(afterMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(1104, 121, 42, 33));
 
         beforeMonth.setText("<");
         beforeMonth.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -572,6 +584,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 beforeMonthMouseClicked(evt);
             }
         });
+        getContentPane().add(beforeMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(1039, 121, 47, 33));
 
         jPanel6.setBackground(new java.awt.Color(244, 67, 54));
 
@@ -583,8 +596,10 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
+
+        getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 750, -1, 20));
 
         jPanel7.setBackground(new java.awt.Color(255, 152, 0));
 
@@ -596,8 +611,10 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
+
+        getContentPane().add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 750, -1, 20));
 
         jPanel8.setBackground(new java.awt.Color(255, 213, 79));
 
@@ -609,8 +626,10 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
+
+        getContentPane().add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 750, -1, 20));
 
         jPanel9.setBackground(new java.awt.Color(3, 169, 244));
 
@@ -625,6 +644,8 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
+        getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 750, -1, -1));
+
         jPanel10.setBackground(new java.awt.Color(76, 175, 80));
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
@@ -635,124 +656,42 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
 
+        getContentPane().add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 750, -1, 20));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setText("เต็ม");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 750, 30, 20));
 
+        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel9.setText("เยอะ");
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 750, 40, 20));
 
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel10.setText("กลาง");
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 750, 40, 20));
 
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel11.setText("น้อย");
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 750, 40, 20));
 
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel12.setText("ว่าง");
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 750, 30, 20));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44)
-                        .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(253, 253, 253)
-                        .addComponent(iconUserProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(beforeMonth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(18, 18, 18)
-                                .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(21, 21, 21))
-                            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(40, 40, 40))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(260, 260, 260)
-                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(44, 44, 44)
-                                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel1)
-                                        .addGap(32, 32, 32)
-                                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel9)
-                                        .addGap(26, 26, 26)
-                                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel10)))
-                                .addGap(42, 42, 42)
-                                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel11)
-                                .addGap(32, 32, 32)
-                                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel12)))
-                        .addContainerGap(21, Short.MAX_VALUE))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(iconUserProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(beforeMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))))
-                .addGap(19, 19, 19)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        username.setBackground(new java.awt.Color(0, 0, 0));
+        username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        username.setText("..");
+        getContentPane().add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 40, 660, 40));
+
+        iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                iconExitMouseClicked(evt);
+            }
+        });
+        getContentPane().add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 40, 40, 40));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -783,7 +722,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
         dispose();
-        new Profile();
+        new Profile(userName,role);
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
@@ -796,7 +735,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
         dispose();
-        new History();
+        new History(userName,role);
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
@@ -861,6 +800,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     updateCalendar();
     }//GEN-LAST:event_beforeMonthMouseClicked
 
+    private void iconExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconExitMouseClicked
+        dispose();
+        new Login();
+    }//GEN-LAST:event_iconExitMouseClicked
+
     
    
 
@@ -874,10 +818,10 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
     private javax.swing.JLabel iconBooking;
+    private javax.swing.JLabel iconExit;
     private javax.swing.JLabel iconHistory;
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
-    private javax.swing.JLabel iconUserProfile;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

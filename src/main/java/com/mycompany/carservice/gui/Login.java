@@ -14,6 +14,10 @@ import java.net.URL;
 import java.io.*;
 import com.mycompany.carservice.entity.CSVHandler;
 import com.mycompany.carservice.entity.RoundedPanel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 
@@ -35,9 +39,8 @@ public class Login extends javax.swing.JFrame {
             setSize(1200, 800);  
             setLocationRelativeTo(null);
             setVisible(true);
-            cautionusername.setVisible(false);cautionpass.setVisible(false);
-//            iconusername.setIcon(new ImageIcon(getClass().getResource("src/main/image/user.png")));
-//            iconpassword.setIcon(new ImageIcon(getClass().getResource("src/main/image/padlock.png")));
+            cautionusername.setVisible(false);
+            cautionpass.setVisible(false);
             try {
                 URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
                 URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
@@ -49,41 +52,32 @@ public class Login extends javax.swing.JFrame {
             }
             
     }
+    
     private void CompleteLogin(){
                 String getUsername = username.getText().trim();
                 String getPass = new String(password.getPassword()).trim();
                 String getBoth = getUsername + "," + getPass;
                 String role = null;
-
-                // สร้าง object CSVHandler
+                
                 CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
-
-                // อ่านข้อมูลทั้งหมดจาก CSV
                 ArrayList<String[]> users = csvHandler.readCSV();
-
                 boolean loginSuccess = false;
                 boolean checkedUsername = false;
                 boolean checkedPassword = false;
-
                 for (String[] parts : users) {
-                    // parts[0] = userID, parts[1] = username, parts[2] = password
                     if (parts.length >= 6) {
                         String fileUsername = parts[1];
                         String filePassword = parts[2];
                         role = parts[5];
                         String confirmlogin = fileUsername + "," + filePassword;
-                        if(getUsername.equals(fileUsername)){
-                            checkedUsername = true ;
-                        }
-                        if(getPass.equals(filePassword)){
-                            checkedUsername = true ;
-                        }
+                        
                         if (getBoth.equals(confirmlogin)) {
                             loginSuccess = true;
                             break;
                         }
                     }
                 }
+                
                 if (getUsername.trim().isEmpty()) {
                     cautionusername.setText("Need to input username");
                     cautionusername.setVisible(true);
@@ -105,9 +99,8 @@ public class Login extends javax.swing.JFrame {
                     cautionpass.setText("Incorrect password. Please try again.");
                     cautionpass.setVisible(true);
                 }
-
-            // ตรวจสอบผลลัพธ์ login
-                if (loginSuccess) {
+                
+                if (loginSuccess ) {
                     cautionusername.setVisible(false);
                     cautionpass.setVisible(false);
                     password.setText(""); 
@@ -149,6 +142,7 @@ public class Login extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         username = new javax.swing.JTextField();
+        repassword = new javax.swing.JLabel();
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 255));
 
@@ -386,6 +380,20 @@ public class Login extends javax.swing.JFrame {
         });
         jPanel2.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, 530, 60));
 
+        repassword.setText("Forgot password?");
+        repassword.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                repasswordMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                repasswordMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                repasswordMouseExited(evt);
+            }
+        });
+        jPanel2.add(repassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 350, -1, -1));
+
         jPanel3.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 680, 580));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 800));
@@ -410,7 +418,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_anotherRegisterMouseEntered
 
     private void anotherRegisterMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_anotherRegisterMouseExited
-        anotherRegister.setForeground(Color.WHITE);
+        anotherRegister.setForeground(Color.BLACK);
     }//GEN-LAST:event_anotherRegisterMouseExited
 
     private void logButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logButtonActionPerformed
@@ -458,7 +466,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_loginFinishMouseEntered
 
     private void loginFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginFinishMouseClicked
-      CompleteLogin();
+        CompleteLogin();
     }//GEN-LAST:event_loginFinishMouseClicked
 
     private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
@@ -468,6 +476,18 @@ public class Login extends javax.swing.JFrame {
     private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
         
     }//GEN-LAST:event_usernameKeyTyped
+
+    private void repasswordMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repasswordMouseClicked
+        new PopConfirm();
+    }//GEN-LAST:event_repasswordMouseClicked
+
+    private void repasswordMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repasswordMouseEntered
+        repassword.setForeground(Color.GRAY);
+    }//GEN-LAST:event_repasswordMouseEntered
+
+    private void repasswordMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repasswordMouseExited
+        repassword.setForeground(Color.BLACK);
+    }//GEN-LAST:event_repasswordMouseExited
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel anotherRegister;
@@ -493,6 +513,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JButton loginFinish;
     private javax.swing.JPasswordField password;
     private javax.swing.JButton registerButton;
+    private javax.swing.JLabel repassword;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
 }
