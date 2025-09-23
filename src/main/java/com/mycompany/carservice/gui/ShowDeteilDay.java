@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -108,8 +109,8 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         selectedPanel = panel;
     }
     
-    private Map<String, Integer> countBookingByTime(String day, String month, String year) {
-        CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
+   private Map<String, Integer> countBookingByTime(String day, String month, String year) {
+    CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
     ArrayList<String[]> data = csvHandler.readCSV();
 
     // Key = เวลา panel เช่น "09:00", Value = จำนวนคน
@@ -125,19 +126,22 @@ public class ShowDeteilDay extends javax.swing.JDialog {
             String timeRange = parts[4].trim(); // index 4 คือเวลาช่วง เช่น 09:00-10:00
 
             if (dateInCsv.equals(targetDate)) {
-                // แยกเวลาเริ่มและเวลาเลิก
                 String[] times = timeRange.split("-");
                 if (times.length == 2) {
                     try {
                         LocalTime start = LocalTime.parse(times[0].trim(), timeFormatter);
                         LocalTime end = LocalTime.parse(times[1].trim(), timeFormatter);
 
-                        // สำหรับทุก panel ที่เราสนใจ
-                        String[] panelTimes = {"09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"};
+                        // panel ที่สนใจ
+                        String[] panelTimes = {"09:00","10:00","11:00","12:00",
+                                               "13:00","14:00","15:00","16:00","17:00"};
                         for (String panelTimeStr : panelTimes) {
                             LocalTime panelTime = LocalTime.parse(panelTimeStr, timeFormatter);
-                            // ถ้า panelTime อยู่ในช่วง start <= panelTime < end
-                            if (!panelTime.isBefore(start) && panelTime.isBefore(end)) {
+
+                            // ✅ ใช้ inclusive: start <= panelTime < end OR start <= panelTime <= end
+                            if ((panelTime.equals(start) || panelTime.isAfter(start)) &&
+                                (panelTime.equals(end)   || panelTime.isBefore(end))) {
+
                                 timeCount.put(panelTimeStr, timeCount.getOrDefault(panelTimeStr, 0) + 1);
                             }
                         }
@@ -148,12 +152,36 @@ public class ShowDeteilDay extends javax.swing.JDialog {
             }
         }
     }
-                for (Map.Entry<String, Integer> entry : timeCount.entrySet()) {
-                     System.out.println("เวลา " + entry.getKey() + " มีคนจอง " + entry.getValue() + " คน");
-               }
 
-        return timeCount;
+    // Debug
+    for (Map.Entry<String, Integer> entry : timeCount.entrySet()) {
+        System.out.println("เวลา " + entry.getKey() + " มีคนจอง " + entry.getValue() + " คน");
     }
+
+    return timeCount;
+}
+   private boolean canBookTimeRange(String startTime, String endTime, Map<String, Integer> timeCount, int limit) {
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    LocalTime start = LocalTime.parse(startTime, timeFormatter);
+    LocalTime end = LocalTime.parse(endTime, timeFormatter);
+
+    String[] panelTimes = {"09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00"};
+
+    for(String t : panelTimes){
+        LocalTime panelTime = LocalTime.parse(t, timeFormatter);
+
+        // panelTime อยู่ในช่วง start <= panelTime < end
+        if(!panelTime.isBefore(start) && panelTime.isBefore(end)) {
+            int count = timeCount.getOrDefault(t,0);
+            if(count >= limit){
+                return false; // panel เต็ม
+            }
+        }
+    }
+    return true; // ทุก panel ยังจองได้
+}
+
+
     private void changeStatus() {
         Map<String, Integer> result = countBookingByTime(day, month, year);
 
@@ -182,9 +210,8 @@ public class ShowDeteilDay extends javax.swing.JDialog {
     private void updatePanelColor(javax.swing.JPanel panel, javax.swing.JLabel label,  String timeKey, Map<String, Integer> timeCount) {
         int count = timeCount.getOrDefault(timeKey, 0);
 
-       if(count > 5){
-           panel.setBackground(new Color(160, 174, 192)); 
-       }else if (count >= 4) {
+       
+       if (count >= 5) {
            panel.setBackground(new Color(245, 101, 101));      // เต็ม
        } else if (count >= 2) {
            panel.setBackground(new Color(237, 137, 54));   // เริ่มเยอะ
@@ -206,23 +233,43 @@ public class ShowDeteilDay extends javax.swing.JDialog {
          return manager.checkCount(count);
     }
     
-    private void loadService(){
-         CSVHandler csvHandler = new CSVHandler("src/main/data/service.csv");
-            ArrayList<String[]> data = csvHandler.readCSV();
+   private void loadService() {
+    CSVHandler csvHandler = new CSVHandler("src/main/data/service.csv");
+    ArrayList<String[]> data = csvHandler.readCSV();
 
-             // ใส่ item พิเศษเป็นช่องแรก
-            serviceCombobox.insertItemAt("-- --", 0);
-            serviceCombobox.setSelectedIndex(0);
+    // ใส่ item พิเศษเป็นช่องแรก
+    serviceCombobox.insertItemAt("-- --", 0);
+    serviceCombobox.setSelectedIndex(0);
 
-            // เริ่มอ่านตั้งแต่ index 1 เพื่อข้าม header
-            for (int i = 1; i < data.size(); i++) {
-                String[] parts = data.get(i);
-                if (parts.length > 0) {
-                    String serviceName = parts[0].trim();
-                    serviceCombobox.addItem(serviceName);
-                }
-            }
+    // เริ่มอ่านตั้งแต่ index 1 เพื่อข้าม header
+    for (int i = 1; i < data.size(); i++) {
+        String[] parts = data.get(i);
+        if (parts.length >= 4) { // ตรวจสอบว่ามีคอลัมน์ Service, Details, Price, Time
+            String serviceName = parts[0].trim();
+            String time = parts[3].trim();
+            String item = serviceName + " - " + time; // รวมชื่อ service กับเวลา
+            serviceCombobox.addItem(item);
+        }
     }
+}
+
+private String calculateFinishTime(String startTime, int hoursToAdd) {
+    try {
+        String[] parts = startTime.split(":"); // แยกชั่วโมงและนาที
+        int hour = Integer.parseInt(parts[0]);
+        int minute = Integer.parseInt(parts[1]);
+
+        hour += hoursToAdd; // บวกชั่วโมง
+        if(hour >= 24) hour -= 24; // ถ้าเกิน 24 ชั่วโมง
+
+        return String.format("%02d:%02d", hour, minute);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return startTime; // fallback
+    }
+}
+
+    
 // homeBtn.setBackground(Color.GRAY);
   
     @SuppressWarnings("unchecked")
@@ -313,7 +360,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 17, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
 
         jPanel4.setBackground(new java.awt.Color(255, 153, 51));
@@ -326,7 +373,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 17, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
 
         jPanel5.setBackground(new java.awt.Color(51, 255, 0));
@@ -339,23 +386,23 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 17, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setText("4-5 คน");
+        jLabel2.setText("เต็ม");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel3.setText("1 คน");
+        jLabel3.setText("ว่าง");
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setText("2-3 คน");
+        jLabel4.setText("ใกล้เต็ม");
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
 
         serviceCombobox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel5.setText("Service :");
 
         dayLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -885,31 +932,28 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
+                .addContainerGap(40, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(backJPanal2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(backJPanal5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(backJPanal3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(backJPanal7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(dayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(serviceCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(40, 40, 40))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(backJPanal2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(backJPanal5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(backJPanal3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(backJPanal7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(backJPanal1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(backJPanal4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(backJPanal6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(backJPanal8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(50, Short.MAX_VALUE))))
+                    .addComponent(backJPanal1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(backJPanal4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(backJPanal6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(backJPanal8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(40, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(dayLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(42, 42, 42)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(serviceCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -943,34 +987,34 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(62, Short.MAX_VALUE)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(54, 54, 54))
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(66, 66, 66)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
+                .addGap(15, 15, 15)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
+                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -995,27 +1039,28 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(backBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comfrimBtn)
-                .addGap(44, 44, 44))
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(40, Short.MAX_VALUE)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                        .addComponent(backBtn)
+                        .addGap(18, 18, 18)
+                        .addComponent(comfrimBtn)
+                        .addGap(32, 32, 32))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40))))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(backBtn)
-                    .addComponent(comfrimBtn))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(comfrimBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+                    .addComponent(backBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1115,56 +1160,62 @@ public class ShowDeteilDay extends javax.swing.JDialog {
     }//GEN-LAST:event_time13PanelMouseClicked
 
     private void comfrimBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comfrimBtnMouseClicked
-       // timeComboBox.getSelectedItem().toString().trim().equals("----")
-         String[] parts = null;
-          AlertManager manager = new AlertManager();
+    
+        
+        AlertManager manager = new AlertManager();
         PopAlert alert = new PopAlert(parentFrame, true); // ใช้ dialog เดิม
         manager.registerObserver(alert);
-         String service = (String) serviceCombobox.getSelectedItem();
+        String service = (String) serviceCombobox.getSelectedItem();
+         
+        int serviceHours = 1; // default
+        // กำหนด startTime ตาม panel
+        String startTime = null;
+        if(selectedPanel == backJPanal2){ startTime="09:00"; }
+        else if(selectedPanel == backJPanal1){ startTime="10:00"; }
+        else if(selectedPanel == backJPanal3){ startTime="11:00"; }
+        else if(selectedPanel == backJPanal4){ startTime="13:00"; }
+        else if(selectedPanel == backJPanal5){ startTime="14:00"; }
+        else if(selectedPanel == backJPanal6){ startTime="15:00"; }
+        else if(selectedPanel == backJPanal7){ startTime="16:00"; }
+        else if(selectedPanel == backJPanal8){ startTime="17:00"; }
+
+        // ดึง service และจำนวนชั่วโมง
+        String serviceItem = (String) serviceCombobox.getSelectedItem();
+    
+        if(manager.checkService(service)){
+            if(manager.checkTime(selectedPanel)){
+                String[] splitItem = serviceItem.split("-");
+                
+                    if(splitItem.length == 2){
+                        String timeStr = splitItem[1].trim(); // เช่น "1 hr" หรือ "2 hrs"
+                        try {
+                            serviceHours = Integer.parseInt(timeStr.split(" ")[0]);
+                        } catch (NumberFormatException e) {
+                            serviceHours = 1; // fallback
+                        }
+                    }
+
+                
+                String endTime = calculateFinishTime(startTime, serviceHours);//คืนเวลาที่งานเสร็จ
+
+                
+                Map<String,Integer> timeCount = countBookingByTime(day, month, year);// นับคนจองปัจจุบัน
+
+                
+                int limit = 5;// ตรวจสอบว่าช่วงเวลาว่าง
+               
+                if( manager.checkCantBook(canBookTimeRange(startTime, endTime, timeCount, limit))){
+                    return;
+                }
+                dispose();
+                 new PopInBooking(null, true,username,startTime,endTime,service,day,month,year);
         
-        if(manager.checkService(service)){//เช็ค service
-            if(manager.checkTime(selectedPanel)){//เช็คว่าเลือกเวลารึยัง
-                System.out.println("service " +serviceCombobox.getSelectedItem() );
-
-            if (selectedPanel == backJPanal2) {
-                System.out.println("คุณเลือกเวลา 09:00");
-                parts =jLabel6.getText().split(":");
-
-            } else if (selectedPanel == backJPanal1) {
-                System.out.println("คุณเลือกเวลา 10:00");
-                parts =jLabel7.getText().split(":");
-                
-            }else if (selectedPanel == backJPanal3) {
-                System.out.println("คุณเลือกเวลา 11:00");
-                parts =jLabel8.getText().split(":");
-                
-            }else if (selectedPanel == backJPanal4) {
-                System.out.println("คุณเลือกเวลา 13:00");
-                parts =jLabel10.getText().split(":");
-                
-            }else if (selectedPanel == backJPanal5) {
-                System.out.println("คุณเลือกเวลา 14:00");
-                parts =jLabel9.getText().split(":");
-            }else if (selectedPanel == backJPanal6) {
-                System.out.println("คุณเลือกเวลา 15:00");
-                parts =jLabel11.getText().split(":");
-            }else if (selectedPanel == backJPanal7) {
-                System.out.println("คุณเลือกเวลา 16:00");
-                parts =jLabel12.getText().split(":");
-            }else if (selectedPanel == backJPanal8) {
-                System.out.println("คุณเลือกเวลา 17:00");
-                parts =jLabel13.getText().split(":");
             }
-            
-            
-             System.out.println("!!!!!    "  +parts[0]);
-                 dispose();
-                 new PopInBooking(null, true,username,parts[0],service,day,month,year);
-            
-                 
-            }
-                
-        } 
+
+      
+        }
+
+      
     }//GEN-LAST:event_comfrimBtnMouseClicked
 
 

@@ -21,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class BookingPage extends javax.swing.JFrame  {
@@ -62,7 +64,7 @@ public class BookingPage extends javax.swing.JFrame  {
 
      
         calendarPanel.setLayout(new java.awt.GridLayout(0, 7,5, 5));
-        loadBookingCount();
+       // loadBookingCount();
         updateCalendar(); 
     }
     
@@ -113,45 +115,77 @@ public class BookingPage extends javax.swing.JFrame  {
     
  
     
-public void loadBookingCount() {
-        CSVHandler handler = new CSVHandler("src/main/data/history_user.csv");
-        ArrayList<String[]> data = handler.readCSV();
+    private void loadBookingCount() {
+        CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
+        ArrayList<String[]> data = csvHandler.readCSV();
 
-        bookingCountMap.clear();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy"); // "1 September 2025"
+        // ใช้ format ที่ตรงกับข้อมูลในไฟล์ CSV
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
+        // ถ้าไฟล์เป็นภาษาไทย เช่น "1 พฤศจิกายน 2025" ให้ใช้ Locale("th", "TH")
 
-        for (int i = 0; i < data.size(); i++) {
-            String[] row = data.get(i);
-            if (row.length < 4) continue; // เช็คว่ามีวันที่
-
-            String dateStr = row[3].trim(); // column Date
+        for (String[] row : data) {
             try {
-                LocalDate date = LocalDate.parse(dateStr, formatter);
+                String dateStr = row[3].trim(); // คอลัมน์ Date
+                LocalDate date = LocalDate.parse(dateStr, formatter); 
                 bookingCountMap.put(date, bookingCountMap.getOrDefault(date, 0) + 1);
             } catch (Exception e) {
-                // ข้ามวันที่ไม่ถูกต้อง
+                e.printStackTrace(); // debug ถ้า parse ไม่ได้
             }
         }
     }
 
       
-    private void saveBookingCount() {
-    CSVHandler handler = new CSVHandler("src/main/data/booking_count.csv");
-    ArrayList<String[]> data = new ArrayList<>();
+private Map<LocalDate, Integer> calculateDailyBooking() {
+    CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
+    ArrayList<String[]> data = csvHandler.readCSV();
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    // เพิ่ม header
-    data.add(new String[] { "date", "count" });
+    Map<LocalDate, Integer> dailyBooking = new HashMap<>();
 
-    // เพิ่มข้อมูลทั้งหมดจาก bookingCountMap
-    for (LocalDate date : bookingCountMap.keySet()) {
-        int count = bookingCountMap.get(date);
-        data.add(new String[] { date.toString(), String.valueOf(count) });
+     boolean firstLine = true; // ข้าม header
+    for (String[] parts : data) {
+        if (firstLine) {
+            firstLine = false;
+            continue;
+        }
+        if (parts.length >= 5) {
+            String dateStr = parts[3].trim();
+            String timeRange = parts[4].trim();
+
+            try {
+                // ใช้ Locale อังกฤษ
+                LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH));
+
+                // แยกเวลา
+                String[] times = timeRange.split("-");
+                if (times.length != 2) continue;
+
+                LocalTime start = LocalTime.parse(times[0].trim(), timeFormatter);
+                LocalTime end = LocalTime.parse(times[1].trim(), timeFormatter);
+
+                // นับจำนวนชั่วโมงแบบ slot
+                int slots = 0;
+                LocalTime t = start;
+                while (t.isBefore(end)) {
+                    slots++;
+                    t = t.plusHours(1);
+                }
+
+                dailyBooking.put(date, dailyBooking.getOrDefault(date, 0) + slots);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    handler.writeCSV(data); // สมมติว่า CSVHandler มี method writeCSV
+    return dailyBooking;
 }
-    
-    
+
+
+
+
+
     private void updateCalendar() {
         
         calendarPanel.removeAll(); 
@@ -170,10 +204,12 @@ public void loadBookingCount() {
     LocalDate firstDayOfMonth = yearMonth.atDay(1);//สร้างวันที่ 1 ของเดือนนั้น
     DayOfWeek firstDayOfWeek = firstDayOfMonth.getDayOfWeek();//เป็นวันอะไรในสัปดาห์
 
+     Map<LocalDate, Integer> dailyBookingMap = calculateDailyBooking();
+
     
     int shift = firstDayOfWeek.getValue(); //เอาไว้บอกว่าเดือนนั้นวันที่ 1 ของเดือนเริ่มตรงไหน
     System.out.println("shift : "+ shift);
- 
+   
     // เติมช่องว่างก่อนวันจริง
     for (int i = 1; i < shift; i++) {
         calendarPanel.add(new JLabel("")); // ช่องว่าง
@@ -185,15 +221,16 @@ public void loadBookingCount() {
             JButton dayButton = new JButton(String.valueOf(day));
 
             LocalDate buttonDate = LocalDate.of(year, monthIndex, day);
-            int booked = bookingCountMap.getOrDefault(buttonDate, 0);
-
+           int booked = dailyBookingMap.getOrDefault(buttonDate, 0);
+ 
             dayButton.setPreferredSize(new Dimension(20, 20));
             dayButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
             dayButton.setFocusPainted(false);
             dayButton.setBorderPainted(false);
             dayButton.setContentAreaFilled(true);
             dayButton.setOpaque(true);
-             System.out.println("จำนวน "+ booked);
+            System.out.println("วันที่ " + buttonDate + " จำนวน " + booked);
+
            
             // ถ้าวันนี้ผ่านมาแล้ว
             if (buttonDate.isBefore(today)) {
@@ -204,51 +241,52 @@ public void loadBookingCount() {
                 dayButton.addActionListener(e -> {
                     JOptionPane.showMessageDialog(this, "ไม่สามารถจองวันผ่านมาแล้วได้");
                     // ไม่เปลี่ยนสี
-                });
-            } else if (booked >= 20) {
-                dayButton.setBackground(Color.RED);
+                });//ชมการจองได้ 35 ชม
+            } else if (booked >= 40) { // เต็ม
+                dayButton.setBackground(new Color(244, 67, 54));
                 dayButton.setForeground(Color.WHITE);
-
-                dayButton.addActionListener(e -> {
-                    JOptionPane.showMessageDialog(this, "วันนี้จองเต็มแล้ว");
+                 dayButton.addActionListener(e -> {
+                    JOptionPane.showMessageDialog(this, "เต็ม");
+                    // ไม่เปลี่ยนสี
                 });
-            } else if (booked >= 15) {
-                dayButton.setBackground(Color.ORANGE);
+            } else if (booked >= 30) { // เยอะ
+                dayButton.setBackground(new Color(255, 152, 0));
                 dayButton.setForeground(Color.BLACK);
-            } else if (booked >= 10) {
-                dayButton.setBackground(Color.YELLOW);
+            } else if (booked >= 20) { // กลาง
+                dayButton.setBackground(new Color(255, 213, 79));
                 dayButton.setForeground(Color.BLACK);
-            } else if (booked >= 5) {
-                dayButton.setBackground(Color.CYAN);
-                dayButton.setForeground(Color.BLACK);
-            } else {
-                dayButton.setBackground(Color.WHITE);
-                dayButton.setForeground(Color.BLACK);
-            }
+            } else if (booked >= 10) { // น้อย
+                dayButton.setBackground(new Color(3, 169, 244));
+                dayButton.setForeground(Color.WHITE);
+            } else { // ว่าง
+                dayButton.setBackground(new Color(76, 175, 80));
+                dayButton.setForeground(Color.WHITE);
+            } 
 
             // เพิ่ม ActionListener สำหรับวันที่เลือกได้เท่านั้น
-            if (!buttonDate.isBefore(today) && booked < 20) {
+            if (!buttonDate.isBefore(today) && booked < 40) {
                 dayButton.addActionListener(e -> {
                     selectedDay = day;
 
-                    if (lastSelectedButton != null) {
-                        // คืนค่าสีปุ่มเก่า
-                        int lastBooked = bookingCountMap.getOrDefault(
-                            LocalDate.of(year, monthIndex, Integer.parseInt(lastSelectedButton.getText())), 0
-                        );
-                        if (lastBooked >= 20) {
-                            lastSelectedButton.setBackground(Color.RED);
-                        } else if (lastBooked >= 15) {
-                            lastSelectedButton.setBackground(Color.ORANGE);
-                        } else if (lastBooked >= 10) {
-                            lastSelectedButton.setBackground(Color.YELLOW);
-                        } else if (lastBooked >= 5) {
-                            lastSelectedButton.setBackground(Color.CYAN);
-                        } else {
-                            lastSelectedButton.setBackground(Color.WHITE);
-                        }
-                        lastSelectedButton.setForeground(Color.BLACK);
-                    }
+                   if (lastSelectedButton != null) {
+                    // คืนค่าสีปุ่มเก่า
+                    int lastBooked = dailyBookingMap.getOrDefault(
+                        LocalDate.of(year, monthIndex, Integer.parseInt(lastSelectedButton.getText())), 0
+                    );
+                    if (lastBooked >= 40) {
+                        lastSelectedButton.setBackground(new Color(244, 67, 54));
+                    } else if (lastBooked >= 30) {
+                        lastSelectedButton.setBackground(new Color(255, 152, 0));
+                    } else if (lastBooked >= 20) {
+                        lastSelectedButton.setBackground(new Color(255, 213, 79));
+                    } else if (lastBooked >= 10) {
+                        lastSelectedButton.setBackground(new Color(3, 169, 244));
+                    } else {
+                        lastSelectedButton.setBackground(new Color(76, 175, 80));
+                    } 
+                    lastSelectedButton.setForeground(Color.BLACK);
+                }
+
 
                     dayButton.setBackground(Color.GREEN); // ปุ่มที่เลือกตอนนี้
                     dayButton.setForeground(Color.BLACK);
@@ -279,7 +317,6 @@ public void loadBookingCount() {
     private void initComponents() {
 
         jMenuItem1 = new javax.swing.JMenuItem();
-        confirmBtn = new javax.swing.JButton();
         monthLabel = new javax.swing.JLabel();
         jPanel3 = new RoundedPanel(30); // 30 radius;
         jLabel2 = new javax.swing.JLabel();
@@ -311,20 +348,22 @@ public void loadBookingCount() {
         calendarPanel = new javax.swing.JPanel();
         afterMonth = new javax.swing.JButton();
         beforeMonth = new javax.swing.JButton();
+        jPanel6 = new RoundedPanel(30); // 30 radius;
+        jPanel7 = new RoundedPanel(30); // 30 radius;
+        jPanel8 = new RoundedPanel(30); // 30 radius;
+        jPanel9 = new RoundedPanel(30); // 30 radius;
+        jPanel10 = new RoundedPanel(30); // 30 radius;
+        jLabel1 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setPreferredSize(new java.awt.Dimension(1200, 800));
-
-        confirmBtn.setText("Confirm");
-        confirmBtn.setToolTipText("");
-        confirmBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                confirmBtnActionPerformed(evt);
-            }
-        });
 
         monthLabel.setBackground(new java.awt.Color(255, 255, 255));
         monthLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -517,7 +556,7 @@ public void loadBookingCount() {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(calendarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         afterMonth.setText(">");
@@ -534,6 +573,81 @@ public void loadBookingCount() {
             }
         });
 
+        jPanel6.setBackground(new java.awt.Color(244, 67, 54));
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 21, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jPanel7.setBackground(new java.awt.Color(255, 152, 0));
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 20, Short.MAX_VALUE)
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jPanel8.setBackground(new java.awt.Color(255, 213, 79));
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 20, Short.MAX_VALUE)
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jPanel9.setBackground(new java.awt.Color(3, 169, 244));
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 20, Short.MAX_VALUE)
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 20, Short.MAX_VALUE)
+        );
+
+        jPanel10.setBackground(new java.awt.Color(76, 175, 80));
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 20, Short.MAX_VALUE)
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jLabel1.setText("เต็ม");
+
+        jLabel9.setText("เยอะ");
+
+        jLabel10.setText("กลาง");
+
+        jLabel11.setText("น้อย");
+
+        jLabel12.setText("ว่าง");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -541,19 +655,6 @@ public void loadBookingCount() {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(260, 260, 260)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                        .addContainerGap(21, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -573,7 +674,41 @@ public void loadBookingCount() {
                                 .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(21, 21, 21))
                             .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(40, 40, 40))))
+                        .addGap(40, 40, 40))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(260, 260, 260)
+                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(44, 44, 44)
+                                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel1)
+                                        .addGap(32, 32, 32)
+                                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jLabel9)
+                                        .addGap(26, 26, 26)
+                                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel10)))
+                                .addGap(42, 42, 42)
+                                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel11)
+                                .addGap(32, 32, 32)
+                                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel12)))
+                        .addContainerGap(21, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -583,22 +718,37 @@ public void loadBookingCount() {
                     .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(iconUserProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(beforeMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(beforeMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING))))
+                .addGap(19, 19, 19)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -606,48 +756,6 @@ public void loadBookingCount() {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
-      /* 
-        
-        AlertManager manager = new AlertManager();
-        PopAlert alert = new PopAlert(this, true); // ใช้ dialog เดิม
-        manager.registerObserver(alert);
-
-        // ตรวจสอบวัน/เวลา/บริการ
-        manager.checkBooking(selectedDay, selectedTime, selectedService);
-
-        // ถ้าเลือกครบก็ทำขั้นตอนจองปกติ
-        if (selectedDay > 0 && selectedTime > 0 && selectedService > 0) {
-            String monthSelected = (String) monthComboBox1.getSelectedItem();
-             String yearSelected = (String) yearComboBox.getSelectedItem();
-            String timeSelected = (String) timeComboBox.getSelectedItem();
-           
-            int daySelected = selectedDay;
-            String service = (String) serviceComboBox1.getSelectedItem();
-
-            PopInBooking dialog = new PopInBooking(this, true, userName);
-            dialog.setDayLabel(daySelected + " " + monthSelected);
-            dialog.setTimeLabel(timeSelected);
-            dialog.setServiceLabel(service);
-            dialog.setYearLabel(yearSelected);
-            dialog.setVisible(true);
-
-            LocalDate selectedDate = LocalDate.of(
-                Integer.parseInt(yearComboBox.getSelectedItem().toString()),
-                monthComboBox1.getSelectedIndex() + 1,
-                selectedDay
-            );
-
-            // เพิ่มจำนวนจอง
-            int currentCount = bookingCountMap.getOrDefault(selectedDate, 0);
-            bookingCountMap.put(selectedDate, currentCount + 1);
-
-            saveBookingCount();
-            updateCalendar();
-        }
-*/
-    }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void monthComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthComboBox1ActionPerformed
              updateCalendar();
@@ -762,7 +870,6 @@ public void loadBookingCount() {
     private javax.swing.JButton beforeMonth;
     private javax.swing.JButton bookingBtn;
     private javax.swing.JPanel calendarPanel;
-    private javax.swing.JButton confirmBtn;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
@@ -771,6 +878,10 @@ public void loadBookingCount() {
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
     private javax.swing.JLabel iconUserProfile;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -778,11 +889,17 @@ public void loadBookingCount() {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JLabel logo;
     private javax.swing.JComboBox<String> monthComboBox1;
     private javax.swing.JLabel monthLabel;

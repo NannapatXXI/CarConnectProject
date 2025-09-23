@@ -67,6 +67,13 @@ public class AlertManager implements Subject {
         }
         return true;
     }
+      public boolean checkCantBook( boolean check){
+        if(!check){
+         notifyObservers("เวลาก่อนหน้าเต็มแล้ว");
+         return true;
+        }
+        return false;
+    }
     
     
     

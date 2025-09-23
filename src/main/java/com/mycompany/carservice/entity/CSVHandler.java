@@ -41,11 +41,23 @@ public class CSVHandler {
             e.printStackTrace();
         }
     }
+    // เพิ่มข้อมูลใหม่ต่อท้าย CSV
+    public void appendCSV(String[] newRow) {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) { // true = append
+        String line = String.join(",", newRow);
+        // ใช้ System.lineSeparator() เพื่อให้แน่ใจว่าจะขึ้นบรรทัดใหม่ทุก OS
+        bw.write(line + System.lineSeparator());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
     public void deleteRow(int rowIndex) {
     ArrayList<String[]> data = readCSV(); // อ่านข้อมูลทั้งหมด
     if(rowIndex < 0 || rowIndex >= data.size()) {
         throw new IndexOutOfBoundsException("Invalid row index: " + rowIndex);
     }
+    
     
     data.remove(rowIndex); // ลบแถว
     writeCSV(data);       // เขียนทับไฟล์ CSV

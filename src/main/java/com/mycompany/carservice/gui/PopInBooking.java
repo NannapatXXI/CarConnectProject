@@ -22,6 +22,7 @@ public class PopInBooking extends javax.swing.JDialog {
     private String name;
     private String userId;
     private String timeBooking;
+      private String endTime;
     private String service;
     private String day;
     private String month;
@@ -33,13 +34,14 @@ public class PopInBooking extends javax.swing.JDialog {
     /**
      * Creates new form popInBooking   
      */
-    public PopInBooking(java.awt.Frame parent, boolean modal,String name,String timeBooking,String service,String day,String month , String year) {// java.awt.Frame parent เอาไว้ให้ class นี้รู้ว่าจะต้อง pop หน้าจอตัวเอาที่ใคร
+    public PopInBooking(java.awt.Frame parent, boolean modal,String name,String timeBooking,String endTime,String service,String day,String month , String year) {// java.awt.Frame parent เอาไว้ให้ class นี้รู้ว่าจะต้อง pop หน้าจอตัวเอาที่ใคร
         super(parent, modal);
         this.name = name;
         this.timeBooking = timeBooking;
         this.service = service;
         this.day = day;
         this.month = month;
+        this.endTime = endTime;
         this.year = year;
          csvHandler = new CSVHandler("src/main/data/user.csv");
        
@@ -56,26 +58,17 @@ public class PopInBooking extends javax.swing.JDialog {
         
     }
     public void setText() {
-        String duration = getServiceTime(service); 
-       String finishTime = calculateFinishTime(timeBooking, duration);
        
-        finishtimeLabel.setText(finishTime);
+       // finishtimeLabel.setText(finishTime);
          dayLabel.setText(day +" "+ month + " " + year);
-        timestartLabel.setText(timeBooking+":00");
+        timestartLabel.setText(timeBooking);
         userLabel.setText(name);
         serviceLabel.setText(service);
+        finishtimeLabel.setText(endTime);
     }
 
    
 
-   private String calculateFinishTime(String startTime, String duration) {
-    int startHour = Integer.parseInt(startTime);
-   
-    int durHour = Integer.parseInt(duration.split(" ")[0]);
-
-    int finishHour = startHour + durHour;
-    return String.format("%02d:00", finishHour);
-}
     
    
             
@@ -93,7 +86,7 @@ public class PopInBooking extends javax.swing.JDialog {
     }
     private String getServiceTime(String serviceName) {
         
-    csvHandler = new CSVHandler("src/main/data/service.csv");
+    csvHandler  = new CSVHandler("src/main/data/service.csv");
        
         ArrayList<String[]> services = csvHandler.readCSV();
         for(String[] s : services){
@@ -106,17 +99,12 @@ public class PopInBooking extends javax.swing.JDialog {
     }
 
    
-    private void saveBooking(String[] newBooking) {
+    private void saveBooking(String[] userData) {
     // 1. อ่านข้อมูลเก่าจาก CSV
     csvHandler = new CSVHandler("src/main/data/history_user.csv");
-       
-    ArrayList<String[]> allBookings = csvHandler.readCSV();
-
-    // 2. เพิ่มข้อมูลใหม่
-    allBookings.add(newBooking);
-
-    // 3. เขียนทั้งหมดกลับไปไฟล์
-    csvHandler.writeCSV(allBookings);
+    
+ 
+     csvHandler.appendCSV(userData);
 }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -350,34 +338,41 @@ public class PopInBooking extends javax.swing.JDialog {
     }//GEN-LAST:event_backBtnMouseClicked
 
     private void okBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okBtnMouseClicked
-      for(String[] data : users){
-        if(data[1].trim().equalsIgnoreCase(name.trim())){
-            System.out.println("User found: " + String.join(", ", data));
-            userLabel.setText(data[1]);
+       System.out.println("โหลลลลล: ");
+       
+        csvHandler = new CSVHandler("src/main/data/user.csv");
+       ArrayList<String[]> userscheck = csvHandler.readCSV();
+        for(String[] data : userscheck){
+            
+            if(data[1].trim().equalsIgnoreCase(name.trim())){
+                System.out.println("User found: " + String.join(", ", data));
+                userLabel.setText(data[1]);
 
-            userId = data[0];
-            System.out.println("UserID: " + userId);
+                userId = data[0];
+                System.out.println("UserID: " + userId);
 
-            // ดึงข้อมูลจาก GUI
-            //String year =  yearLabel.getText().trim();
-           // String service = serviceLabel.getText().trim();
-            String date = dayLabel.getText().trim();
-            //String time = timeLabel1.getText().trim();
-            String note = textDetail.getText().trim();
-            String carReg = textFieldCar.getText().trim();
-            String status = "process"; // หรือค่าอื่นตามต้องการ
+                // ดึงข้อมูลจาก GUI
 
-            // สร้าง array ตามลำดับที่ต้องการ
-           // String[] userData = {userId, data[1], service, date +" " + year, time, note, carReg, status};
+               
+                String date = dayLabel.getText().trim();
+                String time = timestartLabel.getText() + "-" +finishtimeLabel.getText();
+                 System.out.println("เวลาที่เลือก : " + time);
+                 String note = textDetail.getText().trim();
+                String carReg = textFieldCar.getText().trim();
+                String status = "booked"; // หรือค่าอื่นตามต้องการ
 
-            // เขียนข้อมูลต่อจาก CSV เดิม
-           // saveBooking(userData); // ต้องสร้างฟังก์ชัน appendCSV ใน CSVHandler
-            //System.out.println("Booking saved: " + String.join(", ", userData));
+                
+                String[] userData = {userId, data[1], service, date , time, note, carReg, status};
 
-            break;
-        }
+                // เขียนข้อมูลต่อจาก CSV เดิม
+               saveBooking(userData);
+                System.out.println("Booking saved: " + String.join(", ", userData));
+
+                break;
+            }
     }
       dispose(); 
+      new PopSucceed(null,true,"Booking Seucceed");
     }//GEN-LAST:event_okBtnMouseClicked
 
    
