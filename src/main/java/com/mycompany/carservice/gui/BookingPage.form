@@ -60,30 +60,26 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="monthLabel3" min="-2" pref="80" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="monthComboBox1" min="-2" pref="133" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
-                              <Component id="monthLabel" min="-2" pref="56" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="yearComboBox" min="-2" pref="133" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="monthLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="timeComboBox" min="-2" pref="133" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="monthLabel2" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="iconUserProfile" min="-2" pref="38" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="monthLabel3" min="-2" pref="80" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="serviceComboBox1" min="-2" pref="133" max="-2" attributes="0"/>
+                      <Component id="monthComboBox1" min="-2" pref="133" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
+                      <Component id="monthLabel" min="-2" pref="56" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="yearComboBox" min="-2" pref="133" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="253" max="-2" attributes="0"/>
+                      <Component id="iconUserProfile" min="-2" pref="38" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="beforeMonth" max="32767" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="afterMonth" min="-2" pref="42" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
+                          </Group>
                           <Component id="username" min="-2" pref="128" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -103,10 +99,8 @@
                   <Component id="monthComboBox1" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="monthLabel" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="yearComboBox" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="monthLabel1" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="timeComboBox" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="monthLabel2" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="serviceComboBox1" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
+                  <Component id="afterMonth" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                  <Component id="beforeMonth" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
@@ -145,19 +139,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Year :"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="timeComboBox">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="timeComboBoxActionPerformed"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel3">
       <AuxValues>
@@ -272,17 +253,6 @@
         <Property name="useNullLayout" type="boolean" value="false"/>
       </Layout>
     </Container>
-    <Component class="javax.swing.JLabel" name="monthLabel1">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Tahoma" size="18" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Time :"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JComboBox" name="monthComboBox1">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
@@ -304,34 +274,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="monthComboBox1ActionPerformed"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JLabel" name="monthLabel2">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Tahoma" size="18" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Service :"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="serviceComboBox1">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="3">
-            <StringItem index="0" value="---- "/>
-            <StringItem index="1" value="Wash a car"/>
-            <StringItem index="2" value="Repair and Check"/>
-          </StringArray>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serviceComboBox1ActionPerformed"/>
       </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -646,5 +588,21 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="afterMonth">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&gt;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="afterMonthMouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="beforeMonth">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&lt;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="beforeMonthMouseClicked"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>

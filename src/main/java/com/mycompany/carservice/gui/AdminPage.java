@@ -111,8 +111,8 @@ public class AdminPage extends javax.swing.JFrame {
          
          for (int i = 1; i < usersHistory.size(); i++) {   // เริ่มที่ 1 ไม่เอา header
              String[] history = usersHistory.get(i);
-                if(history[7].equalsIgnoreCase("completed")){
-                    System.out.println("completed " );
+                if(history[7].equalsIgnoreCase("complete")){
+                    System.out.println("complete " );
                     countCompleted++;
                 }else if(history[7].equalsIgnoreCase("process")){
                      System.out.println("process"  );
@@ -252,8 +252,10 @@ public class AdminPage extends javax.swing.JFrame {
                  
                     if(status.equals("process")) {
                          setBackground(Color.YELLOW);
-                    } else if (status.equals("completed")) {
+                    } else if (status.equals("complete")) {
                          setBackground(Color.GREEN);
+                    }else if (status.equals("booked")) {
+                         setBackground(Color.GRAY);
                     } else {
                          setBackground(table.getBackground());
                     }

@@ -60,10 +60,7 @@ public class BookingPage extends javax.swing.JFrame  {
         monthComboBox1.setSelectedIndex(monthValue - 1);
         yearComboBox.setSelectedItem(String.valueOf(yearValue));
 
-        // อัปเดตเวลาตามวันปัจจุบัน
-        updateTimeComboBox(dayValue, monthValue, yearValue);
-       
-       
+     
         calendarPanel.setLayout(new java.awt.GridLayout(0, 7,5, 5));
         loadBookingCount();
         updateCalendar(); 
@@ -208,7 +205,7 @@ public void loadBookingCount() {
                     JOptionPane.showMessageDialog(this, "ไม่สามารถจองวันผ่านมาแล้วได้");
                     // ไม่เปลี่ยนสี
                 });
-            } else if (booked >= 30) {
+            } else if (booked >= 20) {
                 dayButton.setBackground(Color.RED);
                 dayButton.setForeground(Color.WHITE);
 
@@ -216,18 +213,21 @@ public void loadBookingCount() {
                     JOptionPane.showMessageDialog(this, "วันนี้จองเต็มแล้ว");
                 });
             } else if (booked >= 15) {
-                dayButton.setBackground(Color.GREEN);
-                dayButton.setForeground(Color.WHITE);
-            } else if (booked >= 10) {
                 dayButton.setBackground(Color.ORANGE);
-                dayButton.setForeground(Color.WHITE);
+                dayButton.setForeground(Color.BLACK);
+            } else if (booked >= 10) {
+                dayButton.setBackground(Color.YELLOW);
+                dayButton.setForeground(Color.BLACK);
+            } else if (booked >= 5) {
+                dayButton.setBackground(Color.CYAN);
+                dayButton.setForeground(Color.BLACK);
             } else {
                 dayButton.setBackground(Color.WHITE);
                 dayButton.setForeground(Color.BLACK);
             }
 
             // เพิ่ม ActionListener สำหรับวันที่เลือกได้เท่านั้น
-            if (!buttonDate.isBefore(today) && booked < 30) {
+            if (!buttonDate.isBefore(today) && booked < 20) {
                 dayButton.addActionListener(e -> {
                     selectedDay = day;
 
@@ -236,24 +236,30 @@ public void loadBookingCount() {
                         int lastBooked = bookingCountMap.getOrDefault(
                             LocalDate.of(year, monthIndex, Integer.parseInt(lastSelectedButton.getText())), 0
                         );
-                        if (lastBooked >= 15) lastSelectedButton.setBackground(Color.GREEN);
-                        else if (lastBooked >= 10) lastSelectedButton.setBackground(Color.ORANGE);
-                        else lastSelectedButton.setBackground(Color.WHITE);
-
+                        if (lastBooked >= 20) {
+                            lastSelectedButton.setBackground(Color.RED);
+                        } else if (lastBooked >= 15) {
+                            lastSelectedButton.setBackground(Color.ORANGE);
+                        } else if (lastBooked >= 10) {
+                            lastSelectedButton.setBackground(Color.YELLOW);
+                        } else if (lastBooked >= 5) {
+                            lastSelectedButton.setBackground(Color.CYAN);
+                        } else {
+                            lastSelectedButton.setBackground(Color.WHITE);
+                        }
                         lastSelectedButton.setForeground(Color.BLACK);
                     }
 
                     dayButton.setBackground(Color.GREEN); // ปุ่มที่เลือกตอนนี้
-                    dayButton.setForeground(Color.WHITE);
+                    dayButton.setForeground(Color.BLACK);
                     lastSelectedButton = dayButton;
 
                     String monthSelected = (String) monthComboBox1.getSelectedItem();
                     String yearSelected = (String) yearComboBox.getSelectedItem();
                     String dayString = String.valueOf(selectedDay);
 
-                    new ShowDeteilDay(this, true, dayString, monthSelected, yearSelected);
+                    new ShowDeteilDay(this, true, dayString, monthSelected, yearSelected,userName);
 
-                    updateTimeComboBox(selectedDay, monthIndex, year);
                 });
             }
 
@@ -265,25 +271,6 @@ public void loadBookingCount() {
         calendarPanel.revalidate();
         calendarPanel.repaint();
     }
-    private void updateTimeComboBox(int selectedDay, int selectedMonth, int selectedYear){
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        model.addElement("----"); // ค่าเริ่มต้น
-         selectedTime = 0;
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
-    
-        for(int h=10; h<=17; h++){
-            if(selectedDay==today.getDayOfMonth() && selectedMonth==today.getMonthValue() && selectedYear==today.getYear()){
-                if(h>now.getHour()){ // เพิ่มเฉพาะเวลาหลังจากตอนนี้
-                    model.addElement(h + ":00");
-                }
-            } else {
-                model.addElement(h + ":00"); // วันอื่น ๆ เพิ่มหมด
-            }
-        }
-
-        timeComboBox.setModel(model);
-    }
 
 
    
@@ -294,7 +281,6 @@ public void loadBookingCount() {
         jMenuItem1 = new javax.swing.JMenuItem();
         confirmBtn = new javax.swing.JButton();
         monthLabel = new javax.swing.JLabel();
-        timeComboBox = new javax.swing.JComboBox<>();
         jPanel3 = new RoundedPanel(30); // 30 radius;
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -304,10 +290,7 @@ public void loadBookingCount() {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        monthLabel1 = new javax.swing.JLabel();
         monthComboBox1 = new javax.swing.JComboBox<>();
-        monthLabel2 = new javax.swing.JLabel();
-        serviceComboBox1 = new javax.swing.JComboBox<>();
         monthLabel3 = new javax.swing.JLabel();
         yearComboBox = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
@@ -326,6 +309,8 @@ public void loadBookingCount() {
         iconUserProfile = new javax.swing.JLabel();
         jPanel1 = new RoundedPanel(30); // 30 radius;
         calendarPanel = new javax.swing.JPanel();
+        afterMonth = new javax.swing.JButton();
+        beforeMonth = new javax.swing.JButton();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -344,12 +329,6 @@ public void loadBookingCount() {
         monthLabel.setBackground(new java.awt.Color(255, 255, 255));
         monthLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         monthLabel.setText("Year :");
-
-        timeComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                timeComboBoxActionPerformed(evt);
-            }
-        });
 
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -384,25 +363,10 @@ public void loadBookingCount() {
         jPanel4.setBackground(new java.awt.Color(51, 255, 0));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        monthLabel1.setBackground(new java.awt.Color(255, 255, 255));
-        monthLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        monthLabel1.setText("Time :");
-
         monthComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
         monthComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 monthComboBox1ActionPerformed(evt);
-            }
-        });
-
-        monthLabel2.setBackground(new java.awt.Color(255, 255, 255));
-        monthLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        monthLabel2.setText("Service :");
-
-        serviceComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---- ", "Wash a car", "Repair and Check" }));
-        serviceComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serviceComboBox1ActionPerformed(evt);
             }
         });
 
@@ -556,6 +520,20 @@ public void loadBookingCount() {
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
+        afterMonth.setText(">");
+        afterMonth.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                afterMonthMouseClicked(evt);
+            }
+        });
+
+        beforeMonth.setText("<");
+        beforeMonth.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                beforeMonthMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -578,27 +556,24 @@ public void loadBookingCount() {
                         .addContainerGap(21, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(44, 44, 44)
-                                .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(monthLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(timeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(monthLabel2))
-                            .addComponent(iconUserProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(monthLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(44, 44, 44)
+                        .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(253, 253, 253)
+                        .addComponent(iconUserProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(beforeMonth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(21, 21, 21))
                             .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(35, 35, 35))))
+                        .addGap(40, 40, 40))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -613,10 +588,8 @@ public void loadBookingCount() {
                     .addComponent(monthComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(timeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(serviceComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(afterMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(beforeMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -635,7 +608,7 @@ public void loadBookingCount() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
-       
+      /* 
         
         AlertManager manager = new AlertManager();
         PopAlert alert = new PopAlert(this, true); // ใช้ dialog เดิม
@@ -673,39 +646,18 @@ public void loadBookingCount() {
             saveBookingCount();
             updateCalendar();
         }
+*/
     }//GEN-LAST:event_confirmBtnActionPerformed
-
-    private void timeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timeComboBoxActionPerformed
-      
-        if( !timeComboBox.getSelectedItem().toString().trim().equals("----")){
-            System.out.println("เวลาที่เลือก"+  timeComboBox.getSelectedItem());
-            selectedTime = 1;
-           
-        }else{
-             selectedTime = 0;
-        }
-        
-    }//GEN-LAST:event_timeComboBoxActionPerformed
 
     private void monthComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthComboBox1ActionPerformed
              updateCalendar();
              // ยังไม่ได้เลือกวัน -> ส่ง -1
-            updateTimeComboBox(-1, monthComboBox1.getSelectedIndex() + 1,Integer.parseInt(yearComboBox.getSelectedItem().toString()));
+           
     }//GEN-LAST:event_monthComboBox1ActionPerformed
-
-    private void serviceComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceComboBox1ActionPerformed
-         if( !serviceComboBox1.getSelectedItem().toString().trim().equals("----")){
-              System.out.println("บริการที่เลือก"+  serviceComboBox1.getSelectedItem());
-            selectedService = 1;
-        }else{
-              selectedService = 0;
-         }
-    }//GEN-LAST:event_serviceComboBox1ActionPerformed
 
     private void yearComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearComboBoxActionPerformed
        updateCalendar();
-       // ยังไม่ได้เลือกวัน -> ส่ง -1
-        updateTimeComboBox(-1, monthComboBox1.getSelectedIndex() + 1,Integer.parseInt(yearComboBox.getSelectedItem().toString()));
+     
     }//GEN-LAST:event_yearComboBoxActionPerformed
 
     private void homeBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseEntered
@@ -768,11 +720,46 @@ public void loadBookingCount() {
         new AdminPage(userName,role);
     }//GEN-LAST:event_adminBtnMouseClicked
 
+    private void afterMonthMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_afterMonthMouseClicked
+        System.out.println("After ");
+         int currentIndex = monthComboBox1.getSelectedIndex();
+        int yearIndex = yearComboBox.getSelectedIndex();
+
+        // ถ้าเลยธันวาคม → ข้ามไปปีถัดไป
+        if (currentIndex == 11) { // index เริ่มจาก 0 → 11 = ธันวาคม
+            monthComboBox1.setSelectedIndex(0);
+            yearComboBox.setSelectedIndex(yearIndex + 1);
+        } else {
+            monthComboBox1.setSelectedIndex(currentIndex + 1);
+        }
+
+        updateCalendar();
+                                      
+    }//GEN-LAST:event_afterMonthMouseClicked
+
+    private void beforeMonthMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_beforeMonthMouseClicked
+        System.out.println("After ");
+        int currentIndex = monthComboBox1.getSelectedIndex();
+    int yearIndex = yearComboBox.getSelectedIndex();
+
+    // ถ้าเลยมกราคม → ย้อนกลับไปปีที่แล้ว
+    if (currentIndex == 0) { // index 0 = มกราคม
+        monthComboBox1.setSelectedIndex(11);
+        yearComboBox.setSelectedIndex(yearIndex - 1);
+    } else {
+        monthComboBox1.setSelectedIndex(currentIndex - 1);
+    }
+
+    updateCalendar();
+    }//GEN-LAST:event_beforeMonthMouseClicked
+
     
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adminBtn;
+    private javax.swing.JButton afterMonth;
+    private javax.swing.JButton beforeMonth;
     private javax.swing.JButton bookingBtn;
     private javax.swing.JPanel calendarPanel;
     private javax.swing.JButton confirmBtn;
@@ -799,12 +786,8 @@ public void loadBookingCount() {
     private javax.swing.JLabel logo;
     private javax.swing.JComboBox<String> monthComboBox1;
     private javax.swing.JLabel monthLabel;
-    private javax.swing.JLabel monthLabel1;
-    private javax.swing.JLabel monthLabel2;
     private javax.swing.JLabel monthLabel3;
     private javax.swing.JButton profileBtn;
-    private javax.swing.JComboBox<String> serviceComboBox1;
-    private javax.swing.JComboBox<String> timeComboBox;
     private javax.swing.JLabel username;
     private javax.swing.JComboBox<String> yearComboBox;
     // End of variables declaration//GEN-END:variables

@@ -43,9 +43,33 @@ public class AlertManager implements Subject {
             notifyObservers("ยังไม่ได้เลือกบริการ");
         }
     }
-    public void checkCount(int count){
-        if(count >= 5 )
-         notifyObservers("วันนี้จองเต็มแล้ว");
+    
+    
+    public boolean checkCount(int count){
+        if(count >= 5 ){
+         notifyObservers("เวลานี้จองเต็มแล้ว");
+         return false;
+        }
+        return true;
     }
+    
+      public boolean checkService( String service){
+        if(service.equals("-- --")){
+         notifyObservers("เลือก Service ก่อน");
+         return false;
+        }
+        return true;
+    }
+      public boolean checkTime( javax.swing.JPanel panel){
+        if(panel == null){
+         notifyObservers("เลือก เวลา ก่อน");
+         return false;
+        }
+        return true;
+    }
+    
+    
+    
+    
     
 }
