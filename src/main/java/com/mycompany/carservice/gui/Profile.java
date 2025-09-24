@@ -12,7 +12,6 @@ import java.io.*;
 import java.util.*;
 import javax.swing.text.*;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.mycompany.carservice.entity.CSVHandler;
 import com.mycompany.carservice.gui.Changepassword;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,15 +23,14 @@ import com.mycompany.carservice.entity.RoundedPanel;
  * @author User
  */
 public class Profile extends javax.swing.JFrame {
-    private  String userName;
-    private  String role;
+    private final String userName;
+    private final String role;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Profile.class.getName());
     private String user;
     private String Tell;
     private String experience;
     private String oldName; // เก็บชื่อเก่าก่อนแก้
-    private String currentUserName ;
-    
+    private String currentUserName = "สมหญิง สวยงาม";
     
     
     /**
@@ -42,9 +40,8 @@ public class Profile extends javax.swing.JFrame {
         initComponents();
         this.userName = userName ;
         this.role = role;
-        this.currentUserName = userName;
-        usernamelabel.setHorizontalAlignment(JLabel.RIGHT);
-        usernamelabel.setText(userName);
+        username.setHorizontalAlignment(JLabel.RIGHT);
+        username.setText(userName);
         
         ((AbstractDocument) phoneText.getDocument()).setDocumentFilter(new NumberDocumentFilter(10));
         setupui();
@@ -105,46 +102,103 @@ public class Profile extends javax.swing.JFrame {
         adminBtn.setContentAreaFilled(false);
         adminBtn.setBorderPainted(false);
 
-    }  
-// โหลดข้อมูลโปรไฟล์ของผู้ใช้จากไฟล์ user.csv
-private void loadUserProfile(String username) {
-    CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
-    ArrayList<String[]> users = csvHandler.readCSV();
-
-    for (int i = 1; i < users.size(); i++) { // ข้าม header
-        String[] values = users.get(i);
-        if (values[1].trim().equals(username.trim())) {
-            usernameText.setText(values[1]);   // ชื่อผู้ใช้
-            passwordText.setText(values[2]);   // รหัสผ่าน
-            emailText.setText(values[3]);      // Email
-            phoneText.setText(values[4]);      // Phone
-
-            oldName = values[1];
-            userName = values[1];
-            role = values[5];
-            break;
-        }
     }
+    
+    
+    private void loadFromCSV() {
+    String filePath = "src/main/data/user.csv"; // ตำแหน่งไฟล์
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        boolean isFirstLine = true;
+        while ((line = br.readLine()) != null) {
+            if (isFirstLine) { 
+                isFirstLine = false; // ข้ามบรรทัด header
+                continue;
+            }
 
-    usernamelabel.setText(username); // แสดงชื่อบน label
+            String[] values = line.split(",");
+
+            // สมมติเลือกบรรทัดแรกสุด
+            if (values.length >= 4) {
+                usernameText.setText(values[1]);       // Name
+                passwordText.setText(values[3]);       // Phone
+                phoneText.setText(values[2]); // Email (หรือเปลี่ยนเป็น exp ถ้ามี)
+            }
+            break; // โหลดแค่แถวแรกพอ
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    
 }
+// โหลดข้อมูลโปรไฟล์ของผู้ใช้จากไฟล์ user.csv
+private void loadUserProfile(String name) {
+    // แสดงชื่อผู้ใช้ปัจจุบันบน label
+    //username.setText(userName);
+    String filePath = "src/main/data/user.csv";
+    // ใช้ BufferedReader อ่านไฟล์ทีละบรรทัด
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        boolean isFirstLine = true;
+        while ((line = br.readLine()) != null) {
+            if (isFirstLine) {
+                isFirstLine = false; // เอาไว้ข้ามบรรทัดแรก (หัวตาราง)
+                continue;
+            }
+            // ถ้าชื่อ (values[1]) ตรงกับ name ที่ส่งมา
+            String[] values = line.split(",");
+            if (values[1].trim().equals(name.trim())) {
+                usernameText.setText(values[1]);   // Name
+                passwordText.setText(values[2]);   // ✅ Password
+                emailText.setText(values[3]);      // Email
+                phoneText.setText(values[4]);      // Phone
+                // เก็บชื่อเก่าไว้ใช้ตอนแก้ไข/อัพเดทข้อมูล
+                oldName = values[1];
+                break;
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    }
 // ใช้ค้นหาจาก "name" (ชื่อเดิม) แล้วแก้ไขเป็นค่าใหม่
 private void updateFirstRowCSV(String name, String newName, String newPassword, String newEmail, String newPhone) {
-    CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
-    ArrayList<String[]> users = csvHandler.readCSV();
+    String filePath = "src/main/data/user.csv";
+    List<String> lines = new ArrayList<>();
+    // อ่านไฟล์ทั้งหมดแล้วเก็บใน list "lines"
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            lines.add(line);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    
+    for (int i = 1; i < lines.size(); i++) {
+        String[] values = lines.get(i).split(",");
+        // ถ้าเจอชื่อเดิมตรงกับ "name"
+        if (values[1].trim().equals(name)) {
+            String userID = values[0]; // เก็บ userID เดิมไว้
+            String role   = values[5]; // เก็บ role เดิมไว้
 
-    for (int i = 1; i < users.size(); i++) {
-        String[] values = users.get(i);
-        if (values[1].trim().equals(oldName.trim())) {
-            String userID = values[0]; // เก็บ ID เดิม
-            String role   = values[5]; // เก็บ role เดิม
-            users.set(i, new String[] {userID, newName, newPassword, newEmail, newPhone, role});
+            // ✅ สร้างบรรทัดใหม่โดยแทนที่ Name, Password, Email, Phone ด้วยค่าที่แก้ไข
+            // รูปแบบ: userID, newName, newPassword, newEmail, newPhone, role
+            lines.set(i, userID + "," + newName + "," + newPassword + "," + newEmail + "," + newPhone + "," + role);
             break;
         }
     }
-
-    csvHandler.writeCSV(users); // เขียนกลับไฟล์
-}
+    //  เขียนข้อมูลทั้งหมด  กลับลงไฟล์
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+        for (String l : lines) {
+            bw.write(l);
+            bw.newLine(); // ขึ้นบรรทัดใหม่
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    }
+// ✅ DocumentFilter สำหรับกรอกเฉพาะตัวเลข และจำกัดจำนวนหลัก
 class NumberDocumentFilter extends DocumentFilter {
     private int maxLength; // ความยาวสูงสุดของ input
 
@@ -214,7 +268,7 @@ class NumberDocumentFilter extends DocumentFilter {
         historyBtn = new javax.swing.JButton();
         bookingBtn = new javax.swing.JButton();
         logo = new javax.swing.JLabel();
-        usernamelabel = new javax.swing.JLabel();
+        username = new javax.swing.JLabel();
         iconExit = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -426,10 +480,10 @@ class NumberDocumentFilter extends DocumentFilter {
 
         jPanel6.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
 
-        usernamelabel.setBackground(new java.awt.Color(0, 0, 0));
-        usernamelabel.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
-        usernamelabel.setText("..");
-        jPanel6.add(usernamelabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 40, 660, 40));
+        username.setBackground(new java.awt.Color(0, 0, 0));
+        username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
+        username.setText("..");
+        jPanel6.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 40, 660, 40));
 
         iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -598,7 +652,7 @@ class NumberDocumentFilter extends DocumentFilter {
     private javax.swing.JTextField phoneText;
     private javax.swing.JButton profileBtn;
     private javax.swing.JLabel texttInbtnEdittext;
+    private javax.swing.JLabel username;
     private javax.swing.JTextField usernameText;
-    private javax.swing.JLabel usernamelabel;
     // End of variables declaration//GEN-END:variables
 }
