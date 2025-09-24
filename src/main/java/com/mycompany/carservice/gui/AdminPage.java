@@ -41,7 +41,7 @@ public class AdminPage extends javax.swing.JFrame {
         setSize(1200, 800);
         setLocationRelativeTo(null);
         setVisible(true);
-
+username.setHorizontalAlignment(JLabel.RIGHT);
         username.setText(user);
        
       //  addButtonColumn();

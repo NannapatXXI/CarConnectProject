@@ -218,6 +218,7 @@ public class PopInBooking extends javax.swing.JDialog {
         finishtimeLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         finishtimeLabel.setText("jLabel9");
 
+        serviceLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         serviceLabel.setText("jLabel9");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -254,7 +255,7 @@ public class PopInBooking extends javax.swing.JDialog {
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(finishtimeLabel))
-                    .addComponent(serviceLabel))
+                    .addComponent(serviceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -372,7 +373,7 @@ public class PopInBooking extends javax.swing.JDialog {
             }
     }
       dispose(); 
-      new PopSucceed(null,true,"Booking Seucceed");
+      new PopSuccess(null,true,"Booking Success");
     }//GEN-LAST:event_okBtnMouseClicked
 
    

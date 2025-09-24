@@ -134,7 +134,7 @@ public class History extends javax.swing.JFrame {
                 System.out.println("CSV Name: [" + nameInCsv + "]");
                 System.out.println("Current User: [" + currentUser + "]");
 
-                if (nameInCsv.equalsIgnoreCase(currentUser)) {
+                if (nameInCsv.equalsIgnoreCase(userName)) {
                     Object[] newRow = {
                     rowNumber,        // No (ลำดับในตาราง)
                     nameInCsv,        // Name
@@ -188,7 +188,6 @@ public class History extends javax.swing.JFrame {
         logo = new javax.swing.JLabel();
         username = new javax.swing.JLabel();
         iconExit = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -413,10 +412,6 @@ public class History extends javax.swing.JFrame {
         });
         jPanel7.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 40, 40, 40));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
-        jLabel1.setText("History");
-        jPanel7.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 40, -1, -1));
-
         getContentPane().add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 800));
 
         pack();
@@ -520,7 +515,6 @@ public class History extends javax.swing.JFrame {
     private javax.swing.JLabel iconHistory;
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -556,3 +556,6 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 0001,Admin,Car Paint Wax/Polish - 2 hrs,2 November 2025,09:00-11:00,-,กน000,process
 0001,Admin,Glass Coating - 6 hrs,1 November 2025,14:00-20:00,-,กจกาญ00,process
 0001,Admin,Exterior Car Wash - 1 hr,25 September 2025,09:00-10:00,ไม่มี,กจ0000,booked
+0001,Admin,Full Car Wash - 1 hr,24 September 2025,10:00-11:00,-,กจ0000,booked
+0001,Admin,Exterior Car Wash - 1 hr,27 September 2025,17:00-18:00,-,oo0000,booked
+0001,Admin,Exterior Car Wash - 1 hr,27 September 2025,09:00-10:00,0,1000,booked

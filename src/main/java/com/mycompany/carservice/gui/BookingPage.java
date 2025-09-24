@@ -81,6 +81,7 @@ public class BookingPage extends javax.swing.JFrame  {
         }else{
              System.out.println("User !!!!");
              adminBtn.setVisible(false);  // user ซ่อนปุ่ม
+             iconAdmin.setVisible(false);
         }
         
         
