@@ -513,6 +513,12 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         jScrollPane2.setViewportView(jTable1);
 
         jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 820, 390));
+
+        searchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchFieldActionPerformed(evt);
+            }
+        });
         jPanel3.add(searchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 230, 30));
 
         jLabel3.setText("Search : ID");
@@ -840,6 +846,10 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         dispose();
         new Login();
     }//GEN-LAST:event_iconExitMouseClicked
+
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchFieldActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addUserBtn;

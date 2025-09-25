@@ -24,7 +24,9 @@ public class CarService {
         //new HomePage("Admin","admin");
      
         // new CsvTableDemo().setVisible(true);
-        new HomePage("Admin","admin");
+        //new HomePage("Admin","admin");
+        //new History("Admin","admin");
+       new AdminPage("Admin","admin");
     });
        
          

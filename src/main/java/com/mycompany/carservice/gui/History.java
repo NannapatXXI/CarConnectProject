@@ -14,6 +14,8 @@ import java.net.URL;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import com.mycompany.carservice.entity.RoundedPanel;
+import javax.swing.table.TableRowSorter;
+import javax.swing.RowFilter;
 
 
 
@@ -36,6 +38,33 @@ public class History extends javax.swing.JFrame {
         SetupIcon();
         setupUi();
         loadHistoryData();
+        
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        jTable1.setRowSorter(sorter);
+
+        jTextField2.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+          private void filter() {
+            String text = jTextField2.getText().trim().toLowerCase();
+            if (text.isEmpty()) {
+               sorter.setRowFilter(null);
+            } else {
+               sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
+                   @Override
+                   public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+                      String dateValue = entry.getStringValue(3).toLowerCase().trim(); // column 3 = Date
+                      return dateValue.contains(text); // ค้นหาบางส่วน
+                  }
+              });
+          }
+      }
+      @Override
+      public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+      @Override
+      public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+      @Override
+      public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+    });
         username.setHorizontalAlignment(JLabel.RIGHT);
         username.setText(userName);
         if ("admin".equalsIgnoreCase(role)) {   
@@ -91,15 +120,15 @@ public class History extends javax.swing.JFrame {
                     URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
                     URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
+                    URL historyfileURL = new File("src/main/image/Historyfile.png").toURI().toURL();
                     
-                    logo.setIcon(new ImageIcon(logoIconURL));
                     iconHome.setIcon(new ImageIcon(homeIconURL));
                     iconBooking.setIcon(new ImageIcon(bookingIconURL));
                     iconHistory.setIcon(new ImageIcon(historyIconURL));
                     iconProfile.setIcon(new ImageIcon(profileIconURL));
                     iconAdmin.setIcon(new ImageIcon(adminIconURL));
                     iconExit.setIcon(new ImageIcon(exitIconURL));
-
+                    headHistory.setIcon(new ImageIcon(historyfileURL));
                 } catch (Exception e) {
                     System.out.println(e);
                     logger.severe("Cannot load icon images");
@@ -173,6 +202,8 @@ public class History extends javax.swing.JFrame {
         jPanel9 = new RoundedPanel(30); // 30 radius;
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
         profileuser = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         iconHome = new javax.swing.JLabel();
@@ -185,9 +216,12 @@ public class History extends javax.swing.JFrame {
         profileBtn = new javax.swing.JButton();
         historyBtn = new javax.swing.JButton();
         bookingBtn = new javax.swing.JButton();
-        logo = new javax.swing.JLabel();
         username = new javax.swing.JLabel();
         iconExit = new javax.swing.JLabel();
+        headHistory = new javax.swing.JLabel();
+        jPanel10 = new RoundedPanel(30); // 30 radius;
+        taskLable = new javax.swing.JLabel();
+        task = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -252,24 +286,35 @@ public class History extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
+        jLabel1.setText("Search : Day");
+
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
 
-        jPanel7.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 140, 930, 610));
+        jPanel7.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 120, 930, 640));
         jPanel7.add(profileuser, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 10, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
@@ -395,22 +440,35 @@ public class History extends javax.swing.JFrame {
         });
         jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 260, 70));
 
-        logo.setForeground(new java.awt.Color(255, 255, 255));
-        jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
-
         jPanel7.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
 
         username.setBackground(new java.awt.Color(0, 0, 0));
         username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
         username.setText("..");
-        jPanel7.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 40, 660, 40));
+        jPanel7.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 30, 660, 40));
 
         iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 iconExitMouseClicked(evt);
             }
         });
-        jPanel7.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 40, 40, 40));
+        jPanel7.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 30, 40, 40));
+
+        headHistory.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        headHistory.setText(" History ");
+        jPanel7.add(headHistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 30, -1, -1));
+
+        jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        taskLable.setFont(new java.awt.Font("Tahoma", 1, 28)); // NOI18N
+        taskLable.setText("jLabel5");
+        jPanel10.add(taskLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 140, 46));
+
+        task.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        task.setText("Today tasks  ");
+        jPanel10.add(task, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, 30));
+
+        jPanel7.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         getContentPane().add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1200, 800));
 
@@ -507,6 +565,7 @@ public class History extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adminBtn;
     private javax.swing.JButton bookingBtn;
+    private javax.swing.JLabel headHistory;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
@@ -515,7 +574,9 @@ public class History extends javax.swing.JFrame {
     private javax.swing.JLabel iconHistory;
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -524,9 +585,11 @@ public class History extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JLabel logo;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JButton profileBtn;
     private javax.swing.JLabel profileuser;
+    private javax.swing.JLabel task;
+    private javax.swing.JLabel taskLable;
     private javax.swing.JLabel username;
     // End of variables declaration//GEN-END:variables
 }
