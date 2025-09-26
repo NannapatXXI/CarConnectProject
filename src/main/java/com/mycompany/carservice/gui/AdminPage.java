@@ -65,7 +65,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     
     }
      private void SetupIcon() {
-        try {
+        try { 
                     URL logoIconURL = new File("src/main/image/logoCarConnect.png").toURI().toURL();
                     URL homeIconURL = new File("src/main/image/home.png").toURI().toURL();
                     URL bookingIconURL = new File("src/main/image/booking.png").toURI().toURL();
@@ -113,7 +113,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
          int countTask = 0;
       //สำหรับ Total
          ArrayList<String[]> users = new ArrayList<>(csvHandler.readCSV());
-        int count =  users.size();
+        int count =  users.size() - 1;
         System.out.println("จำนวน User :" + count);
         
         if(count != 0){

@@ -121,7 +121,8 @@ public class History extends javax.swing.JFrame {
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
                     URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
                     URL historyfileURL = new File("src/main/image/Historyfile.png").toURI().toURL();
-                    
+                    logo.setIcon(new ImageIcon(logoIconURL));
+                   
                     iconHome.setIcon(new ImageIcon(homeIconURL));
                     iconBooking.setIcon(new ImageIcon(bookingIconURL));
                     iconHistory.setIcon(new ImageIcon(historyIconURL));
@@ -216,6 +217,7 @@ public class History extends javax.swing.JFrame {
         profileBtn = new javax.swing.JButton();
         historyBtn = new javax.swing.JButton();
         bookingBtn = new javax.swing.JButton();
+        logo = new javax.swing.JLabel();
         username = new javax.swing.JLabel();
         iconExit = new javax.swing.JLabel();
         headHistory = new javax.swing.JLabel();
@@ -440,6 +442,9 @@ public class History extends javax.swing.JFrame {
         });
         jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 260, 70));
 
+        logo.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
+
         jPanel7.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
 
         username.setBackground(new java.awt.Color(0, 0, 0));
@@ -586,6 +591,7 @@ public class History extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel logo;
     private javax.swing.JButton profileBtn;
     private javax.swing.JLabel profileuser;
     private javax.swing.JLabel task;
