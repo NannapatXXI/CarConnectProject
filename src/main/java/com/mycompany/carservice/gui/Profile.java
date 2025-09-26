@@ -55,7 +55,9 @@ public class Profile extends javax.swing.JFrame {
         setSize(1200, 800);        
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
-        loadUserProfile(currentUserName);
+        this.currentUserName = userName;
+        loadUserProfile(this.userName);
+        
          
          if ("admin".equalsIgnoreCase(role)) {   
             adminBtn.setVisible(true);
