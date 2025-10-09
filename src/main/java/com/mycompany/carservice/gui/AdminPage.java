@@ -60,10 +60,18 @@ public class AdminPage extends javax.swing.JFrame {
         complete.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
         inprocess.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
         task.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
-        homeBtn.setBorderPainted(false); 
-        bookingBtn.setBorderPainted(false); 
-        historyBtn.setBorderPainted(false); 
-        profileBtn.setBorderPainted(false); 
+        
+        bookingBtn.setContentAreaFilled(false);
+        bookingBtn.setBorderPainted(false);
+
+        historyBtn.setContentAreaFilled(false);
+        historyBtn.setBorderPainted(false);
+
+        profileBtn.setContentAreaFilled(false);
+        profileBtn.setBorderPainted(false);
+
+        homeBtn.setContentAreaFilled(false);
+        homeBtn.setBorderPainted(false);
     
     }
      private void SetupIcon() {
@@ -711,7 +719,7 @@ public class AdminPage extends javax.swing.JFrame {
 
         homeBtn.setBackground(new java.awt.Color(43, 43, 43));
         homeBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        homeBtn.setForeground(new java.awt.Color(255, 255, 255));
+        homeBtn.setForeground(new java.awt.Color(204, 204, 204));
         homeBtn.setText(" Home    ");
         homeBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -732,13 +740,14 @@ public class AdminPage extends javax.swing.JFrame {
 
         adminBtn.setBackground(new java.awt.Color(255, 157, 0));
         adminBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        adminBtn.setForeground(new java.awt.Color(255, 255, 255));
         adminBtn.setText("Admin   ");
         adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
         jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 270, 70));
 
         profileBtn.setBackground(new java.awt.Color(43, 43, 43));
         profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        profileBtn.setForeground(new java.awt.Color(255, 255, 255));
+        profileBtn.setForeground(new java.awt.Color(204, 204, 204));
         profileBtn.setText("Profile  ");
         profileBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -757,7 +766,7 @@ public class AdminPage extends javax.swing.JFrame {
 
         historyBtn.setBackground(new java.awt.Color(43, 43, 43));
         historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        historyBtn.setForeground(new java.awt.Color(255, 255, 255));
+        historyBtn.setForeground(new java.awt.Color(204, 204, 204));
         historyBtn.setText("History ");
         historyBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -781,7 +790,7 @@ public class AdminPage extends javax.swing.JFrame {
 
         bookingBtn.setBackground(new java.awt.Color(43, 43, 43));
         bookingBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        bookingBtn.setForeground(new java.awt.Color(255, 255, 255));
+        bookingBtn.setForeground(new java.awt.Color(204, 204, 204));
         bookingBtn.setText("Booking");
         bookingBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         bookingBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -894,6 +903,7 @@ public class AdminPage extends javax.swing.JFrame {
 
     private void profileBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseExited
        profileBtn.setForeground(new Color(204,204,204));
+        
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked

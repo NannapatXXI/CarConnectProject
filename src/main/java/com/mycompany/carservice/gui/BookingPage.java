@@ -71,11 +71,17 @@ public class BookingPage extends javax.swing.JFrame  {
     
       private void SetupUi() {
        
-        homeBtn.setBorderPainted(false); 
-        adminBtn.setBorderPainted(false); 
-        historyBtn.setBorderPainted(false); 
-        profileBtn.setBorderPainted(false); 
-        
+        adminBtn.setContentAreaFilled(false);
+        adminBtn.setBorderPainted(false);
+
+        historyBtn.setContentAreaFilled(false);
+        historyBtn.setBorderPainted(false);
+
+        profileBtn.setContentAreaFilled(false);
+        profileBtn.setBorderPainted(false);
+
+        homeBtn.setContentAreaFilled(false);
+        homeBtn.setBorderPainted(false);
          if(role.equals("admin")){
              System.out.println("Admin !!!!");
         }else{
@@ -448,7 +454,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
         homeBtn.setBackground(new java.awt.Color(43, 43, 43));
         homeBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        homeBtn.setForeground(new java.awt.Color(255, 255, 255));
+        homeBtn.setForeground(new java.awt.Color(204, 204, 204));
         homeBtn.setText(" Home    ");
         homeBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -469,7 +475,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
         adminBtn.setBackground(new java.awt.Color(43, 43, 43));
         adminBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        adminBtn.setForeground(new java.awt.Color(255, 255, 255));
+        adminBtn.setForeground(new java.awt.Color(204, 204, 204));
         adminBtn.setText("Admin   ");
         adminBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         adminBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -488,7 +494,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
         profileBtn.setBackground(new java.awt.Color(43, 43, 43));
         profileBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        profileBtn.setForeground(new java.awt.Color(255, 255, 255));
+        profileBtn.setForeground(new java.awt.Color(204, 204, 204));
         profileBtn.setText("Profile  ");
         profileBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         profileBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -507,7 +513,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
         historyBtn.setBackground(new java.awt.Color(43, 43, 43));
         historyBtn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        historyBtn.setForeground(new java.awt.Color(255, 255, 255));
+        historyBtn.setForeground(new java.awt.Color(204, 204, 204));
         historyBtn.setText("History ");
         historyBtn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         historyBtn.setPreferredSize(new java.awt.Dimension(164, 90));
@@ -709,11 +715,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     }//GEN-LAST:event_yearComboBoxActionPerformed
 
     private void homeBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseEntered
-        homeBtn.setBackground(Color.GRAY);
+        homeBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_homeBtnMouseEntered
 
     private void homeBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseExited
-        homeBtn.setBackground(new Color(43,43,43));
+        homeBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_homeBtnMouseExited
 
     private void homeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBtnActionPerformed
@@ -727,11 +733,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
-        profileBtn.setBackground(Color.GRAY);
+         profileBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_profileBtnMouseEntered
 
     private void profileBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseExited
-        profileBtn.setBackground(new Color(43,43,43));
+        profileBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
@@ -740,11 +746,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
-        historyBtn.setBackground(Color.GRAY);
+       historyBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_historyBtnMouseEntered
 
     private void historyBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseExited
-        historyBtn.setBackground(new Color(43,43,43));
+        historyBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_historyBtnMouseExited
 
     private void historyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyBtnActionPerformed
@@ -756,11 +762,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     }//GEN-LAST:event_bookingBtnActionPerformed
 
     private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
-         adminBtn.setBackground(Color.GRAY);
+         adminBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_adminBtnMouseEntered
 
     private void adminBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseExited
-        adminBtn.setBackground(new Color(43,43,43));
+         adminBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_adminBtnMouseExited
 
     private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked

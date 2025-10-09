@@ -27,6 +27,7 @@ import javax.swing.RowFilter;
 public class History extends javax.swing.JFrame {
     private final String userName;
     private final String role;
+     private TableRowSorter<DefaultTableModel> sorter;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(History.class.getName());
     /**
      * Creates new form History
@@ -39,32 +40,7 @@ public class History extends javax.swing.JFrame {
         setupUi();
         loadHistoryData();
         
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        jTable1.setRowSorter(sorter);
-
-        jTextField2.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-          private void filter() {
-            String text = jTextField2.getText().trim().toLowerCase();
-            if (text.isEmpty()) {
-               sorter.setRowFilter(null);
-            } else {
-               sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
-                   @Override
-                   public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
-                      String dateValue = entry.getStringValue(3).toLowerCase().trim(); // column 3 = Date
-                      return dateValue.contains(text); // ค้นหาบางส่วน
-                  }
-              });
-          }
-      }
-      @Override
-      public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-      @Override
-      public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-      @Override
-      public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-    });
+      
         username.setHorizontalAlignment(JLabel.RIGHT);
         username.setText(userName);
         if ("admin".equalsIgnoreCase(role)) {   
@@ -74,28 +50,44 @@ public class History extends javax.swing.JFrame {
             adminBtn.setVisible(false);
             iconAdmin.setVisible(false);// ซ่อนสำหรับ User ปกติ
         }
-        
-         //จัดข้อความให้อยู่ตรงกลาง
-        ((DefaultTableCellRenderer) jTable1.getTableHeader().getDefaultRenderer())
-                .setHorizontalAlignment(SwingConstants.CENTER);
-         // จัดกลางข้อมูลทุกคอลัมน์
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < jTable1.getColumnCount(); i++) {
-            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
+      
+
+      
         setSize(1200, 800);        
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
-        jTable1.setRowHeight(50);
+       
 
+    }
+    private void setupFilter() {
+        jTextField2.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void filter() {
+                if (sorter == null) return; // ป้องกัน null
+                String text = jTextField2.getText().trim();
+                if (text.isEmpty()) {
+                    sorter.setRowFilter(null);
+                } else {
+                   
+                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, 3));//กรองข้อความจากแถวที่เลือกแบบ ไม่สนใจพิมพ์เล๋กใหญ่ (?i)
+                }
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+        });
+
+        // เวลาเปลี่ยน combobox ก็ให้รีเฟรช filter ด้วย
+       
     }
     
     private void setupUi(){
-        UIManager.put("Table.selectionBackground", new Color(0, 0, 0));
-        UIManager.put("Table.selectionForeground", Color.WHITE);
-        UIManager.put("Table.alternateRowColor", Color.GRAY);
-        
+       UIManager.put("Table.selectionBackground", new Color(60, 60, 60));
+        UIManager.put("Table.selectionForeground",new Color(255, 255, 255));
+        UIManager.put("Table.alternateRowColor", new Color(240, 240, 240));
         homeBtn.setContentAreaFilled(false);
         homeBtn.setBorderPainted(false);
         
@@ -180,17 +172,29 @@ public class History extends javax.swing.JFrame {
                 }
             }
         }
+          // จัดกลางข้อมูลทุกคอลัมน์
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < jTable1.getColumnCount(); i++) {
+            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        
+        jTable1.setRowHeight(50);
+         
+        // sorter
+        sorter = new TableRowSorter<>(model);
+        jTable1.setRowSorter(sorter);
+        
+        
     } catch (IOException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(null, "Error loading history data");
     }
+      setupFilter();
+    
 }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
