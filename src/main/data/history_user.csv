@@ -561,3 +561,4 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 0001,Admin,Exterior Car Wash - 1 hr,27 September 2025,09:00-10:00,0,1000,booked
 0001,Admin,Seat/Carpet Shampoo - 4 hrs,2 November 2025,09:00-13:00,,0990ก,booked
 0001,Admin,Glass Coating - 6 hrs,2 November 2025,14:00-20:00,,ก0912,booked
+0001,Admin,Exterior Car Wash - 1 hr,24 October 2025,11:00-12:00,-,12,booked
