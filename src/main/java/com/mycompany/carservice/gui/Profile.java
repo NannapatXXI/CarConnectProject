@@ -503,6 +503,10 @@ class NumberDocumentFilter extends DocumentFilter {
     System.out.println("Password : " + newPassword);     
     System.out.println("Phone : " + newPhone);
     System.out.println("User : " + currentUserName);
+    AlertManager manager = new AlertManager();
+    PopAlert alert = new PopAlert(this, true); // this = JFrame ปัจจุบัน
+    manager.registerObserver(alert);
+    manager.showMessage("บันทึกข้อมูลสำเร็จ");
 
     // เปิดหน้า Profile ใหม่
     new Profile(currentUserName, role);

@@ -74,7 +74,9 @@ public class AlertManager implements Subject {
         }
         return false;
     }
-    
+    public void showMessage(String message) {
+    notifyObservers(message); // เด้งข้อความไปยัง observer ที่ register ไว้
+    }
     
     
     
