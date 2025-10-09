@@ -1082,7 +1082,7 @@ private String calculateFinishTime(String startTime, int hoursToAdd) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_backBtnActionPerformed
 
     private void time9PanalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time9PanalMouseClicked

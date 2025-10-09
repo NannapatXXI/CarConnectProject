@@ -120,7 +120,7 @@ public class BookingPage extends javax.swing.JFrame  {
 
         // ใช้ format ที่ตรงกับข้อมูลในไฟล์ CSV
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
-        // ถ้าไฟล์เป็นภาษาไทย เช่น "1 พฤศจิกายน 2025" ให้ใช้ Locale("th", "TH")
+       
 
         for (String[] row : data) {
             try {

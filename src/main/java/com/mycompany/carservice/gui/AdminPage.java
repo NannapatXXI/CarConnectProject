@@ -25,6 +25,7 @@ public class AdminPage extends javax.swing.JFrame {
     private CSVHandler csvHandler;
     private String userName;
      private String role;
+     String selectedTable = "User";
 
     public AdminPage(String user,String role) {
        this.userName = user;
@@ -41,10 +42,11 @@ public class AdminPage extends javax.swing.JFrame {
         setSize(1200, 800);
         setLocationRelativeTo(null);
         setVisible(true);
-username.setHorizontalAlignment(JLabel.RIGHT);
+        username.setHorizontalAlignment(JLabel.RIGHT);
         username.setText(user);
        
-      //  addButtonColumn();
+       setupSearchComboBox();
+    
 
     }
     
@@ -107,7 +109,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
    private void SetupInfo(){
         CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
           CSVHandler csvHandlerHistory = new CSVHandler("src/main/data/history_user.csv");
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now();//ดึงวันปัจจุบัน
         int countProcess = 0;
         int countCompleted = 0;
          int countTask = 0;
@@ -139,7 +141,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
                 LocalDate inputDate = LocalDate.parse(history[3], formatter);
 
-               
+               //นับจำนวนงานนั้นวันนั้น
                 if(today.equals(inputDate)){
                     System.out.println("วันนี้ตรงกับ " + history[3]);
                     countTask++;
@@ -162,9 +164,6 @@ username.setHorizontalAlignment(JLabel.RIGHT);
              taskLable.setText("!!!! โหลดข้อมูลไม่ได้");
         }
          
-          System.out.println(" Process :" + countProcess);
-         System.out.println(" completed :" + countCompleted);
-        
       
    }
 
@@ -177,11 +176,11 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     // header จากไฟล์จริง
     String[] fileHeaders = users.get(0); // บรรทัดแรกคือ header
     String[] headers = new String[fileHeaders.length + 2];
-    headers[0] = "No";
+    headers[0] = "No";//สร้างแถวขึ้นมาใหม่เพราะจะ run เลขเอง
     System.arraycopy(fileHeaders, 0, headers, 1, fileHeaders.length);
     headers[headers.length - 1] = "Action";
 
-    DefaultTableModel model = new DefaultTableModel(headers, 0);
+    DefaultTableModel model = new DefaultTableModel(headers, 0);//เริ่มจากแถว 0
 
     // เติมข้อมูล (เริ่มจากบรรทัดที่ 2 ของ CSV)
     for (int i = 1; i < users.size(); i++) {
@@ -190,7 +189,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
 
         String[] row = new String[userRow.length + 2];
         row[0] = null; // No
-        System.arraycopy(userRow, 0, row, 1, userRow.length);
+        System.arraycopy(userRow, 0, row, 1, userRow.length);//ดึงข้อมูลจาก CSV 1 แถวไปเก็บใน row
         row[row.length - 1] = "Edit"; // Action ปุ่ม
 
         model.addRow(row);
@@ -199,14 +198,14 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     jTable1.setModel(model);
     jTable1.setRowHeight(50);
 
-    // --- คอลัมน์ No ---
+    // สร้าง คอลัมน์ No 
     jTable1.getColumn("No").setCellRenderer(new RowNumberRenderer());
 
     // sorter
     sorter = new TableRowSorter<>(model);
     jTable1.setRowSorter(sorter);
 
-    // --- จัดกลาง ---
+    // จัดข้อความให้อยู่ตรงกลาง
     DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
     centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -217,45 +216,118 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         }
     }
 
+    
     // --- ปุ่ม Action ---
     TableColumn actionColumn = jTable1.getColumn("Action");
-    actionColumn.setCellRenderer(new ButtonRenderer());
-    actionColumn.setCellEditor(new ButtonEditor(jTable1, csvHandler));
+    actionColumn.setCellRenderer(new ButtonRenderer());//วาดปุ่มออกมา
+    actionColumn.setCellEditor(new ButtonEditor(jTable1, csvHandler));//จัดการ action
     actionColumn.setPreferredWidth(120);
 
-    // --- ถ้าเป็น History ให้ใส่ status renderer ---
+    // ถ้าเลือกดู History ให้ใส่ status เพิ่ม 
     String selected = chooseTable.getSelectedItem().toString();
     if (selected.equals("History")) {
         int statusColumnIndex = headers.length - 2; // Status อยู่ก่อน Action
-        jTable1.getColumnModel().getColumn(statusColumnIndex).setCellRenderer(new StatusRenderer());
+        jTable1.getColumnModel().getColumn(statusColumnIndex).setCellRenderer(new StatusRenderer());//สร้าง คอลัมน์ Status ลง Table
     }
 
     setupFilter();
 }
 
-     
+    
+   /**
+    * ค้นหาข้อมูลใน Table
+    */
     private void setupFilter() {
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             private void filter() {
-                 if (sorter == null) return; // ป้องกัน null
-                    String text = searchField.getText();
-                 if (text.trim().isEmpty()) {
+                if (sorter == null) return; // ป้องกัน null
+                String text = searchField.getText().trim();
+                if (text.isEmpty()) {
                     sorter.setRowFilter(null);
-                 } else {
-                 // กรองเฉพาะ column Name (index 1)
-                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, 1));
+                } else {
+                    int colIndex = getSelectedColumnIndex(); // เอาไปดึงว่าเลือกจะค้นหาอะไร ex. วัน , บริการ ส่งออกมาเป็นเลข index ของ คอลัมน์
+                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, colIndex));//กรองข้อความจากแถวที่เลือกแบบ ไม่สนใจพิมพ์เล๋กใหญ่ (?i)
                 }
             }
 
-             @Override
-             public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-             @Override
-             public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
-             @Override
-             public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { filter(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { filter(); }
         });
+
+        // เวลาเปลี่ยน combobox ก็ให้รีเฟรช filter ด้วย
+       
     }
 
+    
+    /**
+     * ใส่ item เข้า combobox
+     */
+    private void setupSearchComboBox() {
+        
+    searchComboBox.removeAllItems();
+    if (selectedTable.equals("User")) {
+        searchComboBox.addItem("Search : ID");
+        searchComboBox.addItem("Search : Name");
+    } else {
+        searchComboBox.addItem("Search : ID");
+        searchComboBox.addItem("Search : Service");
+        searchComboBox.addItem("Search : Date");
+        searchComboBox.addItem("Search : Status");
+    }
+    
+}
+   
+    
+    /**
+    * เอาไว้ดึงเลข index จาก item ที่เลือกใน searchComboBox
+    * @return index ของ คอลัมน์
+    */
+    private int getSelectedColumnIndex() {
+       
+        String selected;
+        System.out.println(" Table :" +  selectedTable);
+        
+        if(selectedTable.equals("User")){     
+            selected = (String) searchComboBox.getSelectedItem();
+              
+            switch (selected) {//สำหรับ Table History
+                case "Search : ID":
+                    return 1; // column 0 = ID
+                case "Search : Name":
+                    return 2; // column 2 = Service
+                default:
+                    return 1; // fallback ไปที่ Name
+            }
+        
+        }else{
+            selected = (String) searchComboBox.getSelectedItem();
+              
+             switch (selected) {//สำหรับ Table History
+                case "Search : ID":
+                    return 1; // column 0 = ID
+                case "Search : Service":
+                    return 3; // column 2 = Service
+                case "Search : Date":
+                    return 4; // column 3 = Date
+                case "Search : Status":
+                    return 8; // column 6 = Status
+                default:
+                    return 1; // fallback ไปที่ Name
+            }
+        }
+        
+        
+        
+    }
+
+
+    /**
+    * เอาไว้สร้างคอลัมน์ Status
+    */
     class StatusRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -291,8 +363,10 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         }
     }
 
-    // Renderer สำหรับปุ่ม  / Renderer = แสดงผล
-    class ButtonRenderer extends JPanel implements TableCellRenderer {
+   /**
+    * สร้างปุ่มใน Action
+    */
+    class ButtonRenderer extends JPanel implements TableCellRenderer { // Renderer สำหรับปุ่ม  / Renderer = แสดงผล
        private final JButton editButton;
        private final JButton deleteButton;
 
@@ -326,68 +400,75 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         }
     }
 
+    
     // Editor สำหรับปุ่ม  /Editor = “รับ event คลิก แล้วทำงาน
+    /**
+     * ทำ Action ให้กับปุ่ม
+     */
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor {//TableCellEditor คือ interface ที่ JTable ใช้เมื่อต้องการ component ที่ตอบสนองการแก้ไข
         private final JPanel panel;
-    private final JButton editButton;
-    private final JButton deleteButton;
-    private final JTable table;
-    private final CSVHandler csvHandler;
+        private final JButton editButton;
+        private final JButton deleteButton;
+        private final JTable table;
+        private final CSVHandler csvHandler;
 
-    public ButtonEditor(JTable table, CSVHandler handler) {
-        this.table = table;
-        this.csvHandler = handler;
+        public ButtonEditor(JTable table, CSVHandler handler) {
+            this.table = table;
+            this.csvHandler = handler;
 
-        panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 12));
+            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 12));
 
-        editButton = new JButton("Edit");
-        deleteButton = new JButton("Delete");
+            editButton = new JButton("Edit");
+            deleteButton = new JButton("Delete");
 
-        editButton.setMargin(new Insets(10,10,5,10));
-        deleteButton.setMargin(new Insets(10,10,5,10));
-        editButton.setPreferredSize(new Dimension(50, 50));
-        deleteButton.setPreferredSize(new Dimension(50, 50));
+            editButton.setMargin(new Insets(10,10,5,10));
+            deleteButton.setMargin(new Insets(10,10,5,10));
+            editButton.setPreferredSize(new Dimension(50, 50));
+            deleteButton.setPreferredSize(new Dimension(50, 50));
 
 
-        panel.add(editButton);
-        panel.add(deleteButton);
+            panel.add(editButton);
+            panel.add(deleteButton);
 
-        // Event Edit
-        editButton.addActionListener(e -> {
-            // เพิ่มบรรทัดนี้เพื่อให้คลิกครั้งเดียวทำงาน
-            if (table.getCellEditor() != null) table.getCellEditor().stopCellEditing();
+            // Event Edit
+            editButton.addActionListener(e -> {
+                // เพิ่มบรรทัดนี้เพื่อให้คลิกครั้งเดียวทำงาน
+                if (table.getCellEditor() != null) table.getCellEditor().stopCellEditing();
 
-            int row = table.getSelectedRow(); // ใช้ selectedRow แทน editingRow
-            if(row != -1) {
-                openEditDialog(row);
-            }
-            fireEditingStopped();
-            
-        });
-        // Event Delete
-       deleteButton.addActionListener(e -> {
-            if (table.getCellEditor() != null){
-                table.getCellEditor().stopCellEditing();
-            }
-            int row = table.getSelectedRow();
-            if(row != -1) {
-                int confirm = JOptionPane.showConfirmDialog(
-                             SwingUtilities.getWindowAncestor(table),
-                            "Are you sure you want to delete this row?",
-                            "Confirm Delete",
-                            JOptionPane.YES_NO_OPTION
-                );
-                if(confirm == JOptionPane.YES_OPTION) {
-                    deleteRow(row);  // เรียก method ภายใน ButtonEditor
+                int row = table.getSelectedRow(); // ใช้ selectedRow แทน editingRow
+                if(row != -1) {
+                    openEditDialog(row);
                 }
-            }
-            fireEditingStopped();
-        });
+                fireEditingStopped();
 
-        
-        
+            });
+            // Event Delete
+           deleteButton.addActionListener(e -> {
+                if (table.getCellEditor() != null){
+                    table.getCellEditor().stopCellEditing();
+                }
+                int row = table.getSelectedRow();
+                if(row != -1) {
+                    int confirm = JOptionPane.showConfirmDialog(
+                                 SwingUtilities.getWindowAncestor(table),
+                                "Are you sure you want to delete this row?",
+                                "Confirm Delete",
+                                JOptionPane.YES_NO_OPTION
+                    );
+                    if(confirm == JOptionPane.YES_OPTION) {
+                        deleteRow(row);  // เรียก method ภายใน ButtonEditor
+                    }
+                }
+                fireEditingStopped();
+            });
+
+
+
     }
-
+     /**
+      * เอาไว้เปิดหน้าต่างการแก้ไขข้อมูล
+      * @param รับ row  ที่จะแก้
+      */
     private void openEditDialog(int row) {
         int colCount = table.getColumnCount() - 2;
         String[] data = new String[colCount];
@@ -403,7 +484,10 @@ username.setHorizontalAlignment(JLabel.RIGHT);
             new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true, row, data, csvHandler).setVisible(true);
         }
     }
-
+    /**
+     * เอาไว้ลบ row ที่เลือก
+     * @param row  ที่จะแก้
+     */
     private void deleteRow(int row) {
         try {
             // แปลง index หลัง filter/sort เป็น model index
@@ -429,17 +513,22 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     }
     }
 
-    // ฟังก์ชันสลับ CSV
+   
+    /**
+     * เอาไว้สลับตาราง
+     */
     private void switchTable() {
-        String selected = chooseTable.getSelectedItem().toString();
-        if(selected.equals("User")) {
+         selectedTable = chooseTable.getSelectedItem().toString();
+        if(selectedTable.equals("User")) {
              csvHandler = new CSVHandler("src/main/data/user.csv");
-        } else if(selected.equals("History")) {
+        } else if(selectedTable.equals("History")) {
             csvHandler = new CSVHandler("src/main/data/history_user.csv");
         }
+        setupSearchComboBox();
         loadCsvData(); // โหลดข้อมูลใหม่
     }
-
+    
+    //เขียนเลขขึ้นมาเองตามจำนวนข้อมูล
     class RowNumberRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -448,7 +537,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             // แสดงหมายเลขลำดับตาม row ที่เห็น (หลัง filter/sort แล้ว)
-            setText(String.valueOf(row + 1));
+            setText(String.valueOf(row + 1));//ดึง index ของ table มาบวก
             setHorizontalAlignment(SwingConstants.CENTER);
 
        
@@ -464,11 +553,11 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         searchField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
         chooseTable = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         addUserBtn = new RoundedPanel(30); // 30 radius;
         adduserLable = new javax.swing.JLabel();
+        searchComboBox = new javax.swing.JComboBox<>();
         jPanel4 = new RoundedPanel(30); // 30 radius;
         totalUserLable = new javax.swing.JLabel();
         totaluser = new javax.swing.JLabel();
@@ -519,10 +608,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
                 searchFieldActionPerformed(evt);
             }
         });
-        jPanel3.add(searchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 230, 30));
-
-        jLabel3.setText("Search : ID");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, 50));
+        jPanel3.add(searchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 30, 230, 30));
 
         chooseTable.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "User", "History" }));
         chooseTable.addActionListener(new java.awt.event.ActionListener() {
@@ -555,6 +641,14 @@ username.setHorizontalAlignment(JLabel.RIGHT);
         addUserBtn.add(adduserLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 90, 40));
 
         jPanel3.add(addUserBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 20, 130, 40));
+
+        searchComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        searchComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel3.add(searchComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 120, 30));
 
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -774,6 +868,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
 
     private void addUserBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserBtnMouseEntered
         addUserBtn.setBackground(new Color(216,216,216));
+        
 
     }//GEN-LAST:event_addUserBtnMouseEntered
 
@@ -793,11 +888,12 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
-        profileBtn.setBackground(Color.GRAY);
+      
+               profileBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_profileBtnMouseEntered
 
     private void profileBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseExited
-        profileBtn.setBackground(new Color(43,43,43));
+       profileBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
@@ -806,11 +902,12 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     }//GEN-LAST:event_historyBtnMouseClicked
 
     private void historyBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseEntered
-        historyBtn.setBackground(Color.GRAY);
+       
+         historyBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_historyBtnMouseEntered
 
     private void historyBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseExited
-        historyBtn.setBackground(new Color(43,43,43));
+       historyBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_historyBtnMouseExited
 
     private void historyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyBtnActionPerformed
@@ -823,19 +920,22 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     }//GEN-LAST:event_bookingBtnMouseClicked
 
     private void bookingBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseEntered
-        bookingBtn.setBackground(Color.GRAY);
+       
+           bookingBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_bookingBtnMouseEntered
 
     private void bookingBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseExited
-        bookingBtn.setBackground(new Color(43,43,43));
+
+         bookingBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_bookingBtnMouseExited
 
     private void homeBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseEntered
-        homeBtn.setBackground(Color.GRAY);
+       
+          homeBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_homeBtnMouseEntered
 
     private void homeBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBtnMouseExited
-       homeBtn.setBackground(new Color(43,43,43));
+       homeBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_homeBtnMouseExited
 
     private void addUserBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserBtnMouseClicked
@@ -848,8 +948,16 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     }//GEN-LAST:event_iconExitMouseClicked
 
     private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
-        // TODO add your handling code here:
+       if (!searchField.getText().trim().isEmpty()) {
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText().trim(),
+                                                         getSelectedColumnIndex()));
+               
+            }
     }//GEN-LAST:event_searchFieldActionPerformed
+
+    private void searchComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchComboBoxActionPerformed
+       searchField.setText("");
+    }//GEN-LAST:event_searchComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addUserBtn;
@@ -868,7 +976,6 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
     private javax.swing.JLabel inprocess;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -881,6 +988,7 @@ username.setHorizontalAlignment(JLabel.RIGHT);
     private javax.swing.JLabel logo;
     private javax.swing.JLabel processLable;
     private javax.swing.JButton profileBtn;
+    private javax.swing.JComboBox<String> searchComboBox;
     private javax.swing.JTextField searchField;
     private javax.swing.JLabel task;
     private javax.swing.JLabel taskLable;
