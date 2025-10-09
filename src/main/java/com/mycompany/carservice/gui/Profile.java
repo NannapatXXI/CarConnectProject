@@ -5,11 +5,10 @@
 package com.mycompany.carservice.gui;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.io.*;
 import java.util.*;
+import javax.swing.JTextField;
 import javax.swing.text.*;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.mycompany.carservice.entity.CSVHandler;
@@ -34,31 +33,29 @@ public class Profile extends javax.swing.JFrame {
     private String currentUserName ;
     
     
+    
     /**
      * Creates new form Profile
      */
     public Profile(String userName,String role) {
         initComponents();
+        
+        passwordText.setEditable(false);     // ปิดการแก้ password
+        emailtext.setEditable(false);   // ปิดการแก้ email
+        
         this.userName = userName ;
         this.role = role;
         usernamelabel.setHorizontalAlignment(JLabel.RIGHT);
         usernamelabel.setText(userName);
-        
+        this.currentUserName = userName;
+        loadUserProfile(this.userName);
         ((AbstractDocument) phoneText.getDocument()).setDocumentFilter(new NumberDocumentFilter(10));
         setupui();
-        /*homebutton.putClientProperty("JButton.buttonType", "roundRect");
-        homebutton.putClientProperty("arc",5);
-        historybutton.putClientProperty("JButton.buttonType", "roundRect");
-        historybutton.putClientProperty("arc",5);
-        bookingbutton.putClientProperty("JButton.buttonType", "roundRect");
-        bookingbutton.putClientProperty("arc", 5);*/
+        
         setSize(1200, 800);        
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
-        this.currentUserName = userName;
-        loadUserProfile(this.userName);
         
-         
          if ("admin".equalsIgnoreCase(role)) {   
             adminBtn.setVisible(true);
             iconAdmin.setVisible(true); // แสดงเฉพาะ Admin
@@ -76,7 +73,17 @@ public class Profile extends javax.swing.JFrame {
                 URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
                 URL changepasswordIconURL = new File("src/main/image/Pofilepassword.png").toURI().toURL();
                 URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
+                URL usernameIconURL = new File("src/main/image/user.png").toURI().toURL();
+                URL passwordIconURL = new File("src/main/image/padlock.png").toURI().toURL();
+                URL emailIconURL = new File("src/main/image/email.png").toURI().toURL();
+                URL phoneIconURL = new File("src/main/image/phone-call.png").toURI().toURL();
+                URL profiletextIconURL = new File("src/main/image/profilemain.png").toURI().toURL();
                 
+                profileicon.setIcon(new ImageIcon(profiletextIconURL));
+                phoneicon.setIcon(new ImageIcon(phoneIconURL));
+                emailicon.setIcon(new ImageIcon(emailIconURL));
+                usernameicon.setIcon(new ImageIcon(usernameIconURL));
+                passwordicon.setIcon(new ImageIcon(passwordIconURL));
                 changepasswordicon.setIcon(new ImageIcon(changepasswordIconURL));
                 logo.setIcon(new ImageIcon(logoIconURL));
                 iconHome.setIcon(new ImageIcon(homeIconURL));
@@ -104,108 +111,83 @@ public class Profile extends javax.swing.JFrame {
 
         adminBtn.setContentAreaFilled(false);
         adminBtn.setBorderPainted(false);
-
-    }
-    
-    
-    
+    }    
 // โหลดข้อมูลโปรไฟล์ของผู้ใช้จากไฟล์ user.csv
 private void loadUserProfile(String username) {
-    CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
-    ArrayList<String[]> users = csvHandler.readCSV();
+    CSVHandler csv = new CSVHandler("src/main/data/user.csv");
+        ArrayList<String[]> users = csv.readCSV();
 
-    for (int i = 1; i < users.size(); i++) { // ข้าม header
-        String[] values = users.get(i);
-        if (values[1].trim().equals(username.trim())) {
-            usernameText.setText(values[1]);   // ชื่อผู้ใช้
-            passwordText.setText(values[2]);   // รหัสผ่าน
-            emailText.setText(values[3]);      // Email
-            phoneText.setText(values[4]);      // Phone
-
-            oldName = values[1];
-            userName = values[1];
-            role = values[5];
-            break;
+        for (String[] row : users) { //วนลูปไปทีละแถว
+            if (row.length > 1 && row[1].equalsIgnoreCase(username)) {
+                oldName = row[1];
+                usernameText.setText(row[1]);
+                passwordText.setText("•".repeat(row[2].length())); // ซ่อน password ด้วยจุด
+                emailtext.setText(row[3]);
+                phoneText.setText(row[4]);
+                break;
+            }
         }
+
+        usernamelabel.setText(username);
     }
+private void updateFirstRowCSV(String name, String newName, String newPassword,  String newPhone) {
+    CSVHandler csv = new CSVHandler("src/main/data/user.csv");
+        ArrayList<String[]> users = csv.readCSV();
 
-    usernamelabel.setText(username); // แสดงชื่อบน label
-}
-// ใช้ค้นหาจาก "name" (ชื่อเดิม) แล้วแก้ไขเป็นค่าใหม่
-private void updateFirstRowCSV(String name, String newName, String newPassword, String newEmail, String newPhone) {
-    CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
-    ArrayList<String[]> users = csvHandler.readCSV();
-
-    for (int i = 1; i < users.size(); i++) {
-        String[] values = users.get(i);
-        if (values[1].trim().equals(oldName.trim())) {
-            String userID = values[0]; // เก็บ ID เดิม
-            String role   = values[5]; // เก็บ role เดิม
-            users.set(i, new String[] {userID, newName, newPassword, newEmail, newPhone, role});
-            break;
+        for (String[] row : users) {
+            if (row[1].equals(oldName)) {
+                row[1] = newName;
+                row[2] = newPassword;
+                row[4] = newPhone;
+                break;
+            }
         }
-    }
 
-    csvHandler.writeCSV(users); // เขียนกลับไฟล์
+        csv.writeCSV(users);
+        oldName = newName;
+        logger.info("Profile updated for " + newName);
 }
-// ✅ DocumentFilter สำหรับกรอกเฉพาะตัวเลข และจำกัดจำนวนหลัก
+
 class NumberDocumentFilter extends DocumentFilter {
-    private int maxLength; // ความยาวสูงสุดของ input
+   private final int maxLength;
 
-    public NumberDocumentFilter(int maxLength) {
-        this.maxLength = maxLength; 
-    }
-
-    @Override
-    // เรียกเมื่อมีการ "insert" ตัวอักษรใหม่เข้ามา
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        if (string == null) return; // ถ้าไม่มีค่า → ไม่ทำอะไร
-        // เช็คว่าเป็นตัวเลขล้วน และความยาวไม่เกินที่กำหนด
-        if (isNumeric(string) && (fb.getDocument().getLength() + string.length()) <= maxLength) {
-            super.insertString(fb, offset, string, attr);
+        public NumberDocumentFilter(int maxLength) {
+            this.maxLength = maxLength;
         }
-    }
 
-    @Override
-    // เรียกเมื่อมีการ "แทนที่" ข้อความ เช่น paste หรือ select + พิมพ์ทับ
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        if (text == null) return;
-        // เช็คว่าเป็นตัวเลข และความยาวหลังแทนที่ไม่เกินที่กำหนด
-        if (isNumeric(text) && (fb.getDocument().getLength() - length + text.length()) <= maxLength) {
-            super.replace(fb, offset, length, text, attrs);
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                throws BadLocationException {
+            //ถ้า text ไม่ว่าง, มีแต่ตัวเลข, และความยาวรวมไม่เกิน maxLength
+            if (text != null && text.matches("\\d+") &&
+                fb.getDocument().getLength() - length + text.length() <= maxLength) {
+                super.replace(fb, offset, length, text, attrs);     // ยอมให้แทนที่ข้อความ
+            }
         }
-    }
-    // ฟังก์ชันช่วยเช็คว่า input เป็นตัวเลขหรือไม่
-    private boolean isNumeric(String str) {
-        return str.matches("\\d*"); //  แก้เป็น \\d* ให้รองรับ empty string (เวลาลบ)
-    }
-    }
-
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+    
+}
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel6 = new javax.swing.JPanel();
-        jPanel4 = new RoundedPanel(30); // 30 radius;
+        emaillabel = new RoundedPanel(30); // 30 radius;
+        passwordicon = new javax.swing.JLabel();
+        usernameicon = new javax.swing.JLabel();
         usernameText = new javax.swing.JTextField();
+        emailicon = new javax.swing.JLabel();
         changepasswordicon = new javax.swing.JLabel();
-        passwordText = new javax.swing.JTextField();
+        profileicon = new javax.swing.JLabel();
+        emailtext = new javax.swing.JTextField();
+        phoneicon = new javax.swing.JLabel();
         phoneText = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        texttInbtnEdittext = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        savebutton = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        emailText = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
+        passwordText = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         iconHome = new javax.swing.JLabel();
         iconBooking = new javax.swing.JLabel();
@@ -226,92 +208,84 @@ class NumberDocumentFilter extends DocumentFilter {
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        emaillabel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        emaillabel.add(passwordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, 70, 60));
+        emaillabel.add(usernameicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 70, 60));
 
-        usernameText.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        usernameText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        usernameText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         usernameText.setActionCommand("<Not Set>");
         usernameText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        jPanel4.add(usernameText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 130, 646, 63));
+        usernameText.setMargin(new java.awt.Insets(2, 55, 5, 6));
+        usernameText.setName(""); // NOI18N
+        emaillabel.add(usernameText, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 150, 650, 63));
+        emaillabel.add(emailicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 330, 70, 60));
 
         changepasswordicon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 changepasswordiconMouseClicked(evt);
             }
         });
-        jPanel4.add(changepasswordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 230, 60, 40));
+        emaillabel.add(changepasswordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 260, 60, 40));
 
-        passwordText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        passwordText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        passwordText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordTextActionPerformed(evt);
-            }
-        });
-        jPanel4.add(passwordText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 223, 646, 60));
+        profileicon.setFont(new java.awt.Font("Helvetica Neue", 0, 48)); // NOI18N
+        emaillabel.add(profileicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 40, 90, 80));
 
-        phoneText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        phoneText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        phoneText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                phoneTextActionPerformed(evt);
-            }
-        });
-        jPanel4.add(phoneText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 400, 646, 60));
+        emailtext.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        emailtext.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        emaillabel.add(emailtext, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, 650, 60));
+        emaillabel.add(phoneicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 420, 80, 60));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        phoneText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        phoneText.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        emaillabel.add(phoneText, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 420, 650, 60));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Username :");
-        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 150, 110, -1));
+        emaillabel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 160, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("password :");
-        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, 100, -1));
+        emaillabel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 140, -1));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("phone :");
-        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 420, 70, -1));
+        emaillabel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, 100, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Profile");
         jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 50, -1, -1));
+        emaillabel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 40, 200, 80));
 
-        texttInbtnEdittext.setBackground(new java.awt.Color(0, 0, 0));
-        texttInbtnEdittext.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        texttInbtnEdittext.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        texttInbtnEdittext.setText("Save");
-        texttInbtnEdittext.addMouseListener(new java.awt.event.MouseAdapter() {
+        savebutton.setBackground(new java.awt.Color(255, 254, 251));
+        savebutton.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        savebutton.setText("Save");
+        savebutton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                texttInbtnEdittextMouseClicked(evt);
+                savebuttonMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                savebuttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                savebuttonMouseExited(evt);
             }
         });
-        jPanel4.add(texttInbtnEdittext, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 552, 60, 40));
+        emaillabel.add(savebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 520, 140, 50));
 
-        jButton1.setBackground(new java.awt.Color(255, 149, 0));
-        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 550, 140, 50));
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Email :");
-        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 330, -1, -1));
+        emaillabel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 350, -1, -1));
 
-        emailText.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        emailText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        emailText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emailTextActionPerformed(evt);
-            }
-        });
-        jPanel4.add(emailText, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 646, 63));
+        passwordText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        passwordText.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        emaillabel.add(passwordText, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 650, 60));
 
-        jLabel8.setText("jLabel8");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 240, -1, -1));
-
-        jPanel6.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 130, 900, 610));
+        jPanel6.add(emaillabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 130, 900, 580));
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
         jPanel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -368,11 +342,6 @@ class NumberDocumentFilter extends DocumentFilter {
                 adminBtnMouseExited(evt);
             }
         });
-        adminBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adminBtnActionPerformed(evt);
-            }
-        });
         jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 270, 70));
 
         profileBtn.setBackground(new java.awt.Color(255, 157, 0));
@@ -397,11 +366,6 @@ class NumberDocumentFilter extends DocumentFilter {
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 historyBtnMouseExited(evt);
-            }
-        });
-        historyBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                historyBtnActionPerformed(evt);
             }
         });
         jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 260, 70));
@@ -456,46 +420,6 @@ class NumberDocumentFilter extends DocumentFilter {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void phoneTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phoneTextActionPerformed
-        
-
-    }//GEN-LAST:event_phoneTextActionPerformed
-
-    private void texttInbtnEdittextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_texttInbtnEdittextMouseClicked
-        String newName = usernameText.getText();
-    String newPassword = passwordText.getText();
-    String newEmail = emailText.getText();
-    String newPhone = phoneText.getText();
-
-    updateFirstRowCSV(oldName, newName, newPassword, newEmail, newPhone);
-    oldName = newName; 
-    System.out.println("Name : " + newName);
-    System.out.println("Password : " + newPassword);     
-    System.out.println("Email : " + newEmail);
-    System.out.println("Phone : " + newPhone);
-
-    // อัปเดต oldName เป็นค่าล่าสุด (เพื่อใช้รอบต่อไป)
-    oldName = usernameText.getText(); 
-        user = usernameText.getText();
-            System.out.println("User : "+ user);
-        Tell = passwordText.getText();
-            System.out.println("Tell : "+ Tell);     
-        experience = phoneText.getText();
-            System.out.println("experience : "+ experience);
-    }//GEN-LAST:event_texttInbtnEdittextMouseClicked
-
-    private void passwordTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_passwordTextActionPerformed
-
-    private void emailTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_emailTextActionPerformed
-
-    private void changepasswordiconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changepasswordiconMouseClicked
-        new Changepassword(userName,role);
-    }//GEN-LAST:event_changepasswordiconMouseClicked
-
     private void adminBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseClicked
         dispose();
         new AdminPage(userName,role);
@@ -511,10 +435,6 @@ class NumberDocumentFilter extends DocumentFilter {
         adminBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_adminBtnMouseExited
 
-    private void adminBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_adminBtnActionPerformed
-
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
         dispose();
         new History(userName,role);
@@ -529,10 +449,6 @@ class NumberDocumentFilter extends DocumentFilter {
         //historyBtn.setBackground(new Color(204,204,204));
         historyBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_historyBtnMouseExited
-
-    private void historyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_historyBtnActionPerformed
 
     private void bookingBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseClicked
         dispose();
@@ -569,6 +485,39 @@ class NumberDocumentFilter extends DocumentFilter {
         new Login();
     }//GEN-LAST:event_iconExitMouseClicked
 
+    private void savebuttonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseClicked
+    String newName = usernameText.getText();
+    String newPassword = emailtext.getText();
+    String newPhone = phoneText.getText();
+
+    updateFirstRowCSV(oldName, newName, newPassword, newPhone);
+
+    // อัปเดตตัวแปรสำหรับรอบต่อไป
+    oldName = newName; 
+    currentUserName = newName;
+
+    System.out.println("Name : " + newName);
+    System.out.println("Password : " + newPassword);     
+    System.out.println("Phone : " + newPhone);
+    System.out.println("User : " + currentUserName);
+
+    // เปิดหน้า Profile ใหม่
+    new Profile(currentUserName, role);
+    this.dispose(); // ปิดหน้าปัจจุบัน
+    }//GEN-LAST:event_savebuttonMouseClicked
+
+    private void savebuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseEntered
+        savebutton.setBackground(Color.GRAY);
+    }//GEN-LAST:event_savebuttonMouseEntered
+
+    private void savebuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseExited
+        savebutton.setBackground(Color.WHITE);
+    }//GEN-LAST:event_savebuttonMouseExited
+
+    private void changepasswordiconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changepasswordiconMouseClicked
+        new Changepassword(userName, role);
+    }//GEN-LAST:event_changepasswordiconMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -578,7 +527,9 @@ class NumberDocumentFilter extends DocumentFilter {
     private javax.swing.JButton bookingBtn;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel changepasswordicon;
-    private javax.swing.JTextField emailText;
+    private javax.swing.JLabel emailicon;
+    private javax.swing.JPanel emaillabel;
+    private javax.swing.JTextField emailtext;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
@@ -587,22 +538,23 @@ class NumberDocumentFilter extends DocumentFilter {
     private javax.swing.JLabel iconHistory;
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel logo;
     private javax.swing.JTextField passwordText;
+    private javax.swing.JLabel passwordicon;
     private javax.swing.JTextField phoneText;
+    private javax.swing.JLabel phoneicon;
     private javax.swing.JButton profileBtn;
-    private javax.swing.JLabel texttInbtnEdittext;
+    private javax.swing.JLabel profileicon;
+    private javax.swing.JButton savebutton;
     private javax.swing.JTextField usernameText;
+    private javax.swing.JLabel usernameicon;
     private javax.swing.JLabel usernamelabel;
     // End of variables declaration//GEN-END:variables
 }

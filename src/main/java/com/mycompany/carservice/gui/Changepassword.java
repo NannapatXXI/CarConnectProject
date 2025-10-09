@@ -5,11 +5,8 @@
 package com.mycompany.carservice.gui;
 import javax.swing.JOptionPane;
 import javax.swing.JOptionPane;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.mycompany.carservice.entity.CSVHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.mycompany.carservice.gui.*;
@@ -22,7 +19,7 @@ public class Changepassword extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Changepassword.class.getName());
     private String userName;
     private String role;
-
+   // private Profile profileFrame;
     
     public Changepassword(String userName,String role) {
         initComponents();
@@ -31,12 +28,9 @@ public class Changepassword extends javax.swing.JFrame {
         setVisible(true);
         this.userName = userName;
         this.role = role;
-        save.addActionListener(evt -> handleChangePassword());
     }
     private String validatePassword(String password) {
-    boolean hasUpper = false;
-    boolean hasDigit = false;
-    boolean hasSpecial = false;
+         boolean hasUpper = false, hasDigit = false, hasSpecial = false;
 
     for (char c : password.toCharArray()) {
         if (Character.isUpperCase(c)) hasUpper = true;
@@ -44,79 +38,42 @@ public class Changepassword extends javax.swing.JFrame {
         else if (!Character.isLetterOrDigit(c)) hasSpecial = true;
     }
 
-    StringBuilder error = new StringBuilder();
+    StringBuilder error = new StringBuilder();  // เก็บข้อความ error
     if (!hasUpper) error.append("- ต้องมีตัวอักษรพิมพ์ใหญ่ 1 ตัว\n");
     if (!hasDigit) error.append("- ต้องมีตัวเลข 1 ตัว\n");
     if (!hasSpecial) error.append("- ต้องมีตัวอักษรพิเศษ 1 ตัว\n");
-
-    return error.toString(); // คืนค่าว่างถ้ารหัสผ่านถูกต้อง
+    return error.toString(); // คืนค่าข้อความ error
 }
+    
+    
+    private void updatePassword(String oldPass, String newPass) {
+    CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
+    ArrayList<String[]> users = csvHandler.readCSV();
 
-    private void handleChangePassword() {
-    String oldPass = oldpassword.getText().trim();
-    String newPass = newpassword.getText().trim();
-    String confirmPass = confrimpassword.getText().trim();
-
-    if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "กรุณากรอกข้อมูลให้ครบ", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    if (!newPass.equals(confirmPass)) {
-        JOptionPane.showMessageDialog(this, "รหัสใหม่และยืนยันรหัสไม่ตรงกัน", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    String filePath = "src/main/data/user.csv";
-    List<String> lines = new ArrayList<>();
-    boolean updated = false;
-
-    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-        String line;
-        while ((line = br.readLine()) != null) {
-            lines.add(line);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-
-    for (int i = 1; i < lines.size(); i++) { // ข้าม header
-        String[] values = lines.get(i).split(","); // ✅ ประกาศที่นี่
-        if (values[1].equals(userName)) {
-            if (!values[2].equals(oldPass)) {
+    for (int i = 1; i < users.size(); i++) {
+        String[] row = users.get(i); // ดึงข้อมูลผู้ใช้แถวปัจจุบัน
+        if (row[1].equals(userName)) { // ตรวจสอบ username ตรงกับผู้ใช้
+            if (!row[2].equals(oldPass)) { // ตรวจสอบรหัสเก่า
                 JOptionPane.showMessageDialog(this, "รหัสเก่าไม่ถูกต้อง", "Error", JOptionPane.ERROR_MESSAGE);
+                return;// ออกจากฟังก์ชัน
+            }
+
+            String error = validatePassword(newPass); // ตรวจสอบรหัสใหม่
+            if (!error.isEmpty()) { 
+                JOptionPane.showMessageDialog(this, "รหัสผ่านไม่ถูกต้อง:\n" + error, "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-    String passwordError = validatePassword(newPass);
-            if (!passwordError.isEmpty()) {
-    JOptionPane.showMessageDialog(this, 
-        "รหัสผ่านไม่ถูกต้อง:\n" + passwordError, 
-        "Error", JOptionPane.ERROR_MESSAGE);
-    return;
-    
-    }
 
-            values[2] = newPass;
-            lines.set(i, String.join(",", values));
-            updated = true;
-            break;
+            // อัปเดตรหัสผ่าน
+            row[2] = newPass;
+            users.set(i, row);
+            csvHandler.writeCSV(users);
+
+            JOptionPane.showMessageDialog(this, "เปลี่ยนรหัสผ่านสำเร็จ", "Success", JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+            new Profile(userName, role);
+            return;
         }
-    }
-
-    if (updated) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
-            for (String l : lines) {
-                bw.write(l);
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JOptionPane.showMessageDialog(this, "เปลี่ยนรหัสผ่านสำเร็จ", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-        this.dispose();
-        new Profile(userName,role);
     }
 }
 
@@ -232,11 +189,25 @@ public class Changepassword extends javax.swing.JFrame {
 
     private void backMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backMouseClicked
         dispose();
-        new Profile(userName,role);
+        
     }//GEN-LAST:event_backMouseClicked
 
     private void saveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMouseClicked
-        // TODO add your handling code here:
+      String oldPass = oldpassword.getText().trim();
+    String newPass = newpassword.getText().trim();
+    String confirmPass = confrimpassword.getText().trim();
+
+    if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) { // กรอกไม่ครบ
+        JOptionPane.showMessageDialog(this, "กรุณากรอกข้อมูลให้ครบ", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (!newPass.equals(confirmPass)) { // รหัสใหม่ไม่ตรงกับยืนยันรหัส
+        JOptionPane.showMessageDialog(this, "รหัสใหม่และยืนยันรหัสไม่ตรงกัน", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    updatePassword(oldPass, newPass);  // อัปเดตรหัสผ่าน
     }//GEN-LAST:event_saveMouseClicked
 
    
