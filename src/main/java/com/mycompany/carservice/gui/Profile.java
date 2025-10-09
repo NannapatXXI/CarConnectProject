@@ -48,6 +48,7 @@ public class Profile extends javax.swing.JFrame {
         usernamelabel.setHorizontalAlignment(JLabel.RIGHT);
         usernamelabel.setText(userName);
         this.currentUserName = userName;
+        profile.setHorizontalAlignment(JLabel.RIGHT);
         loadUserProfile(this.userName);
         ((AbstractDocument) phoneText.getDocument()).setDocumentFilter(new NumberDocumentFilter(10));
         setupui();
@@ -79,7 +80,7 @@ public class Profile extends javax.swing.JFrame {
                 URL phoneIconURL = new File("src/main/image/phone-call.png").toURI().toURL();
                 URL profiletextIconURL = new File("src/main/image/profilemain.png").toURI().toURL();
                 
-                profileicon.setIcon(new ImageIcon(profiletextIconURL));
+                //profileicon.setIcon(new ImageIcon(profiletextIconURL));
                 phoneicon.setIcon(new ImageIcon(phoneIconURL));
                 emailicon.setIcon(new ImageIcon(emailIconURL));
                 usernameicon.setIcon(new ImageIcon(usernameIconURL));
@@ -92,6 +93,8 @@ public class Profile extends javax.swing.JFrame {
                 iconProfile.setIcon(new ImageIcon(profileIconURL));
                 iconAdmin.setIcon(new ImageIcon(adminIconURL));
                 iconExit.setIcon(new ImageIcon(exitIconURL));
+                
+                profile.setIcon(new ImageIcon(profiletextIconURL));
 
             } catch (MalformedURLException e) {
                 System.out.println(e);
@@ -177,14 +180,12 @@ class NumberDocumentFilter extends DocumentFilter {
         usernameText = new javax.swing.JTextField();
         emailicon = new javax.swing.JLabel();
         changepasswordicon = new javax.swing.JLabel();
-        profileicon = new javax.swing.JLabel();
         emailtext = new javax.swing.JTextField();
         phoneicon = new javax.swing.JLabel();
         phoneText = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         savebutton = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         passwordText = new javax.swing.JTextField();
@@ -202,6 +203,7 @@ class NumberDocumentFilter extends DocumentFilter {
         logo = new javax.swing.JLabel();
         usernamelabel = new javax.swing.JLabel();
         iconExit = new javax.swing.JLabel();
+        profile = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -209,59 +211,51 @@ class NumberDocumentFilter extends DocumentFilter {
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         emaillabel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        emaillabel.add(passwordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, 70, 60));
-        emaillabel.add(usernameicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 70, 60));
+        emaillabel.add(passwordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 150, 70, 60));
+        emaillabel.add(usernameicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 70, 70, 60));
 
         usernameText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         usernameText.setActionCommand("<Not Set>");
         usernameText.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         usernameText.setMargin(new java.awt.Insets(2, 55, 5, 6));
         usernameText.setName(""); // NOI18N
-        emaillabel.add(usernameText, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 150, 650, 63));
-        emaillabel.add(emailicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 330, 70, 60));
+        emaillabel.add(usernameText, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 70, 650, 63));
+        emaillabel.add(emailicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 230, 70, 60));
 
         changepasswordicon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 changepasswordiconMouseClicked(evt);
             }
         });
-        emaillabel.add(changepasswordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 260, 60, 40));
-
-        profileicon.setFont(new java.awt.Font("Helvetica Neue", 0, 48)); // NOI18N
-        emaillabel.add(profileicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 40, 90, 80));
+        emaillabel.add(changepasswordicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 160, 60, 40));
 
         emailtext.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         emailtext.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        emaillabel.add(emailtext, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 330, 650, 60));
-        emaillabel.add(phoneicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 420, 80, 60));
+        emaillabel.add(emailtext, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 230, 650, 60));
+        emaillabel.add(phoneicon, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 310, 80, 60));
 
         phoneText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         phoneText.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        emaillabel.add(phoneText, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 420, 650, 60));
+        emaillabel.add(phoneText, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, 650, 60));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Username :");
-        emaillabel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 160, -1));
+        emaillabel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 190, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("password :");
-        emaillabel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 140, -1));
+        emaillabel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 200, 30));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("phone :");
-        emaillabel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, 100, -1));
+        emaillabel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 320, 130, -1));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Profile");
-        jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        emaillabel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 40, 200, 80));
-
-        savebutton.setBackground(new java.awt.Color(255, 254, 251));
-        savebutton.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        savebutton.setBackground(new java.awt.Color(255, 157, 0));
+        savebutton.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        savebutton.setForeground(new java.awt.Color(255, 255, 255));
         savebutton.setText("Save");
         savebutton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -274,18 +268,18 @@ class NumberDocumentFilter extends DocumentFilter {
                 savebuttonMouseExited(evt);
             }
         });
-        emaillabel.add(savebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 520, 140, 50));
+        emaillabel.add(savebutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 390, 110, 40));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Email :");
-        emaillabel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 350, -1, -1));
+        emaillabel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 120, -1));
 
         passwordText.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         passwordText.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        emaillabel.add(passwordText, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 250, 650, 60));
+        emaillabel.add(passwordText, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 650, 60));
 
-        jPanel6.add(emaillabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 130, 900, 580));
+        jPanel6.add(emaillabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 210, 880, 460));
 
         jPanel2.setBackground(new java.awt.Color(43, 43, 43));
         jPanel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -397,24 +391,33 @@ class NumberDocumentFilter extends DocumentFilter {
         usernamelabel.setBackground(new java.awt.Color(0, 0, 0));
         usernamelabel.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
         usernamelabel.setText("..");
-        jPanel6.add(usernamelabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 40, 660, 40));
+        jPanel6.add(usernamelabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 40, 660, 40));
 
         iconExit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 iconExitMouseClicked(evt);
             }
         });
-        jPanel6.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 40, 40, 40));
+        jPanel6.add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 40, 40, 40));
+
+        profile.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
+        profile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        profile.setText("PROFILE");
+        profile.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel6.add(profile, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 110, 270, 80));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -508,10 +511,12 @@ class NumberDocumentFilter extends DocumentFilter {
 
     private void savebuttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseEntered
         savebutton.setBackground(Color.GRAY);
+        savebutton.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_savebuttonMouseEntered
 
     private void savebuttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseExited
-        savebutton.setBackground(Color.WHITE);
+        savebutton.setBackground(new Color(255,157,0));
+        savebutton.setForeground(new Color(255,255,255));
     }//GEN-LAST:event_savebuttonMouseExited
 
     private void changepasswordiconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changepasswordiconMouseClicked
@@ -541,7 +546,6 @@ class NumberDocumentFilter extends DocumentFilter {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel6;
@@ -550,8 +554,8 @@ class NumberDocumentFilter extends DocumentFilter {
     private javax.swing.JLabel passwordicon;
     private javax.swing.JTextField phoneText;
     private javax.swing.JLabel phoneicon;
+    private javax.swing.JLabel profile;
     private javax.swing.JButton profileBtn;
-    private javax.swing.JLabel profileicon;
     private javax.swing.JButton savebutton;
     private javax.swing.JTextField usernameText;
     private javax.swing.JLabel usernameicon;
