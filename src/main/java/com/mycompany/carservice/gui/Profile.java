@@ -133,14 +133,13 @@ private void loadUserProfile(String username) {
 
         usernamelabel.setText(username);
     }
-private void updateFirstRowCSV(String name, String newName, String newPassword,  String newPhone) {
+private void updateFirstRowCSV(String name, String newName,  String newPhone) {
     CSVHandler csv = new CSVHandler("src/main/data/user.csv");
         ArrayList<String[]> users = csv.readCSV();
 
         for (String[] row : users) {
             if (row[1].equals(oldName)) {
                 row[1] = newName;
-                row[2] = newPassword;
                 row[4] = newPhone;
                 break;
             }
@@ -498,7 +497,7 @@ class NumberDocumentFilter extends DocumentFilter {
     String newPassword = emailtext.getText();
     String newPhone = phoneText.getText();
 
-    updateFirstRowCSV(oldName, newName, newPassword, newPhone);
+    updateFirstRowCSV(oldName, newName, newPhone);
 
     // อัปเดตตัวแปรสำหรับรอบต่อไป
     oldName = newName; 
@@ -508,10 +507,7 @@ class NumberDocumentFilter extends DocumentFilter {
     System.out.println("Password : " + newPassword);     
     System.out.println("Phone : " + newPhone);
     System.out.println("User : " + currentUserName);
-    AlertManager manager = new AlertManager();
-    PopAlert alert = new PopAlert(this, true); // this = JFrame ปัจจุบัน
-    manager.registerObserver(alert);
-    manager.showMessage("บันทึกข้อมูลสำเร็จ");
+    new PopSuccess(null,true," Success");
 
     // เปิดหน้า Profile ใหม่
     new Profile(currentUserName, role);
