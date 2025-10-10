@@ -29,6 +29,7 @@ public class BookingPage extends javax.swing.JFrame  {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BookingPage.class.getName());
     private HashMap<LocalDate, Integer> bookingCountMap = new HashMap<>();
+     private ArrayList<LocalDate> closedDays = new ArrayList<>();
     private int selectedDay = -1;
     private int selectedTime = -1;
     private int selectedService = -1;
@@ -66,7 +67,9 @@ public class BookingPage extends javax.swing.JFrame  {
      
         calendarPanel.setLayout(new java.awt.GridLayout(0, 7,5, 5));
        // loadBookingCount();
+       loadClosedDays();
         updateCalendar(); 
+        
     }
     
       private void SetupUi() {
@@ -82,12 +85,15 @@ public class BookingPage extends javax.swing.JFrame  {
 
         homeBtn.setContentAreaFilled(false);
         homeBtn.setBorderPainted(false);
+        
+        
          if(role.equals("admin")){
              System.out.println("Admin !!!!");
         }else{
              System.out.println("User !!!!");
              adminBtn.setVisible(false);  // user ซ่อนปุ่ม
              iconAdmin.setVisible(false);
+             
         }
         
         
@@ -238,23 +244,26 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
            
             // ถ้าวันนี้ผ่านมาแล้ว
-            if (buttonDate.isBefore(today)) {
+           if (closedDays.contains(buttonDate)) {
+                dayButton.setBackground(Color.GRAY);
+                dayButton.setForeground(Color.WHITE);
+                 dayButton.addActionListener(e -> {
+                    JOptionPane.showMessageDialog(this, "วันนี้ร้านปิด");
+                });
+            } else if (buttonDate.isBefore(today)) {
                 dayButton.setBackground(Color.LIGHT_GRAY);
                 dayButton.setForeground(Color.BLACK);
-
-                // ป้องกันไม่ให้เลือกวันเก่า
                 dayButton.addActionListener(e -> {
                     JOptionPane.showMessageDialog(this, "ไม่สามารถจองวันผ่านมาแล้วได้");
-                    // ไม่เปลี่ยนสี
-                });//ชมการจองได้ 35 ชม
-            } else if (booked >= 40) { // เต็ม
+                });
+            }  else if (booked >= 40) { // เต็ม
                 dayButton.setBackground(new Color(244, 67, 54));
                 dayButton.setForeground(Color.WHITE);
                  dayButton.addActionListener(e -> {
                     JOptionPane.showMessageDialog(this, "เต็ม");
                     // ไม่เปลี่ยนสี
                 });
-            } else if (booked >= 30) { // เยอะ
+            } else  if (booked >= 30) { // เยอะ
                 dayButton.setBackground(new Color(255, 152, 0));
                 dayButton.setForeground(Color.BLACK);
             } else if (booked >= 20) { // กลาง
@@ -269,7 +278,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             } 
 
             // เพิ่ม ActionListener สำหรับวันที่เลือกได้เท่านั้น
-            if (!buttonDate.isBefore(today) && booked < 40) {
+            if (!buttonDate.isBefore(today) && booked < 40  && !closedDays.contains(buttonDate) ) {
                 dayButton.addActionListener(e -> {
                     selectedDay = day;
 
@@ -314,6 +323,24 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         calendarPanel.revalidate();
         calendarPanel.repaint();
     }
+    private void loadClosedDays() {
+        closedDays.clear(); // เคลียร์ข้อมูลเก่า
+
+        CSVHandler closeCsv = new CSVHandler("src/main/data/close_day.csv");
+        ArrayList<String[]> closeData = closeCsv.readCSV();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // ตามรูปแบบไฟล์
+
+        for (String[] row : closeData) {
+            if (row.length > 0 && !row[0].equalsIgnoreCase("Date")) {
+                try {
+                    closedDays.add(LocalDate.parse(row[0].trim(), formatter));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+}
+
 
 
    
@@ -363,6 +390,9 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         jLabel12 = new javax.swing.JLabel();
         username = new javax.swing.JLabel();
         iconExit = new javax.swing.JLabel();
+        close = new javax.swing.JButton();
+        jLabel13 = new javax.swing.JLabel();
+        jPanel11 = new RoundedPanel(30); // 30 radius;
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -583,7 +613,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 afterMonthMouseClicked(evt);
             }
         });
-        getContentPane().add(afterMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(1104, 121, 42, 33));
+        getContentPane().add(afterMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(1120, 120, 42, 33));
 
         beforeMonth.setText("<");
         beforeMonth.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -591,7 +621,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 beforeMonthMouseClicked(evt);
             }
         });
-        getContentPane().add(beforeMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(1039, 121, 47, 33));
+        getContentPane().add(beforeMonth, new org.netbeans.lib.awtextra.AbsoluteConstraints(1050, 120, 47, 33));
 
         jPanel6.setBackground(new java.awt.Color(244, 67, 54));
 
@@ -599,14 +629,14 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 21, Short.MAX_VALUE)
+            .addGap(0, 20, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 750, -1, 20));
+        getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 760, 20, 20));
 
         jPanel7.setBackground(new java.awt.Color(255, 152, 0));
 
@@ -621,7 +651,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 750, -1, 20));
+        getContentPane().add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 760, -1, 20));
 
         jPanel8.setBackground(new java.awt.Color(255, 213, 79));
 
@@ -636,7 +666,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 750, -1, 20));
+        getContentPane().add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 760, -1, 20));
 
         jPanel9.setBackground(new java.awt.Color(3, 169, 244));
 
@@ -651,7 +681,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 750, -1, -1));
+        getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 760, -1, -1));
 
         jPanel10.setBackground(new java.awt.Color(76, 175, 80));
 
@@ -666,27 +696,27 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 750, -1, 20));
+        getContentPane().add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 760, -1, 20));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setText("เต็ม");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 750, 30, 20));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 760, 30, 20));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel9.setText("เยอะ");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 750, 40, 20));
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 760, 40, 20));
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel10.setText("กลาง");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 750, 40, 20));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 760, 40, 20));
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel11.setText("น้อย");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 750, 40, 20));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 760, 40, 20));
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel12.setText("ว่าง");
-        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 750, 30, 20));
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 760, 30, 20));
 
         username.setBackground(new java.awt.Color(0, 0, 0));
         username.setFont(new java.awt.Font("Tahoma", 0, 20)); // NOI18N
@@ -699,6 +729,33 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             }
         });
         getContentPane().add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 40, 40, 40));
+
+        close.setText("jButton1");
+        close.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeActionPerformed(evt);
+            }
+        });
+        getContentPane().add(close, new org.netbeans.lib.awtextra.AbsoluteConstraints(1120, 750, 60, 40));
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel13.setText("ปิด");
+        getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 760, 30, 20));
+
+        jPanel11.setBackground(java.awt.Color.gray);
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 21, Short.MAX_VALUE)
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 20, Short.MAX_VALUE)
+        );
+
+        getContentPane().add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 760, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -785,8 +842,8 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             yearComboBox.setSelectedIndex(yearIndex + 1);
         } else {
             monthComboBox1.setSelectedIndex(currentIndex + 1);
-        }
-
+        }   
+        loadClosedDays();
         updateCalendar();
                                       
     }//GEN-LAST:event_afterMonthMouseClicked
@@ -803,7 +860,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     } else {
         monthComboBox1.setSelectedIndex(currentIndex - 1);
     }
-
+    loadClosedDays();
     updateCalendar();
     }//GEN-LAST:event_beforeMonthMouseClicked
 
@@ -811,6 +868,12 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         dispose();
         new Login();
     }//GEN-LAST:event_iconExitMouseClicked
+
+    private void closeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeActionPerformed
+         dispose();
+        new CloseDay(userName,role);
+       
+    }//GEN-LAST:event_closeActionPerformed
 
     
    
@@ -821,6 +884,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     private javax.swing.JButton beforeMonth;
     private javax.swing.JButton bookingBtn;
     private javax.swing.JPanel calendarPanel;
+    private javax.swing.JButton close;
     private javax.swing.JButton historyBtn;
     private javax.swing.JButton homeBtn;
     private javax.swing.JLabel iconAdmin;
@@ -833,6 +897,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -844,6 +909,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
