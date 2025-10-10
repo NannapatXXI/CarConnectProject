@@ -3,9 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.carservice.gui;
+import com.mycompany.carservice.entity.CSVHandler;
 import java.awt.Color;
 import javax.swing.*;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.mycompany.carservice.entity.CSVHandler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,11 +16,9 @@ import java.net.URL;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import com.mycompany.carservice.entity.RoundedPanel;
+import java.util.ArrayList;
 import javax.swing.table.TableRowSorter;
 import javax.swing.RowFilter;
-
-
-
 
 /**
  *
@@ -50,15 +50,14 @@ public class History extends javax.swing.JFrame {
             adminBtn.setVisible(false);
             iconAdmin.setVisible(false);// ซ่อนสำหรับ User ปกติ
         }
-      
-
-      
-        setSize(1200, 800);        
+        setSize(1210, 830);        
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
        
-
     }
+     /**
+     * จัดเรียงและกรองแถว
+     */
     private void setupFilter() {
         jTextField2.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             private void filter() {
@@ -81,9 +80,10 @@ public class History extends javax.swing.JFrame {
         });
 
         // เวลาเปลี่ยน combobox ก็ให้รีเฟรช filter ด้วย
-       
-    }
-    
+    } 
+    /**
+     * เก็บ Ui 
+     */
     private void setupUi(){
        UIManager.put("Table.selectionBackground", new Color(60, 60, 60));
         UIManager.put("Table.selectionForeground",new Color(255, 255, 255));
@@ -100,9 +100,10 @@ public class History extends javax.swing.JFrame {
         adminBtn.setContentAreaFilled(false);
         adminBtn.setBorderPainted(false);
 
-       
-
     }
+    /**
+     * เก็บรูปภาพ
+     */
     private void SetupIcon() {
         try {
                     URL logoIconURL = new File("src/main/image/logoCarConnect.png").toURI().toURL();
@@ -114,7 +115,6 @@ public class History extends javax.swing.JFrame {
                     URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
                     URL historyfileURL = new File("src/main/image/Historyfile.png").toURI().toURL();
                     logo.setIcon(new ImageIcon(logoIconURL));
-                   
                     iconHome.setIcon(new ImageIcon(homeIconURL));
                     iconBooking.setIcon(new ImageIcon(bookingIconURL));
                     iconHistory.setIcon(new ImageIcon(historyIconURL));
@@ -127,74 +127,60 @@ public class History extends javax.swing.JFrame {
                     logger.severe("Cannot load icon images");
                 }
     
-    }
-    
-    
-  private void loadHistoryData() {
-    String filePath = "src/main/data/history_user.csv";
+    }    
+    /**
+     * อ่านไฟล์ csv
+     */
+private void loadHistoryData() {
+    String filePath = "src/main/data/history_user.csv"; // กำหนด path ไฟล์
     DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-    model.setRowCount(0);
-
-    String currentUser = username.getText().trim();  // ชื่อผู้ใช้ปัจจุบัน
+    model.setRowCount(0); // ล้างข้อมูลเดิมในตาราง
     int rowNumber = 1;
+    
+        //ใช้ CSVHandler อ่านข้อมูลจากไฟล์ CSV
+        CSVHandler csvHandler = new CSVHandler(filePath);
+        ArrayList<String[]> rows = csvHandler.readCSV();
 
-    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-        String line;
         boolean firstLine = true;
-
-        while ((line = br.readLine()) != null) {
-            if (firstLine) { // ข้าม header
+        for (String[] data : rows) {
+            if (firstLine) { //ข้าม header
                 firstLine = false;
                 continue;
             }
-
-            String[] data = line.split(",");
-
-            if (data.length >= 8) {
-                String nameInCsv = data[1].replace("\uFEFF", "").trim(); // ใช้ column 1 = Name
-
-                System.out.println("CSV Name: [" + nameInCsv + "]");
-                System.out.println("Current User: [" + currentUser + "]");
-
-                if (nameInCsv.equalsIgnoreCase(userName)) {
-                    Object[] newRow = {
-                    rowNumber,        // No (ลำดับในตาราง)
-                    nameInCsv,        // Name
-                    data[2].trim(),   // Service
-                    data[3].trim(),   // Date
-                    data[4].trim(),   // Time
-                    data[5].trim(),   // Note
-                    data[6].trim(),   // Car registration
-                    data[7].trim()    // Status
-            };
-                    model.addRow(newRow);
-                    rowNumber++;
-                }
+            // ตัดช่องว่างออกจากแต่ละช่อง
+            for (int i = 0; i < data.length; i++) {
+                data[i] = data[i].trim();
+            }
+            //กรองข้อมูลเฉพาะของ user ที่ล็อกอินอยู่
+            if (data.length >= 8 && data[1].equalsIgnoreCase(userName)) {
+                model.addRow(new Object[]{
+                    rowNumber++,
+                    data[1],  // Name
+                    data[2],  // Service
+                    data[3],  // Date
+                    data[4],  // Time
+                    data[5],  // Note
+                    data[6],  // Car registration
+                    data[7]   // Status
+                });
             }
         }
-          // จัดกลางข้อมูลทุกคอลัมน์
+
+        //จัดข้อความให้อยู่ตรงกลางในทุกคอลัมน์
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < jTable1.getColumnCount(); i++) {
             jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        
+
         jTable1.setRowHeight(50);
-         
-        // sorter
+
+        // เปิดระบบ sorter (เรียงลำดับและค้นหา)
         sorter = new TableRowSorter<>(model);
         jTable1.setRowSorter(sorter);
         
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Error loading history data");
-    }
-      setupFilter();
-    
+    setupFilter(); // ฟังก์ชันกรองข้อมูล (ค้นหา)
 }
-
-   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -447,11 +433,6 @@ public class History extends javax.swing.JFrame {
         jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 260, 70));
 
         logo.setForeground(new java.awt.Color(255, 255, 255));
-        logo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                logoMouseClicked(evt);
-            }
-        });
         jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
 
         jPanel7.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
@@ -495,17 +476,15 @@ public class History extends javax.swing.JFrame {
     }//GEN-LAST:event_adminBtnMouseClicked
 
     private void adminBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseEntered
-        //adminBtn.setBackground(Color.GRAY);
         adminBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_adminBtnMouseEntered
 
     private void adminBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adminBtnMouseExited
-        //adminBtn.setBackground(new Color(28,24,24));
         adminBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_adminBtnMouseExited
 
     private void adminBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminBtnActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_adminBtnActionPerformed
 
     private void profileBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseClicked
@@ -514,13 +493,11 @@ public class History extends javax.swing.JFrame {
     }//GEN-LAST:event_profileBtnMouseClicked
 
     private void profileBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseEntered
-        //profileBtn.setBackground(Color.GRAY);
-        profileBtn.setForeground(Color.WHITE);
+       profileBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_profileBtnMouseEntered
 
     private void profileBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profileBtnMouseExited
-        //profileBtn.setBackground(new Color(28,24,24));
-        profileBtn.setForeground(new Color(204,204,204));
+       profileBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_profileBtnMouseExited
 
     private void historyBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyBtnMouseClicked
@@ -536,7 +513,7 @@ public class History extends javax.swing.JFrame {
     }//GEN-LAST:event_historyBtnMouseExited
 
     private void historyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyBtnActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_historyBtnActionPerformed
 
     private void bookingBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseClicked
@@ -545,12 +522,10 @@ public class History extends javax.swing.JFrame {
     }//GEN-LAST:event_bookingBtnMouseClicked
 
     private void bookingBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseEntered
-        //bookingBtn.setBackground(Color.GRAY);
         bookingBtn.setForeground(Color.WHITE);
     }//GEN-LAST:event_bookingBtnMouseEntered
 
     private void bookingBtnMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bookingBtnMouseExited
-        //bookingBtn.setBackground(new Color(28,24,24));
         bookingBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_bookingBtnMouseExited
 
@@ -571,11 +546,6 @@ public class History extends javax.swing.JFrame {
         dispose();
         new Login();
     }//GEN-LAST:event_iconExitMouseClicked
-
-    private void logoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoMouseClicked
-        dispose();
-        new HomePage(userName,role);
-    }//GEN-LAST:event_logoMouseClicked
  
     /**
      * @param args the command line arguments
