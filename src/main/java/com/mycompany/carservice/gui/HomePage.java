@@ -442,6 +442,11 @@ public class HomePage extends javax.swing.JFrame {
         jPanel2.add(bookingBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 270, 260, 70));
 
         logo.setForeground(new java.awt.Color(255, 255, 255));
+        logo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                logoMouseClicked(evt);
+            }
+        });
         jPanel2.add(logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 240, 140));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 240, 800));
@@ -641,6 +646,11 @@ public class HomePage extends javax.swing.JFrame {
     private void fixAnnouncement1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fixAnnouncement1MouseClicked
         openEditAnnouncementDialogServicePrice();
     }//GEN-LAST:event_fixAnnouncement1MouseClicked
+
+    private void logoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoMouseClicked
+        dispose();
+        new HomePage(userName,role);
+    }//GEN-LAST:event_logoMouseClicked
 
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
