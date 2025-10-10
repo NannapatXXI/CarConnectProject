@@ -60,8 +60,8 @@ public class HomePage extends javax.swing.JFrame {
             adminBtn.setVisible(true);
             iconAdmin.setVisible(true); // แสดงเฉพาะ Admin
         } else {
-            fixAnnouncement.setVisible(true); 
-            fixAnnouncement1.setVisible(true);
+            fixAnnouncement.setVisible(false); 
+            fixAnnouncement1.setVisible(false);
             adminBtn.setVisible(false);
             iconAdmin.setVisible(false);// ซ่อนสำหรับ User ปกติ
         }

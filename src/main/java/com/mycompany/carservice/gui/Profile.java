@@ -404,7 +404,7 @@ class NumberDocumentFilter extends DocumentFilter {
         profile.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         profile.setText("PROFILE");
         profile.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jPanel6.add(profile, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 110, 270, 80));
+        jPanel6.add(profile, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 110, 290, 80));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -415,7 +415,7 @@ class NumberDocumentFilter extends DocumentFilter {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
