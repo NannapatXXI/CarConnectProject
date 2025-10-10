@@ -115,7 +115,7 @@ public class Profile extends javax.swing.JFrame {
         adminBtn.setContentAreaFilled(false);
         adminBtn.setBorderPainted(false);
     }    
-// โหลดข้อมูลโปรไฟล์ของผู้ใช้จากไฟล์ user.csv
+// โหลดข้อมูลโปรไฟล์ของผู้ใช้จากไฟล์ CSV
 private void loadUserProfile(String username) {
     CSVHandler csv = new CSVHandler("src/main/data/user.csv");
         ArrayList<String[]> users = csv.readCSV();
@@ -124,7 +124,7 @@ private void loadUserProfile(String username) {
             if (row.length > 1 && row[1].equalsIgnoreCase(username)) {
                 oldName = row[1];
                 usernameText.setText(row[1]);
-                passwordText.setText("•".repeat(row[2].length())); // ซ่อน password ด้วยจุด
+                passwordText.setText("•".repeat(row[2].length())); // ซ่อน password ด้วย •
                 emailtext.setText(row[3]);
                 phoneText.setText(row[4]);
                 break;
@@ -133,23 +133,23 @@ private void loadUserProfile(String username) {
 
         usernamelabel.setText(username);
     }
-private void updateFirstRowCSV(String name, String newName,  String newPhone) {
+// อัปเดตข้อมูลผู้ใช้ (ชื่อและเบอร์โทร) ใน CSV
+private void updateFirstRowCSV(String name, String newName,   String newPhone) {
     CSVHandler csv = new CSVHandler("src/main/data/user.csv");
         ArrayList<String[]> users = csv.readCSV();
 
         for (String[] row : users) {
             if (row[1].equals(oldName)) {
-                row[1] = newName;
-                row[4] = newPhone;
+                row[1] = newName; // เปลี่ยนชื่อใหม่
+                row[4] = newPhone; // เปลี่ยนเบอร์ใหม่
                 break;
             }
         }
 
         csv.writeCSV(users);
         oldName = newName;
-        logger.info("Profile updated for " + newName);
 }
-
+// ให้รับได้เฉพาะตัวเลข และจำกัดความยาว
 class NumberDocumentFilter extends DocumentFilter {
    private final int maxLength;
 
@@ -160,7 +160,7 @@ class NumberDocumentFilter extends DocumentFilter {
         @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                 throws BadLocationException {
-            //ถ้า text ไม่ว่าง, มีแต่ตัวเลข, และความยาวรวมไม่เกิน maxLength
+            //  text ไม่ว่าง, มีแต่ตัวเลข, และความยาวรวมไม่เกิน maxLength
             if (text != null && text.matches("\\d+") &&
                 fb.getDocument().getLength() - length + text.length() <= maxLength) {
                 super.replace(fb, offset, length, text, attrs);     // ยอมให้แทนที่ข้อความ
@@ -494,22 +494,19 @@ class NumberDocumentFilter extends DocumentFilter {
 
     private void savebuttonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseClicked
     String newName = usernameText.getText();
-    String newPassword = emailtext.getText();
     String newPhone = phoneText.getText();
-
-    updateFirstRowCSV(oldName, newName, newPhone);
+    updateFirstRowCSV(oldName, newName,  newPhone); // อัปเดต CSV
 
     // อัปเดตตัวแปรสำหรับรอบต่อไป
     oldName = newName; 
     currentUserName = newName;
 
     System.out.println("Name : " + newName);
-    System.out.println("Password : " + newPassword);     
     System.out.println("Phone : " + newPhone);
-    System.out.println("User : " + currentUserName);
+    System.out.println("User : " + currentUserName); // แสดง popup success
+    
     new PopSuccess(null,true," Success");
 
-    // เปิดหน้า Profile ใหม่
     new Profile(currentUserName, role);
     this.dispose(); // ปิดหน้าปัจจุบัน
     }//GEN-LAST:event_savebuttonMouseClicked
