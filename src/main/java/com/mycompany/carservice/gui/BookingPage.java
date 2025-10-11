@@ -875,8 +875,9 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     }//GEN-LAST:event_iconExitMouseClicked
 
     private void closeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeActionPerformed
-         dispose();
+        
         new CloseDay(userName,role);
+        updateCalendar();
        
     }//GEN-LAST:event_closeActionPerformed
 

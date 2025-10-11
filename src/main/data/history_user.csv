@@ -8,7 +8,7 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 6716,พิมพ์ใจ อ่อนโยน,Engine Oil Change,22 September 2025,16:00-17:00,,กท1006,process
 6707,ประเสริฐ สุขใจ,Tire Replacement (4 pcs.),22 September 2025,08:00-10:00,,กท1007,complete
 6729,ชัยวัฒน์ แข็งแรง,Seat/Carpet Shampoo,22 September 2025,10:00-14:00,,กท1008,complete
-6726,สุชาดา น่ารัก,Glass Coating,22 September 2025,08:00-14:00,,กท1009,booked
+6726,สุชาดา น่ารัก,Glass Coating,22 September 2025,08:00-14:00,,กท1009,process
 6723,วรชัย แกร่งกล้า,Car Paint Wax/Polish,22 September 2025,14:00-16:00,,กท1010,process
 6727,ทวีศักดิ์ กล้าหาญ,Exterior Dent Repair,22 September 2025,16:00-18:00,,กท1011,booked
 6741,ธนวัฒน์ กล้าแกร่ง,Engine Oil Change,22 September 2025,08:00-09:00,,กท1012,process
@@ -133,7 +133,7 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 6727,ทวีศักดิ์ กล้าหาญ,Basic Inspection,01 October 2025,13:00-14:00,,กท1131,process
 6727,ทวีศักดิ์ กล้าหาญ,Battery Replacement,01 October 2025,14:00-15:00,,กท1132,process
 6706,จารุวรรณ น่ารัก,Tire Replacement (4 pcs.),02 October 2025,08:00-10:00,,กท1133,process
-6703,อนุชา แก้วใส,Exterior Car Wash,02 October 2025,10:00-11:00,,กท1134,booked
+6703,อนุชา แก้วใส,Exterior Car Wash,02 October 2025,10:00-11:00,,กท1134,complete
 6729,ชัยวัฒน์ แข็งแรง,Full Car Wash,02 October 2025,11:00-12:00,,กท1135,process
 6715,ปรีชา กล้าหาญ,Exterior Car Wash,02 October 2025,12:00-13:00,,กท1136,booked
 6739,ประเสริฐ แข็งแรง,Engine Oil Change,02 October 2025,13:00-14:00,,กท1137,booked
@@ -549,7 +549,7 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 6706,จารุวรรณ น่ารัก,Wheel Alignment & Balancing,31 October 2025,12:00-14:00,,กท1547,complete
 0001,Admin,Glass Coating,1 November 2025,09:00-15:00,,กจ0000,process
 0001,Admin,Seat/Carpet Shampoo - 4 hrs,1 November 2025,09:00-13:00,,df0000,process
-0001,Admin,Seat/Carpet Shampoo - 4 hrs,1 November 2025,09:00-13:00,,df0000,complete
+0001,Admin,Seat/Carpet Shampoo - 4 hrs,1 November 2025,09:00-13:00,,df0000,process
 0001,Admin,Glass Coating - 6 hrs,1 November 2025,09:00-15:00,,df00,process
 0001,Admin,Exterior Car Wash - 1 hr,1 November 2025,09:00-10:00,,df0000,process
 0001,Admin,Exterior Car Wash - 1 hr,1 November 2025,13:00-14:00,,kf0000,process
@@ -558,8 +558,5 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 0001,Admin,Exterior Car Wash - 1 hr,25 September 2025,09:00-10:00,ไม่มี,กจ0000,booked
 0001,Admin,Full Car Wash - 1 hr,24 September 2025,10:00-11:00,-,กจ0000,booked
 0001,Admin,Exterior Car Wash - 1 hr,27 September 2025,17:00-18:00,-,oo0000,booked
-0001,Admin,Exterior Car Wash - 1 hr,27 September 2025,09:00-10:00,0,1000,booked
-0001,Admin,Seat/Carpet Shampoo - 4 hrs,2 November 2025,09:00-13:00,,0990ก,booked
-0001,Admin,Glass Coating - 6 hrs,2 November 2025,14:00-20:00,,ก0912,booked
-0001,Admin,Exterior Car Wash - 1 hr,24 October 2025,11:00-12:00,-,12,booked
+0001,Admin,Exterior Car Wash - 1 hr,27 September 2025,09:00-10:00,0,1000,process
 6501,Nannapat,Seat/Carpet Shampoo - 4 hrs,23 October 2025,11:00-15:00,,12กจ,booked

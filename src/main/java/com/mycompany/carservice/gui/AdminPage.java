@@ -9,6 +9,7 @@ import com.mycompany.carservice.entity.RoundedPanel;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -72,6 +73,9 @@ public class AdminPage extends javax.swing.JFrame {
 
         homeBtn.setContentAreaFilled(false);
         homeBtn.setBorderPainted(false);
+        
+        jLabelStatus.setVisible(false);  // user ซ่อนปุ่ม
+        chooseStatus.setVisible(false);
     
     }
      private void SetupIcon() {
@@ -246,16 +250,13 @@ public class AdminPage extends javax.swing.JFrame {
     * ค้นหาข้อมูลใน Table
     */
     private void setupFilter() {
+       
+         System.out.println("โหล " );
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             private void filter() {
-                if (sorter == null) return; // ป้องกัน null
-                String text = searchField.getText().trim();
-                if (text.isEmpty()) {
-                    sorter.setRowFilter(null);
-                } else {
-                    int colIndex = getSelectedColumnIndex(); // เอาไปดึงว่าเลือกจะค้นหาอะไร ex. วัน , บริการ ส่งออกมาเป็นเลข index ของ คอลัมน์
-                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text, colIndex));//กรองข้อความจากแถวที่เลือกแบบ ไม่สนใจพิมพ์เล๋กใหญ่ (?i)
-                }
+                if (!searchField.isFocusOwner()) return;
+                    applyFilter(); // false = ไม่ force clear ถ้ายังไม่พิมพ์
+             
             }
 
             @Override
@@ -267,8 +268,42 @@ public class AdminPage extends javax.swing.JFrame {
         });
 
         // เวลาเปลี่ยน combobox ก็ให้รีเฟรช filter ด้วย
-       
+       chooseStatus.addActionListener(e -> applyFilter());
     }
+    
+  private void applyFilter() {
+    if (sorter == null) return;
+
+    String searchText = searchField.getText().trim();
+    String selectedStatus = (String) chooseStatus.getSelectedItem();
+    int searchCol = getSelectedColumnIndex(); // จาก searchComboBox
+
+    List<RowFilter<Object, Object>> filters = new ArrayList<>();
+
+    if (!searchText.isEmpty()) {
+        filters.add(RowFilter.regexFilter("(?i)" + searchText, searchCol));
+    }
+
+    if (selectedTable.equals("History") && selectedStatus != null && !selectedStatus.equals("----------")) {
+        int statusColIndex = jTable1.getColumn("Status").getModelIndex(); // ใช้ index จริงจาก JTable
+        filters.add(RowFilter.regexFilter("(?i)" + selectedStatus, statusColIndex));
+    }
+
+    if (filters.isEmpty()) {
+        sorter.setRowFilter(null);
+    } else if (filters.size() == 1) {
+        sorter.setRowFilter(filters.get(0));
+    } else {
+        sorter.setRowFilter(RowFilter.andFilter(filters));
+    }
+}
+
+
+
+
+
+
+
 
     
     /**
@@ -297,7 +332,7 @@ public class AdminPage extends javax.swing.JFrame {
     private int getSelectedColumnIndex() {
        
         String selected;
-        System.out.println(" Table :" +  selectedTable);
+        
         
         if(selectedTable.equals("User")){     
             selected = (String) searchComboBox.getSelectedItem();
@@ -440,35 +475,49 @@ public class AdminPage extends javax.swing.JFrame {
 
             // Event Edit
             editButton.addActionListener(e -> {
-                // เพิ่มบรรทัดนี้เพื่อให้คลิกครั้งเดียวทำงาน
-                if (table.getCellEditor() != null) table.getCellEditor().stopCellEditing();
+                  if (table.getCellEditor() != null) table.getCellEditor().stopCellEditing();
+                int viewRow = table.getSelectedRow(); // ดึง row index ปัจจุบัน (view)
 
-                int row = table.getSelectedRow(); // ใช้ selectedRow แทน editingRow
-                if(row != -1) {
-                    openEditDialog(row);
+                if (viewRow == -1) {
+                    // ไม่มี row ถูกเลือก
+                    JOptionPane.showMessageDialog(null, "กรุณาเลือกแถวก่อนแก้ไข");
+                    return;
                 }
-                fireEditingStopped();
 
+                // เปิด dialog ผ่านฟังก์ชันที่มีอยู่
+                openEditDialog(viewRow);
+                 loadCsvData();
+                 applyFilter();
+                
             });
+
+             
             // Event Delete
-           deleteButton.addActionListener(e -> {
-                if (table.getCellEditor() != null){
-                    table.getCellEditor().stopCellEditing();
-                }
-                int row = table.getSelectedRow();
-                if(row != -1) {
-                    int confirm = JOptionPane.showConfirmDialog(
-                                 SwingUtilities.getWindowAncestor(table),
-                                "Are you sure you want to delete this row?",
-                                "Confirm Delete",
-                                JOptionPane.YES_NO_OPTION
-                    );
-                    if(confirm == JOptionPane.YES_OPTION) {
-                        deleteRow(row);  // เรียก method ภายใน ButtonEditor
-                    }
-                }
-                fireEditingStopped();
-            });
+        deleteButton.addActionListener(e -> {
+            if (table.getCellEditor() != null) table.getCellEditor().stopCellEditing();
+
+            int viewRow = table.getSelectedRow();
+            if(viewRow == -1) {
+                // ไม่มี row ถูกเลือก
+                JOptionPane.showMessageDialog(null, "Please select a row first!");
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(
+                SwingUtilities.getWindowAncestor(table),
+                "Are you sure you want to delete this row?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if(confirm == JOptionPane.YES_OPTION) {
+                deleteRow(viewRow); // ใช้ฟังก์ชันที่เตรียมไว้
+            }
+
+            fireEditingStopped();
+             loadCsvData();
+                 applyFilter();
+        });
 
 
 
@@ -477,21 +526,23 @@ public class AdminPage extends javax.swing.JFrame {
       * เอาไว้เปิดหน้าต่างการแก้ไขข้อมูล
       * @param รับ row  ที่จะแก้
       */
-    private void openEditDialog(int row) {
+   private void openEditDialog(int row) {
+        int modelRow = table.convertRowIndexToModel(row); // แปลง index
         int colCount = table.getColumnCount() - 2;
         String[] data = new String[colCount];
         for (int i = 0; i < colCount; i++) {
-            Object value = table.getValueAt(row, i + 1);
+            Object value = table.getModel().getValueAt(modelRow, i + 1); // ใช้ modelRow
             data[i] = value != null ? value.toString() : "";
         }
 
         String selected = chooseTable.getSelectedItem().toString();
         if(selected.equals("User")) {
-            new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true, row, data, csvHandler).setVisible(true);
+            new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true, modelRow, data, csvHandler).setVisible(true);
         } else if(selected.equals("History")) {
-            new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true, row, data, csvHandler).setVisible(true);
+            new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true, modelRow, data, csvHandler).setVisible(true);
         }
-    }
+}
+
     /**
      * เอาไว้ลบ row ที่เลือก
      * @param row  ที่จะแก้
@@ -499,7 +550,7 @@ public class AdminPage extends javax.swing.JFrame {
     private void deleteRow(int row) {
         try {
             // แปลง index หลัง filter/sort เป็น model index
-            int modelRow = table.convertRowIndexToModel(row);//อาจ sort/filter ทำให้ index view != index model
+            int modelRow = table.convertRowIndexToModel(row) + 1;//อาจ sort/filter ทำให้ index view != index model
             csvHandler.deleteRow(modelRow); 
             ((DefaultTableModel) table.getModel()).removeRow(modelRow);
         } catch(Exception ex) {
@@ -529,8 +580,13 @@ public class AdminPage extends javax.swing.JFrame {
          selectedTable = chooseTable.getSelectedItem().toString();
         if(selectedTable.equals("User")) {
              csvHandler = new CSVHandler("src/main/data/user.csv");
+              jLabelStatus.setVisible(false);
+            chooseStatus.setVisible(false);
         } else if(selectedTable.equals("History")) {
             csvHandler = new CSVHandler("src/main/data/history_user.csv");
+             
+             jLabelStatus.setVisible(true);
+            chooseStatus.setVisible(true);
         }
         setupSearchComboBox();
         loadCsvData(); // โหลดข้อมูลใหม่
@@ -562,10 +618,12 @@ public class AdminPage extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         searchField = new javax.swing.JTextField();
         chooseTable = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
+        jLabelStatus = new javax.swing.JLabel();
         addUserBtn = new RoundedPanel(30); // 30 radius;
         adduserLable = new javax.swing.JLabel();
         searchComboBox = new javax.swing.JComboBox<>();
+        chooseStatus = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
         jPanel4 = new RoundedPanel(30); // 30 radius;
         totalUserLable = new javax.swing.JLabel();
         totaluser = new javax.swing.JLabel();
@@ -610,13 +668,7 @@ public class AdminPage extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTable1);
 
         jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 820, 390));
-
-        searchField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchFieldActionPerformed(evt);
-            }
-        });
-        jPanel3.add(searchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 30, 230, 30));
+        jPanel3.add(searchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 210, 30));
 
         chooseTable.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "User", "History" }));
         chooseTable.addActionListener(new java.awt.event.ActionListener() {
@@ -624,10 +676,10 @@ public class AdminPage extends javax.swing.JFrame {
                 chooseTableActionPerformed(evt);
             }
         });
-        jPanel3.add(chooseTable, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 30, 110, 30));
+        jPanel3.add(chooseTable, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 30, 110, 30));
 
-        jLabel4.setText("Table :");
-        jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 30, -1, 30));
+        jLabelStatus.setText("Status :");
+        jPanel3.add(jLabelStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, -1, 30));
 
         addUserBtn.setBackground(new java.awt.Color(255, 255, 255));
         addUserBtn.setForeground(new java.awt.Color(216, 216, 216));
@@ -648,7 +700,7 @@ public class AdminPage extends javax.swing.JFrame {
         adduserLable.setText("Add user");
         addUserBtn.add(adduserLable, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 90, 40));
 
-        jPanel3.add(addUserBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 20, 130, 40));
+        jPanel3.add(addUserBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 20, 130, 40));
 
         searchComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         searchComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -656,7 +708,13 @@ public class AdminPage extends javax.swing.JFrame {
                 searchComboBoxActionPerformed(evt);
             }
         });
-        jPanel3.add(searchComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 120, 30));
+        jPanel3.add(searchComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 140, 30));
+
+        chooseStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "----------", "complete", "process", "booked" }));
+        jPanel3.add(chooseStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 30, 90, 30));
+
+        jLabel5.setText("Table :");
+        jPanel3.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 30, -1, 30));
 
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -962,16 +1020,11 @@ public class AdminPage extends javax.swing.JFrame {
         new Login();
     }//GEN-LAST:event_iconExitMouseClicked
 
-    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
-       if (!searchField.getText().trim().isEmpty()) {
-                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText().trim(),
-                                                         getSelectedColumnIndex()));
-               
-            }
-    }//GEN-LAST:event_searchFieldActionPerformed
-
     private void searchComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchComboBoxActionPerformed
        searchField.setText("");
+        String selectedSearch = (String) searchComboBox.getSelectedItem();
+ 
+      
     }//GEN-LAST:event_searchComboBoxActionPerformed
 
     private void logoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoMouseClicked
@@ -984,6 +1037,7 @@ public class AdminPage extends javax.swing.JFrame {
     private javax.swing.JLabel adduserLable;
     private javax.swing.JButton adminBtn;
     private javax.swing.JButton bookingBtn;
+    private javax.swing.JComboBox<String> chooseStatus;
     private javax.swing.JComboBox<String> chooseTable;
     private javax.swing.JLabel complete;
     private javax.swing.JLabel completedLable;
@@ -996,7 +1050,8 @@ public class AdminPage extends javax.swing.JFrame {
     private javax.swing.JLabel iconHome;
     private javax.swing.JLabel iconProfile;
     private javax.swing.JLabel inprocess;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabelStatus;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

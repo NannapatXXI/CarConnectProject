@@ -34,14 +34,15 @@ public class CloseDay extends javax.swing.JFrame {
 
     private void loadCsv(){
          
-    
+    openday.removeAllItems();
+    openday.addItem("-----");
          ArrayList<String[]> day = new ArrayList<>(csvHandler.readCSV());
            for (int i = 1; i < day.size(); i++) {
             String[] row = day.get(i);
             if (row.length > 0) {
                 // สมมติว่าคอลัมน์แรกคือวันที่
                 String date = row[0];
-                jComboBox1.addItem(date);
+                openday.addItem(date);
             }
     }
          
@@ -64,7 +65,7 @@ public class CloseDay extends javax.swing.JFrame {
         saveDayOpen = new javax.swing.JButton();
         saveDayClose = new javax.swing.JButton();
         dateSpinner1 = new javax.swing.JSpinner();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        openday = new javax.swing.JComboBox<>();
         backBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -112,8 +113,8 @@ public class CloseDay extends javax.swing.JFrame {
         );
         jPanel3.add(dateSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, 160, -1));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
-        jPanel3.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 160, -1));
+        openday.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
+        jPanel3.add(openday, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 160, -1));
 
         jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 460, 280));
 
@@ -160,27 +161,32 @@ public class CloseDay extends javax.swing.JFrame {
     }//GEN-LAST:event_backBtnActionPerformed
 
     private void saveDayOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveDayOpenActionPerformed
-            int selectedIndex = jComboBox1.getSelectedIndex() + 2  ;
-             System.out.println(": " + selectedIndex);
-             deleteRow(selectedIndex);
-             loadCsv();
-            
+           int comboIndex = openday.getSelectedIndex();
+            if(comboIndex <= 0) { // 0 คือ "-----"
+
+                return;
+            }
+
+            ArrayList<String[]> csvData = csvHandler.readCSV();
+          //  int csvIndex = comboIndex;
+
+            if(comboIndex < csvData.size()) {
+                String selectedOpenDay = (String) openday.getSelectedItem();
+                deleteRow(comboIndex);
+                loadCsv();
+                new PopSuccess(null,true,"Open :"+selectedOpenDay);
+            }
     }//GEN-LAST:event_saveDayOpenActionPerformed
 
     private void saveDayCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveDayCloseActionPerformed
             // อ่านค่าวันจาก spinner
         Date selectedDate = (Date) dateSpinner1.getValue();
         String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(selectedDate);
-
-          
-
-            System.out.println("วันที่ที่เลือกคือ: " + formattedDate);
-            
-             // 1. อ่านข้อมูลเก่าจาก CSV
-           
-
-             csvHandler.appendCSV(new String[]{formattedDate});
-             loadCsv();
+        System.out.println("วันที่ที่เลือกคือ: " + formattedDate);
+        csvHandler.appendCSV(new String[]{formattedDate});
+        loadCsv();
+             
+               new PopSuccess(null,true,"Close :"+formattedDate);
     }//GEN-LAST:event_saveDayCloseActionPerformed
 
  
@@ -188,13 +194,13 @@ public class CloseDay extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backBtn;
     private javax.swing.JSpinner dateSpinner1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JComboBox<String> openday;
     private javax.swing.JButton saveDayClose;
     private javax.swing.JButton saveDayOpen;
     // End of variables declaration//GEN-END:variables
