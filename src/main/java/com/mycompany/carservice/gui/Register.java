@@ -13,72 +13,103 @@ import java.util.*;
 import com.mycompany.carservice.entity.RoundedPanel;
 
 /**
- *
- * @author usEr
+ * คลาส Register ใช้สำหรับสร้างหน้าต่างสมัครสมาชิก (Register Page)
+ * โดยผู้ใช้สามารถกรอกชื่อผู้ใช้ รหัสผ่าน ยืนยันรหัสผ่าน เบอร์โทรศัพท์ และอีเมล
+ * เมื่อบันทึกแล้ว ข้อมูลจะถูกเก็บลงในไฟล์ CSV (user.csv)
+ * 
+ * หน้าที่หลักของคลาส:
+ * - แสดง UI สำหรับสมัครสมาชิก
+ * - โหลดไอคอนให้กับช่องกรอกข้อมูล
+ * - ตรวจสอบความถูกต้องของข้อมูลที่กรอก
+ * - สร้างรหัสผู้ใช้ (UserID) ใหม่อัตโนมัติจากไฟล์ CSV
+ * 
  */
 public class Register extends javax.swing.JFrame {
-    
+    /**
+     * Logger สำหรับบันทึกข้อผิดพลาดหรือข้อความสำคัญในระบบ 
+     */
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Register.class.getName());
     
     /**
-     * Creates new form Register
+     * คอนสตรัคเตอร์ของคลาส Register
+     * ใช้สำหรับตั้งค่าหน้าต่างสมัครสมาชิกและกำหนดค่าเริ่มต้นขององค์ประกอบต่าง ๆ
      */
         public Register() {
+                // เรียกใช้เมธอดที่ NetBeans สร้างขึ้นเพื่อจัดการส่วนประกอบในหน้า
                 initComponents();
-                        setSize(1200, 800);  
-                        setLocationRelativeTo(null);
-                        setVisible(true);
-                        cautionusername.setVisible(false); 
-                        cautionpass.setVisible(false); 
-                        cautionconfirmpass.setVisible(false); 
-                        cautiontel.setVisible(false); 
-                        cautionemail.setVisible(false);
-//                        iconusername.setIcon(new ImageIcon(getClass().getResource("/image/user.png")));
-//                        iconpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
-//                        iconconfirmpassword.setIcon(new ImageIcon(getClass().getResource("/image/padlock.png")));
-//                        icontel.setIcon(new ImageIcon(getClass().getResource("/image/phone-call.png")));
+
+                // กำหนดขนาดหน้าต่าง (width=1200, height=800)
+                setSize(1200, 800);
+
+                // จัดตำแหน่งหน้าต่างให้อยู่ตรงกลางหน้าจอ
+                setLocationRelativeTo(null);
+
+                // แสดงหน้าต่าง Register
+                setVisible(true);
+
+                // ซ่อนข้อความเตือนทั้งหมดไว้ก่อน (จะโชว์เมื่อข้อมูลไม่ถูกต้อง)
+                cautionusername.setVisible(false); 
+                cautionpass.setVisible(false); 
+                cautionconfirmpass.setVisible(false); 
+                cautiontel.setVisible(false); 
+                cautionemail.setVisible(false);
+
                 try {
+                    // โหลดภาพไอคอนจากโฟลเดอร์ src/main/image/
                     URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
                     URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
                     URL emailIconURL = new File("src/main/image/email.png").toURI().toURL();
                     URL telIconURL = new File("src/main/image/phone-call.png").toURI().toURL();
+
+                    // ตั้งค่าไอคอนให้กับ JLabel ที่อยู่ข้างช่องกรอกข้อมูล
                     iconusername.setIcon(new ImageIcon(userIconURL));
                     iconpassword.setIcon(new ImageIcon(passIconURL));
                     iconconfirmpassword.setIcon(new ImageIcon(passIconURL));
                     iconemail.setIcon(new ImageIcon(emailIconURL));
                     icontel.setIcon(new ImageIcon(telIconURL));
                 } catch (Exception e) {
+                    // ถ้ามีปัญหาในการโหลดไฟล์ภาพ
                     System.out.println(e);
                     logger.severe("Cannot load icon images");
-                }
+                }       
         }
+        
+        /**
+        * เมธอด generateNewUserID()
+        * ใช้สำหรับสร้างรหัสผู้ใช้ (User ID) ใหม่โดยอัตโนมัติ
+        * โดยจะอ่านไฟล์ user.csv เพื่อตรวจสอบ ID สูงสุดในปัจจุบัน
+        * แล้วเพิ่มขึ้น 1 จากนั้นแปลงเป็นรูปแบบเลข 4 หลัก (เช่น 0001, 0002, 0003)
+        *
+        * @return รหัสผู้ใช้ใหม่ในรูปแบบ String (เช่น "0005")
+        */
         private String generateNewUserID() {
+            // สร้างออบเจ็กต์ CSVHandler เพื่ออ่านไฟล์ข้อมูลผู้ใช้
             CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
             ArrayList<String[]> data = csvHandler.readCSV();
-
+            
+            // ตัวแปรw;hเก็บค่า ID สูงสุดจากไฟล์
             int maxID = 0;
-
+            
+            // วนลูปอ่านแต่ละแถวของข้อมูล CSV
             for (String[] row : data) {
                 if (row.length > 0) {
                     String idStr = row[0];
                     try {
+                        // แปลงค่าเป็น int เพื่อตรวจสอบ ID ที่มากที่สุด
                         int id = Integer.parseInt(idStr);
                         if (id > maxID) maxID = id;
+                        
                     } catch (NumberFormatException e) {
-                        // ข้ามถ้าไม่ใช่เลข
+                        // ถ้าค่า ID ไม่ใช่ตัวเลข (ข้ามแถวนี้)
                     }
                 }
             }
-
+            // เพิ่มค่า ID สูงสุดขึ้น 1 เพื่อเป็น ID ใหม่
             maxID++;
+            // คืนค่าในรูปแบบตัวเลข 4 หลัก เช่น "0005"
             return String.format("%04d", maxID);
         }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -155,11 +186,6 @@ public class Register extends javax.swing.JFrame {
                 logButtonMouseExited(evt);
             }
         });
-        logButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                logButtonActionPerformed(evt);
-            }
-        });
         jPanel4.add(logButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(72, 305, 237, 60));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 370, 800));
@@ -187,11 +213,6 @@ public class Register extends javax.swing.JFrame {
 
         username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        username.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usernameActionPerformed(evt);
-            }
-        });
         username.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 usernameKeyTyped(evt);
@@ -201,11 +222,6 @@ public class Register extends javax.swing.JFrame {
 
         password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         password.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        password.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordActionPerformed(evt);
-            }
-        });
         password.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 passwordKeyTyped(evt);
@@ -215,11 +231,6 @@ public class Register extends javax.swing.JFrame {
 
         confirmPassword.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         confirmPassword.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        confirmPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                confirmPasswordActionPerformed(evt);
-            }
-        });
         confirmPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 confirmPasswordKeyTyped(evt);
@@ -340,14 +351,33 @@ public class Register extends javax.swing.JFrame {
     }//GEN-LAST:event_registerFinishMouseEntered
 
     private void registerFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseClicked
+        /**
+        * ตอนคลิกปุ่ม Register
+        * เมธอดนี้จะตรวจสอบว่าถูกต้องตามเงื่อนไขที่ได้ตั้งไว้ในเเต่ล่ะส่วนหรือไม่ของ
+        * ีusername ,password,confirm password, email, phone number
+        * มี
+        * - ตรวจสอบว่าช่องว่างหรือไม่
+        * - ตรวจสอบความซับซ้อนของรหัสผ่าน
+        * - ตรวจสอบการยืนยันรหัสผ่าน
+        * - ตรวจสอบเบอร์โทรและอีเมล
+        * 
+        * ถ้าข้อมูลถูกต้องทั้งหมด → เขียนข้อมูลใหม่ลงไฟล์ user.csv
+        * จากนั้นจะปิดหน้าต่างสมัครสมาชิกและเปิดหน้า Login ใหม่
+        * 
+        *.@param evt เหตุการณ์ MouseEvent เมื่อผู้ใช้คลิกปุ่มสมัคร
+        */
+        
+        // แปลงรหัสผ่านและยืนยันรหัสผ่านจากช่อง Password Field เป็น String
         String pass = new String(password.getPassword()).trim();
         String confirmpass = new String(confirmPassword.getPassword()).trim();
+        // ตัวแปรใช้เก็บสถานะการตรวจสอบแต่ละช่อง (0 = ผ่าน, 1 = ไม่ผ่าน)
         int sumuser = 0;
         int sumpass = 0;
         int sumconfirm = 0;
         int sumtel = 0;
         int sumemail = 0;
         
+        //ตรวจสอบช่อง Username ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
         if (username.getText().trim().isEmpty()) {
             cautionusername.setText("Need to input username");
             cautionusername.setVisible(true);
@@ -357,7 +387,7 @@ public class Register extends javax.swing.JFrame {
             cautionusername.setVisible(false);
             sumuser=0;
         }
-
+        //ตรวจสอบช่อง Password ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
         if (pass.isEmpty()) {
             cautionpass.setText("Need to input password");
             cautionpass.setVisible(true);
@@ -387,11 +417,13 @@ public class Register extends javax.swing.JFrame {
             cautionpass.setVisible(false);
             sumpass=0;
         }
-
+        //ตรวจสอบช่อง Confirm Password ว่าตรงกับ Password หรือไม่
         if (confirmpass.isEmpty()) {
             cautionconfirmpass.setText("Need to confirm password");
             cautionconfirmpass.setVisible(true);
             sumconfirm=1;
+            
+        // ถ้ารหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน
         }else if (!confirmpass.equals(pass)) {
             cautionconfirmpass.setText("Nah");
             cautionconfirmpass.setVisible(true);
@@ -401,7 +433,7 @@ public class Register extends javax.swing.JFrame {
             cautionconfirmpass.setVisible(false);
             sumconfirm=0;
         }
-
+        //ตรวจสอบช่อง tel หรือ phone number ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
         if (tel.getText().trim().isEmpty()) {
             cautiontel.setText("Need to input your Phone number");
             cautiontel.setVisible(true);
@@ -415,7 +447,7 @@ public class Register extends javax.swing.JFrame {
             cautiontel.setVisible(false);
             sumtel=0;
         }
-        
+        //ตรวจสอบช่อง Email ว่าตรงกับ pattern ที่ตั้งไว้หรือไม่
         String emailText = email.getText().trim();
         String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.(com|co\\.th)$";
 
@@ -432,7 +464,7 @@ public class Register extends javax.swing.JFrame {
             cautionemail.setVisible(false);
             sumemail = 0;
         }
-
+        //ถ้าทุกช่องผ่านการตรวจสอบทั้งหมดเเล้ว ทำการปิดคำเตือนทั้งหมด 
         if (sumpass == 0 && sumuser == 0 && sumconfirm==0 &&  sumtel == 0 &&  sumtel == 0){
             cautionusername.setVisible(false);
             cautionpass.setVisible(false);
@@ -440,17 +472,18 @@ public class Register extends javax.swing.JFrame {
             cautiontel.setVisible(false);
             cautionemail.setVisible(false);
 
-            // อ่านค่าจาก TextField
+            // อ่านค่าจากทุกช่องทั้งหมดเเล้วเก็บไว้
             String usernameget = username.getText().trim();
             String passwordget = new String(password.getPassword()).trim();
             String telget = tel.getText().trim();
             String emailget = email.getText().trim();
-            // เขียนลง CSV
+            // นำมาเขียนลง user.csv
             try {
                 File f = new File("src/main/data/user.csv");
                 FileWriter fw = new FileWriter(f,true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 System.out.println("Saved successfully!");
+                // เขียนข้อมูลลงไฟล์ CSV ในรูปแบบ: id,username,password,email,tel,role
                 bw.write("\n"+ generateNewUserID() +","+usernameget+","+passwordget+","+emailget+","+telget+",user");
                 bw.close();
                 fw.close();
@@ -458,8 +491,8 @@ public class Register extends javax.swing.JFrame {
                 e.printStackTrace();
             }
 
-            password.setText("");
             System.out.print(username.getText() + "\n" + pass);
+            // ปิดหน้าต่าง Register เปิดหน้า Login ใหม่
             dispose();
             new Login();
 
@@ -474,10 +507,6 @@ public class Register extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_confirmPasswordKeyTyped
 
-    private void confirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_confirmPasswordActionPerformed
-
     private void passwordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyTyped
         char c = evt.getKeyChar();
         if (Character.isWhitespace(c)) {
@@ -485,24 +514,12 @@ public class Register extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_passwordKeyTyped
 
-    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_passwordActionPerformed
-
     private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
         char c = evt.getKeyChar();
         if (!Character.isLetter(c)&!Character.isDigit(c)) {
             evt.consume();
         }
     }//GEN-LAST:event_usernameKeyTyped
-
-    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_usernameActionPerformed
-
-    private void logButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_logButtonActionPerformed
 
     private void logButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseExited
         logButton.setBackground(Color.WHITE);
@@ -550,31 +567,6 @@ public class Register extends javax.swing.JFrame {
             evt.consume();
         }
     }//GEN-LAST:event_emailKeyTyped
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Register().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel cautionconfirmpass;

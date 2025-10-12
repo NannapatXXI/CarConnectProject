@@ -109,6 +109,7 @@ public class BookingPage extends javax.swing.JFrame  {
                     URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
                     URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
                     URL exitIconURL = new File("src/main/image/logout.png").toURI().toURL();
+                    URL settingIconURL = new File("src/main/image/setting2.png").toURI().toURL();
                    
                     logo.setIcon(new ImageIcon(logoIconURL));
                     iconHome.setIcon(new ImageIcon(homeIconURL));
@@ -117,6 +118,7 @@ public class BookingPage extends javax.swing.JFrame  {
                     iconProfile.setIcon(new ImageIcon(profileIconURL));
                     iconAdmin.setIcon(new ImageIcon(adminIconURL));
                     iconExit.setIcon(new ImageIcon(exitIconURL));
+                    close.setIcon(new ImageIcon(settingIconURL));
                    
                     
                 } catch (Exception e) {
@@ -750,13 +752,14 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         });
         getContentPane().add(iconExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 40, 40, 40));
 
-        close.setText("jButton1");
+        close.setText("Edit Close Day");
+        close.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeActionPerformed(evt);
             }
         });
-        getContentPane().add(close, new org.netbeans.lib.awtextra.AbsoluteConstraints(1120, 750, 60, 40));
+        getContentPane().add(close, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 750, 140, 30));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel13.setText("ปิด");

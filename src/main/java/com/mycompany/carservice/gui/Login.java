@@ -23,47 +23,67 @@ import java.util.ArrayList;
 
 
 /**
- *
- * @author usEr
+ * คลาส Login 
+ * โดยมีการตรวจสอบชื่อผู้ใช้และรหัสผ่านจากไฟล์ CSV
+ * หากเข้าสู่ระบบสำเร็จจะไปยังหน้า HomePage 
+ * 
  */
 public class Login extends javax.swing.JFrame {
     
+    /** ตัว logger สำหรับแสดงและบันทึก error 
+     */
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
 
     /**
-     * Creates new form Login
+     *  Login ใช้สำหรับสร้างหน้าต่างล็อกอินของโปรแกรม
      */
     public Login() {
             
-            initComponents();
-            setSize(1200, 800);  
-            setLocationRelativeTo(null);
-            setVisible(true);
+            initComponents(); // เรียกใช้ method ที่สร้างและจัดวาง components ทั้งหมดในหน้า
+            setSize(1200, 800);   // กำหนดขนาดหน้าต่าง
+            setLocationRelativeTo(null); // จัดให้อยู่กึ่งกลางหน้าจอ
+            setVisible(true); // แสดงหน้าต่าง Login
+            
+            // ซ่อนข้อความเตือนของ username และ password ตอนเริ่มต้น
             cautionusername.setVisible(false);
             cautionpass.setVisible(false);
+            
             try {
+                // โหลดภาพไอคอนของ username และ password จากโฟลเดอร์
                 URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
                 URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
+                // ตั้งค่าไอคอนให้กับ JLabel
                 iconusername.setIcon(new ImageIcon(userIconURL));
                 iconpassword.setIcon(new ImageIcon(passIconURL));
+                
             } catch (MalformedURLException e) {
+                // แสดง exception ถ้ามีปัญหาในการโหลดไฟล์ภาพ
                 e.printStackTrace();
                 logger.severe("Cannot load icon images");
             }
             
     }
-    
+    /**
+     * method CompleteLogin ไว้ตรวจสอบข้อมูลก่อนเข้าสู่ระบบจากไฟล์ CSV
+     * ถ้าตรงกันจะเข้าสู่หน้า HomePage ตาม role ของผู้ใช้
+     */
     private void CompleteLogin(){
+                // ดึงค่าจากช่อง username และ password
                 String getUsername = username.getText().trim();
                 String getPass = new String(password.getPassword()).trim();
                 String getBoth = getUsername + "," + getPass;
                 String role = null;
                 
+                // สร้างออบเจ็กต์ CSVHandler เพื่ออ่านข้อมูลจากไฟล์ user.csv
                 CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
                 ArrayList<String[]> users = csvHandler.readCSV();
+                
+                //ตัวตรวจสอบการเข้าสู่ระบบ
                 boolean loginSuccess = false;
                 boolean checkedUsername = false;
                 boolean checkedPassword = false;
+                
+                //ดึงและตรวจสอบข้อมูลในไฟล์ user.csv 
                 for (String[] parts : users) {
                     if (parts.length >= 6) {
                         String fileUsername = parts[1];
@@ -71,13 +91,14 @@ public class Login extends javax.swing.JFrame {
                         role = parts[5];
                         String confirmlogin = fileUsername + "," + filePassword;
                         
+                        // ตรวจสอบชื่อผู้ใช้กับรหัสผ่าน ว่าตรงกันหรือไม่
                         if (getBoth.equals(confirmlogin)) {
                             loginSuccess = true;
                             break;
                         }
                     }
                 }
-                
+                // เช็คว่าผู้ใช้ป้อนชื่อผู้ใช้หรือไม่ และห้ามเป็นช่องว่าง
                 if (getUsername.trim().isEmpty()) {
                     cautionusername.setText("Need to input username");
                     cautionusername.setVisible(true);
@@ -89,6 +110,7 @@ public class Login extends javax.swing.JFrame {
                     cautionusername.setVisible(true);
                 }
                 
+                //เช็ค password ที่ผู้ใช้ป้อนเข้ามาว่าตรงกับ user.csv ไหม
                 if (getPass.trim().isEmpty()) {
                     cautionpass.setText("Need to input password");
                     cautionpass.setVisible(true);
@@ -100,6 +122,7 @@ public class Login extends javax.swing.JFrame {
                     cautionpass.setVisible(true);
                 }
                 
+                //ถ้า loginSuccess เป็น true จะทำให้ คำเตือนไม่โชว์ ปิดหน้าต่าง Login เเล้วส่งข้อมูล username กับ role ไปหน้า Homepage
                 if (loginSuccess ) {
                     cautionusername.setVisible(false);
                     cautionpass.setVisible(false);
@@ -250,11 +273,6 @@ public class Login extends javax.swing.JFrame {
                 logButtonMouseExited(evt);
             }
         });
-        logButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                logButtonActionPerformed(evt);
-            }
-        });
 
         registerButton.setFont(new java.awt.Font("Gadugi", 1, 24)); // NOI18N
         registerButton.setText("Register");
@@ -314,20 +332,10 @@ public class Login extends javax.swing.JFrame {
                 loginFinishMouseExited(evt);
             }
         });
-        loginFinish.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loginFinishActionPerformed(evt);
-            }
-        });
         jPanel2.add(loginFinish, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 430, 530, 60));
 
         password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         password.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        password.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passwordActionPerformed(evt);
-            }
-        });
         jPanel2.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, 530, 60));
 
         cautionpass.setForeground(new java.awt.Color(255, 0, 51));
@@ -368,16 +376,6 @@ public class Login extends javax.swing.JFrame {
 
         username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        username.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usernameActionPerformed(evt);
-            }
-        });
-        username.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                usernameKeyTyped(evt);
-            }
-        });
         jPanel2.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, 530, 60));
 
         repassword.setText("Forgot password?");
@@ -401,13 +399,6 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
-          
-                  System.out.println("ไอน้องพี่มาแล้ว");
-                  CompleteLogin();
-            
-    }//GEN-LAST:event_passwordActionPerformed
-
     private void anotherRegisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_anotherRegisterMouseClicked
         dispose();
         new Register();
@@ -420,10 +411,6 @@ public class Login extends javax.swing.JFrame {
     private void anotherRegisterMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_anotherRegisterMouseExited
         anotherRegister.setForeground(Color.BLACK);
     }//GEN-LAST:event_anotherRegisterMouseExited
-
-    private void logButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_logButtonActionPerformed
 
     private void logButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseClicked
         dispose();
@@ -453,10 +440,6 @@ public class Login extends javax.swing.JFrame {
         registerButton.setForeground(Color.BLACK);
     }//GEN-LAST:event_registerButtonMouseExited
 
-    private void loginFinishActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginFinishActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_loginFinishActionPerformed
-
     private void loginFinishMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginFinishMouseExited
         loginFinish.setForeground(Color.BLACK);
     }//GEN-LAST:event_loginFinishMouseExited
@@ -468,14 +451,6 @@ public class Login extends javax.swing.JFrame {
     private void loginFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginFinishMouseClicked
         CompleteLogin();
     }//GEN-LAST:event_loginFinishMouseClicked
-
-    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_usernameActionPerformed
-
-    private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
-        
-    }//GEN-LAST:event_usernameKeyTyped
 
     private void repasswordMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_repasswordMouseClicked
         new PopConfirm();

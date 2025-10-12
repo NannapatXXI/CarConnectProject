@@ -75,8 +75,8 @@ public class CloseDay extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Close ");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, -1, -1));
+        jLabel1.setText("Edit Open/Close Day ");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, -1, -1));
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setPreferredSize(new java.awt.Dimension(500, 400));
@@ -85,11 +85,13 @@ public class CloseDay extends javax.swing.JFrame {
         jPanel3.setMinimumSize(new java.awt.Dimension(458, 237));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setText("ปิดวัน :");
-        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 140, -1, -1));
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel2.setText("Close Day :");
+        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, 60, 40));
 
-        jLabel3.setText("เปิดวัน :");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 70, -1, -1));
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel3.setText("Open Day :");
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 80, 40));
 
         saveDayOpen.setText("Save");
         saveDayOpen.addActionListener(new java.awt.event.ActionListener() {
@@ -97,7 +99,7 @@ public class CloseDay extends javax.swing.JFrame {
                 saveDayOpenActionPerformed(evt);
             }
         });
-        jPanel3.add(saveDayOpen, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 70, -1, -1));
+        jPanel3.add(saveDayOpen, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 80, 80, -1));
 
         saveDayClose.setText("Save");
         saveDayClose.addActionListener(new java.awt.event.ActionListener() {
@@ -105,18 +107,18 @@ public class CloseDay extends javax.swing.JFrame {
                 saveDayCloseActionPerformed(evt);
             }
         });
-        jPanel3.add(saveDayClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, -1, -1));
+        jPanel3.add(saveDayClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 180, 80, -1));
 
         dateSpinner1.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.DAY_OF_MONTH)
         );
         dateSpinner1.setEditor(new javax.swing.JSpinner.DateEditor(dateSpinner1, "dd-MM-yyyy")
         );
-        jPanel3.add(dateSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, 160, -1));
+        jPanel3.add(dateSpinner1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 180, 40));
 
         openday.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-" }));
-        jPanel3.add(openday, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 160, -1));
+        jPanel3.add(openday, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, 180, 40));
 
-        jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 460, 280));
+        jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 460, 270));
 
         backBtn.setText("Close");
         backBtn.setActionCommand("close");
@@ -125,7 +127,7 @@ public class CloseDay extends javax.swing.JFrame {
                 backBtnActionPerformed(evt);
             }
         });
-        jPanel4.add(backBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 320, -1, -1));
+        jPanel4.add(backBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 303, -1, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -135,9 +137,9 @@ public class CloseDay extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(

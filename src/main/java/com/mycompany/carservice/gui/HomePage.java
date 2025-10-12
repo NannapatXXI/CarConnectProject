@@ -14,8 +14,16 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- *
- * @author nannapat
+ * คลาส HomePage เป็นหน้าหลักของระบบ Car Service
+ * ทำหน้าที่แสดงข้อมูลผู้ใช้, ประกาศ, โปรโมชั่น และสถิติการจอง
+ * รวมถึงจัดการส่วนของผู้ดูแลระบบ (Admin)
+ * 
+ * Features:
+ * - โหลดประกาศและโปรโมชั่นจากไฟล์ CSV
+ * - แสดงข้อมูลการจองของผู้ใช้
+ * - รองรับโหมดผู้ใช้ทั่วไปและผู้ดูแลระบบ
+ * - สามารถแก้ไขข้อความประกาศได้ (เฉพาะ Admin)
+ * 
  */
 public class HomePage extends javax.swing.JFrame {
     
@@ -24,8 +32,10 @@ public class HomePage extends javax.swing.JFrame {
     private final String role;
 
     /**
-     * Creates new form mainPage
-     * @param userName
+     * สร้างหน้าหลัก
+     * รับชื่อผู้ใช้และบทบาท
+     * @param userName ชื่อผู้ใช้ที่ล็อกอิน
+     * @param role บทบาทของผู้ใช้ (admin หรือ user)
      */
     public HomePage(String userName,String role) {
         this.userName = userName ;
@@ -38,34 +48,39 @@ public class HomePage extends javax.swing.JFrame {
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
         SetupIcon();
-        
+        // โหลดและแสดงข้อความประกาศทั่วไป
         String announcement = loadAnnouncementForLabel();   // เพิ่ม
         announcementsLabel.setText(announcement);   // เพิ่ม
         announcementsLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
         announcementsLabel.setForeground(Color.BLACK);
         announcementsLabel.setOpaque(false);
         
+        // โหลดและแสดงบริการกับราคาของบริการ
         String announcementPromotion = loadAnnouncementServicePrice();   // เพิ่ม
         announcementsServicePrice.setText(announcementPromotion);   // เพิ่ม
         announcementsServicePrice.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
         announcementsServicePrice.setForeground(Color.BLACK);
         announcementsServicePrice.setOpaque(false);
-
-        if ("admin".equalsIgnoreCase(role)) {   // แสดงเฉพาะ Admin
+        
+        
+        if ("admin".equalsIgnoreCase(role)) {   
+            // แสดงเฉพาะ Admin
             fixAnnouncement.setVisible(true); 
             fixAnnouncement1.setVisible(true); 
             adminBtn.setVisible(true);
             iconAdmin.setVisible(true); 
-        } else { // ซ่อนสำหรับ User ปกติ
+            
+        } else { 
+            // ซ่อนสำหรับ User ปกติ
             fixAnnouncement.setVisible(true); 
             fixAnnouncement1.setVisible(true);
             adminBtn.setVisible(false);
             iconAdmin.setVisible(false);
         }
     }
-    
-
-    
+    /**
+     * ตั้งค่าการจัดวาง UI ของหน้าหลัก
+     */
     private void SetupUi() {
         welcomeUser.setHorizontalTextPosition(JLabel.LEFT); // ข้อความอยู่ซ้าย, icon อยู่ขวา
         bookingAn.setHorizontalTextPosition(JLabel.LEFT); 
@@ -73,6 +88,8 @@ public class HomePage extends javax.swing.JFrame {
         pendingAn.setHorizontalTextPosition(JLabel.LEFT); 
         announcements.setHorizontalTextPosition(JLabel.LEFT);
         servicePrice.setHorizontalTextPosition(JLabel.LEFT); 
+        
+        // ตั้งค่าข้อความชื่อผู้ใช้
         username.setText(userName);
         welcomeUser.setText(userName+" ");
         
@@ -88,80 +105,97 @@ public class HomePage extends javax.swing.JFrame {
         adminBtn.setContentAreaFilled(false);
         adminBtn.setBorderPainted(false);
         
+        // ลบขอบ ScrollPane
         jScrollPane1.setBorder(null);
         jScrollPane1.getViewport().setBorder(null);
 
     }
-    private void SetupIcon() {
-        try {
-                    URL logoIconURL = new File("src/main/image/logoCarConnect.png").toURI().toURL();
-                    URL homeIconURL = new File("src/main/image/home.png").toURI().toURL();
-                    URL bookingIconURL = new File("src/main/image/booking.png").toURI().toURL();
-                    URL historyIconURL = new File("src/main/image/history.png").toURI().toURL();
-                    URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
-                    URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
-                    
-                    URL profileUserIconURL = new File("src/main/image/logout.png").toURI().toURL();
-                    
-                    URL welcomeIconURL = new File("src/main/image/wavinghand.png").toURI().toURL();
-                    URL fixIconURL = new File("src/main/image/settings.png").toURI().toURL();
-                    URL bookingannIconURL = new File("src/main/image/bookingann.png").toURI().toURL();
-                    URL completedURL = new File("src/main/image/checked.png").toURI().toURL();
-                    URL pendingIconURL = new File("src/main/image/file.png").toURI().toURL();
-                    URL announcementIconURL = new File("src/main/image/megaphone.png").toURI().toURL();
-                    URL promotionURL = new File("src/main/image/discounttag.png").toURI().toURL();
-                    logo.setIcon(new ImageIcon(logoIconURL));
-                    iconHome.setIcon(new ImageIcon(homeIconURL));
-                    iconBooking.setIcon(new ImageIcon(bookingIconURL));
-                    iconHistory.setIcon(new ImageIcon(historyIconURL));
-                    iconProfile.setIcon(new ImageIcon(profileIconURL));
-                    iconAdmin.setIcon(new ImageIcon(adminIconURL));
-                    
-                    iconExit.setIcon(new ImageIcon(profileUserIconURL));
-                    
-                    welcomeUser.setIcon(new ImageIcon(welcomeIconURL));
-                    fixAnnouncement.setIcon(new ImageIcon(fixIconURL));
-                    fixAnnouncement1.setIcon(new ImageIcon(fixIconURL));
-                    bookingAn.setIcon(new ImageIcon(bookingannIconURL));
-                    completedAn.setIcon(new ImageIcon(completedURL));
-                    pendingAn.setIcon(new ImageIcon(pendingIconURL));
-                    announcements.setIcon(new ImageIcon(announcementIconURL));
-                    servicePrice.setIcon(new ImageIcon(promotionURL));
-                    
-                } catch (Exception e) {
-                    System.out.println(e);
-                    logger.severe("Cannot load icon images");
-                }
     
-    }
+    /**
+     * โหลดและตั้งค่าไอคอนในหน้าหลักจากโฟลเดอร์ /image
+     */
+        private void SetupIcon() {
+            try {
+                        //โหลดไฟล์ไอคอนทั้งหมดจากโฟลเดอร์ "src/main/image/"
+                        URL logoIconURL = new File("src/main/image/logoCarConnect.png").toURI().toURL();
+                        URL homeIconURL = new File("src/main/image/home.png").toURI().toURL();
+                        URL bookingIconURL = new File("src/main/image/booking.png").toURI().toURL();
+                        URL historyIconURL = new File("src/main/image/history.png").toURI().toURL();
+                        URL profileIconURL = new File("src/main/image/profile.png").toURI().toURL();
+                        URL adminIconURL = new File("src/main/image/admin.png").toURI().toURL();
+                        URL profileUserIconURL = new File("src/main/image/logout.png").toURI().toURL();
+                        URL welcomeIconURL = new File("src/main/image/wavinghand.png").toURI().toURL();
+                        URL fixIconURL = new File("src/main/image/settings.png").toURI().toURL();
+                        URL bookingannIconURL = new File("src/main/image/bookingann.png").toURI().toURL();
+                        URL completedURL = new File("src/main/image/checked.png").toURI().toURL();
+                        URL pendingIconURL = new File("src/main/image/file.png").toURI().toURL();
+                        URL announcementIconURL = new File("src/main/image/megaphone.png").toURI().toURL();
+                        URL promotionURL = new File("src/main/image/discounttag.png").toURI().toURL();
+
+                        // กำหนดไอคอนให้กับแต่ล่ะส่วนในหน้า HomePage
+                        logo.setIcon(new ImageIcon(logoIconURL));
+                        iconHome.setIcon(new ImageIcon(homeIconURL));
+                        iconBooking.setIcon(new ImageIcon(bookingIconURL));
+                        iconHistory.setIcon(new ImageIcon(historyIconURL));
+                        iconProfile.setIcon(new ImageIcon(profileIconURL));
+                        iconAdmin.setIcon(new ImageIcon(adminIconURL));
+                        iconExit.setIcon(new ImageIcon(profileUserIconURL));
+                        welcomeUser.setIcon(new ImageIcon(welcomeIconURL));
+                        fixAnnouncement.setIcon(new ImageIcon(fixIconURL));
+                        fixAnnouncement1.setIcon(new ImageIcon(fixIconURL));
+                        bookingAn.setIcon(new ImageIcon(bookingannIconURL));
+                        completedAn.setIcon(new ImageIcon(completedURL));
+                        pendingAn.setIcon(new ImageIcon(pendingIconURL));
+                        announcements.setIcon(new ImageIcon(announcementIconURL));
+                        servicePrice.setIcon(new ImageIcon(promotionURL));
+
+                    } catch (Exception e) {
+                        // หากเกิดข้อผิดพลาดขณะโหลดไฟล์ไอคอน ให้พิมพ์ข้อผิดพลาดออกหน้าจอ
+                        // และบันทึกข้อความ error ลงใน log เพื่อใช้ในการตรวจสอบภายหลัง
+                        System.out.println(e);
+                        logger.severe("Cannot load icon images");
+                    }
+        }
+        
+        /**
+         * โหลดข้อมูลจำนวนการจองของผู้ใช้จากไฟล์ history_user.csv
+         * แล้วแสดงผลในหน้าหลัก เช่น จำนวนที่รอดำเนินการ / เสร็จสิ้น
+         */
         private void Announcements() {
+            
                 CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
                 ArrayList<String[]> users = csvHandler.readCSV();
                 int processCount = 0, completedCount = 0, userBookingCount = 0; // ตัวนับ
                 for (String[] parts : users) {
                     if (parts.length >= 8) {
-                        String fileUsername = parts[1]; // สมมติ column 1 คือชื่อผู้ใช้
+                        String fileUsername = parts[1]; //ชื่อผู้ใช้
+                        
+                        // ตรวจสอบว่าเป็นข้อมูลของผู้ใช้ที่ล็อกอินหรือไม่
                         if (fileUsername.equalsIgnoreCase(userName)) { // นับเฉพาะ user ที่ล็อคอิน
-                            String fileProcess = parts[7]; // สมมติ column 7 คือสถานะ
+                            String fileProcess = parts[7]; //สถานะ
                             if (fileProcess.toLowerCase().contains("process")) {
                                 processCount++;
                             } else if (fileProcess.toLowerCase().contains("complete")) {
                                 completedCount++;
                             }
-                            userBookingCount++; // ทุกแถวของ user ที่ล็อคอินถือเป็น booking
+                            userBookingCount++; 
                         }
                     }
                 }
+                // แสดงค่าที่นับได้บนหน้าจอ
                 pendinginfo.setText(String.valueOf(processCount));
                 completedinfo.setText(String.valueOf(completedCount));
                 userBookingInfo.setText(String.valueOf(userBookingCount));
         }
-        
+        /**
+        * โหลดประกาศทั่วไปจากไฟล์ announcement.csv
+        * @return ข้อความประกาศในรูปแบบ HTML ที่พร้อมแสดงใน JLabel
+        */
         private String loadAnnouncementForLabel() {
                 CSVHandler csvHandler = new CSVHandler("src/main/data/announcement.csv");
                 ArrayList<String[]> data = csvHandler.readCSV();
                 StringBuilder announcement = new StringBuilder();
-                // ข้าม header (index 0) ถ้ามี
+                // ข้าม header ถ้ามี
                 for (int i = 1; i < data.size(); i++) {
                     String[] row = data.get(i);
                     if (row.length > 0) {
@@ -171,10 +205,16 @@ public class HomePage extends javax.swing.JFrame {
                         announcement.append(row[0]); // สมมติว่า column แรกคือข้อความ
                     }
                 }
-                //ถ้ามีข้อความใน CSV → result = ข้อความที่อ่านมา ถ้าไม่มีข้อความ → result = "ยังไม่มีประกาศ"
+                //ถ้ามีข้อความใน CSV  ให้ result = ข้อความที่อ่านมา 
+                //ถ้าไม่มีข้อความ  ให้ result = "ยังไม่มีประกาศ"
                 String result = announcement.length() > 0 ? announcement.toString() : "ยังไม่มีประกาศ";
                 return "<html>" + result + "</html>";
         }
+        
+        /**
+        * บันทึกข้อความประกาศใหม่ลงไฟล์ announcement.csv
+        * @param newMessage ข้อความใหม่ที่ต้องการบันทึก
+        */
         
         private void saveAnnouncement(String newMessage) {   // เพิ่ม
                 CSVHandler csvHandler = new CSVHandler("src/main/data/announcement.csv");
@@ -183,8 +223,13 @@ public class HomePage extends javax.swing.JFrame {
                 data.add(new String[]{newMessage});// ใส่ข้อความใหม่
                 csvHandler.writeCSV(data);// เขียนทับไฟล์
         }
-    
+        /**
+        * เปิดหน้าต่างแก้ไขข้อความประกาศ เฉพาะ admin
+        */
+        
+        //ใช้ "<html> ... </html>" ตอน setText ให้กับ JLabel เพราะว่า JLabel ไม่รองรับการขึ้นบรรทัด (\n) โดยตรง ถ้าใส่ \n จะไม่ขึ้นบรรทัดใหม่ ต้องใช้ HTML <br> เป็นตัวช่วย
         private void openEditAnnouncementDialog() {
+            // ดึงข้อความปัจจุบันจาก JLabel และแปลงกลับเป็นข้อความธรรมดา
             String currentMessage = announcementsLabel.getText()
                         .replaceAll("(?i)<html>", "")
                         .replaceAll("(?i)</html>", "")
@@ -213,6 +258,10 @@ public class HomePage extends javax.swing.JFrame {
             }
         }
         
+        /**
+        * โหลดข้อความโปรโมชั่นจากไฟล์ serviceprice.csv
+        * @return ข้อความโปรโมชั่นในรูปแบบ HTML สำหรับ JLabel
+        */
         
         private String loadAnnouncementServicePrice() {
                 CSVHandler csvHandler = new CSVHandler("src/main/data/serviceprice.csv");
@@ -232,6 +281,10 @@ public class HomePage extends javax.swing.JFrame {
                 String result = announcementPromo.length() > 0 ? announcementPromo.toString() : "ยังไม่มีประกาศ";
                 return "<html>" + result + "</html>";
         }
+        /**
+        * บันทึกข้อความโปรโมชั่นใหม่ลงไฟล์ serviceprice.csv
+        * @param Message ข้อความโปรโมชั่นใหม่
+        */
         
         private void saveAnnouncementServicePrice(String Message) {
                 CSVHandler csvHandler = new CSVHandler("src/main/data/serviceprice.csv");
@@ -240,6 +293,10 @@ public class HomePage extends javax.swing.JFrame {
                 data.add(new String[]{Message});// ใส่ข้อความใหม่
                 csvHandler.writeCSV(data);// เขียนทับไฟล์
         }
+        
+        /**
+        * เปิดหน้าต่างแก้ไขข้อความโปรโมชั่นบริการ เฉพาะ admin
+        */
         
         //ใช้ "<html> ... </html>" ตอน setText ให้กับ JLabel เพราะว่า JLabel ไม่รองรับการขึ้นบรรทัด (\n) โดยตรง ถ้าใส่ \n จะไม่ขึ้นบรรทัดใหม่ ต้องใช้ HTML <br> เป็นตัวช่วย
         private void openEditAnnouncementDialogServicePrice() {
@@ -348,11 +405,6 @@ public class HomePage extends javax.swing.JFrame {
         homeBtn.setForeground(new java.awt.Color(255, 255, 255));
         homeBtn.setText(" Home    ");
         homeBtn.setPreferredSize(new java.awt.Dimension(164, 90));
-        homeBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                homeBtnActionPerformed(evt);
-            }
-        });
         jPanel2.add(homeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 260, 70));
 
         adminBtn.setBackground(new java.awt.Color(43, 43, 43));
@@ -370,11 +422,6 @@ public class HomePage extends javax.swing.JFrame {
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 adminBtnMouseExited(evt);
-            }
-        });
-        adminBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adminBtnActionPerformed(evt);
             }
         });
         jPanel2.add(adminBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 270, 70));
@@ -413,11 +460,6 @@ public class HomePage extends javax.swing.JFrame {
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 historyBtnMouseExited(evt);
-            }
-        });
-        historyBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                historyBtnActionPerformed(evt);
             }
         });
         jPanel2.add(historyBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 260, 70));
@@ -621,18 +663,6 @@ public class HomePage extends javax.swing.JFrame {
         //adminBtn.setBackground(new Color(28,24,24));
         adminBtn.setForeground(new Color(204,204,204));
     }//GEN-LAST:event_adminBtnMouseExited
-
-    private void homeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_homeBtnActionPerformed
-
-    private void historyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_historyBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_historyBtnActionPerformed
-
-    private void adminBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_adminBtnActionPerformed
 
     private void iconExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconExitMouseClicked
         dispose();
