@@ -125,7 +125,7 @@ public class BookingPage extends javax.swing.JFrame  {
                 }
     
     }
-    
+    /*
     private void loadBookingCount() {
         CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
         ArrayList<String[]> data = csvHandler.readCSV();
@@ -143,14 +143,14 @@ public class BookingPage extends javax.swing.JFrame  {
                 e.printStackTrace(); // debug ถ้า parse ไม่ได้
             }
         }
-    }
+    }*/
 
       
 private Map<LocalDate, Integer> calculateDailyBooking() {
     CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
     ArrayList<String[]> data = csvHandler.readCSV();
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
+    // Key =  วันที่ Value = จำนวนชั่วโมงการจอง
     Map<LocalDate, Integer> dailyBooking = new HashMap<>();
 
      boolean firstLine = true; // ข้าม header
@@ -160,17 +160,19 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             continue;
         }
         if (parts.length >= 5) {
-            String dateStr = parts[3].trim();
-            String timeRange = parts[4].trim();
+            String dateStr = parts[3].trim(); // วันที่จอง
+            String timeRange = parts[4].trim();// เวลาที่จอง
 
             try {
                 // ใช้ Locale อังกฤษ
+                //แปลง จาก 22 September 2025 ใน csv เป็น 2025-09-22
                 LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH));
 
                 // แยกเวลา
                 String[] times = timeRange.split("-");
                 if (times.length != 2) continue;
-
+                
+                //เวลาเริ่ม และ เวลาจบ
                 LocalTime start = LocalTime.parse(times[0].trim(), timeFormatter);
                 LocalTime end = LocalTime.parse(times[1].trim(), timeFormatter);
 
@@ -179,9 +181,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 LocalTime t = start;
                 while (t.isBefore(end)) {
                     slots++;
-                    t = t.plusHours(1);
-                }
-
+                    t = t.plusHours(1); 
+                }// ex "09:00-12:00" จะนับเป็น 3 ชั่วโมง (09-10, 10-11, 11-12)
+                
+                //ถ้าวันนั้นเคยมี booking มาก่อน  บวกเพิ่ม
+                //ถ้ายังไม่มี → เริ่มจาก 0
                 dailyBooking.put(date, dailyBooking.getOrDefault(date, 0) + slots);
 
             } catch (Exception e) {
@@ -196,29 +200,35 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
 
 
 
-
+    /**
+     * เอาไว้สร้างตารางปฏิทินตามวันจริงและจำนวนวันของเดือนนั้น
+     */
     private void updateCalendar() {
         
-        calendarPanel.removeAll(); 
+    calendarPanel.removeAll(); 
     selectedDay = -1;
-
+    
+    //LocalDate เก็บ ปี + เดือน + วัน
     LocalDate today = LocalDate.now(); 
     
-    // ดึงเดือน/ปีจาก combobox
+    
     int monthIndex = monthComboBox1.getSelectedIndex() + 1;
     int year = Integer.parseInt(yearComboBox.getSelectedItem().toString());
-
-    YearMonth yearMonth = YearMonth.of(year, monthIndex);//ดึงปีและวันที่เลือกใน combobox
-    int daysInMonth = yearMonth.lengthOfMonth();
+    //YearMonth เก็บ ปี + เดือน เท่านั้น 
+    YearMonth yearMonth = YearMonth.of(year, monthIndex);//ดึงเดือนกับปี ที่เลือกมาจาก combobox
+    int daysInMonth = yearMonth.lengthOfMonth();//นับจำนวนวันในเดือนนั้น
 
     // หาว่าวันที่ 1 ตรงกับวันอะไร
     LocalDate firstDayOfMonth = yearMonth.atDay(1);//สร้างวันที่ 1 ของเดือนนั้น
-    DayOfWeek firstDayOfWeek = firstDayOfMonth.getDayOfWeek();//เป็นวันอะไรในสัปดาห์
-
+    DayOfWeek firstDayOfWeek = firstDayOfMonth.getDayOfWeek();//วันแรกของเดือนนั้น เป็นวันอะไรในสัปดาห์
+    
+    System.out.println("เป็นวันอะไร :"+firstDayOfWeek);        // WEDNESDAY
+    System.out.println("วันที่ :"+firstDayOfWeek.getValue()); // 3
+    
      Map<LocalDate, Integer> dailyBookingMap = calculateDailyBooking();
 
     
-    int shift = firstDayOfWeek.getValue(); //เอาไว้บอกว่าเดือนนั้นวันที่ 1 ของเดือนเริ่มตรงไหน
+    int shift = firstDayOfWeek.getValue(); //เอาไว้บอกว่าเดือนนั้นวันที่ 1 ของเดือนเริ่มตรงไหน เช่นวัน พุธ  = shitf 3
     System.out.println("shift : "+ shift);
    
     // เติมช่องว่างก่อนวันจริง
@@ -232,7 +242,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             JButton dayButton = new JButton(String.valueOf(day));
 
             LocalDate buttonDate = LocalDate.of(year, monthIndex, day);
-           int booked = dailyBookingMap.getOrDefault(buttonDate, 0);
+           int booked = dailyBookingMap.getOrDefault(buttonDate, 0);//กรณีที่ไม่มีการจองจะคืนค่า ออกมาเป็น 0 กัน Null
  
             dayButton.setPreferredSize(new Dimension(20, 20));
             dayButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -243,14 +253,14 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             System.out.println("วันที่ " + buttonDate + " จำนวน " + booked);
 
            
-            // ถ้าวันนี้ผ่านมาแล้ว
-           if (closedDays.contains(buttonDate)) {
+           
+           if (closedDays.contains(buttonDate)) {//ตรงกับวันที่ร้านปิด
                 dayButton.setBackground(Color.GRAY);
                 dayButton.setForeground(Color.WHITE);
                  dayButton.addActionListener(e -> {
                     JOptionPane.showMessageDialog(this, "วันนี้ร้านปิด");
                 });
-            } else if (buttonDate.isBefore(today)) {
+            } else if (buttonDate.isBefore(today)) { // ถ้าวันนี้ผ่านมาแล้ว
                 dayButton.setBackground(Color.LIGHT_GRAY);
                 dayButton.setForeground(Color.BLACK);
                 dayButton.addActionListener(e -> {
@@ -323,6 +333,11 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         calendarPanel.revalidate();
         calendarPanel.repaint();
     }
+    
+    
+    /**
+     * โหลดข้อมูลวันหยุดของร้าน
+     */
     private void loadClosedDays() {
         closedDays.clear(); // เคลียร์ข้อมูลเก่า
 

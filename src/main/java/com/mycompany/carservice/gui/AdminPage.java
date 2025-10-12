@@ -548,15 +548,14 @@ public class AdminPage extends javax.swing.JFrame {
      * @param row  ที่จะแก้
      */
     private void deleteRow(int row) {
-        try {
+        
             // แปลง index หลัง filter/sort เป็น model index
-            int modelRow = table.convertRowIndexToModel(row) + 1;//อาจ sort/filter ทำให้ index view != index model
-            csvHandler.deleteRow(modelRow); 
+            int modelRow = table.convertRowIndexToModel(row) ;//อาจ sort/filter ทำให้ index view != index model
+           csvHandler.deleteRow(modelRow + 1); 
             ((DefaultTableModel) table.getModel()).removeRow(modelRow);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(table, "Failed to delete row: " + ex.getMessage());
-        }
+             System.out.println("ลบ " + modelRow + (int)1);
+              System.out.println("ที่เลือก " + row);
+       
     }
 
 
@@ -1012,7 +1011,15 @@ public class AdminPage extends javax.swing.JFrame {
     }//GEN-LAST:event_homeBtnMouseExited
 
     private void addUserBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserBtnMouseClicked
-       new AddUser();
+      AddUser addUser = new AddUser();
+addUser.addWindowListener(new java.awt.event.WindowAdapter() {
+    @Override
+    public void windowClosed(java.awt.event.WindowEvent e) {
+      loadCsvData();
+    }
+});
+       
+                
     }//GEN-LAST:event_addUserBtnMouseClicked
 
     private void iconExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iconExitMouseClicked

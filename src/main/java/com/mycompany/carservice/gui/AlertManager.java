@@ -74,6 +74,13 @@ public class AlertManager implements Subject {
         }
         return false;
     }
+      public boolean checkTimeInDetail( boolean check){
+        if(check){
+         notifyObservers("เวลานี้ผ่านมาแล้ว");
+         return true;
+        }
+        return false;
+    }
     public void showMessage(String message) {
     notifyObservers(message); // เด้งข้อความไปยัง observer ที่ register ไว้
     }

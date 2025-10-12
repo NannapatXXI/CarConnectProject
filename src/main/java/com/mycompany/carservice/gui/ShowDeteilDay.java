@@ -92,11 +92,19 @@ public class ShowDeteilDay extends javax.swing.JDialog {
     private void disablePastTime(javax.swing.JPanel panel, String timeText) {
         if (isPastDateTime(day, month, year, timeText)) {
             panel.setBackground(new Color(200, 200, 200)); // สีเทา
-            panel.setEnabled(false); // ปิดการคลิก
+              panel.setEnabled(false); // ปิดการคลิก
+            panel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR)); // เปลี่ยน cursor
+            if (selectedPanel == panel) {
+                selectedPanel = null; // เคลียร์ selectedPanel ถ้า panel ผ่านเวลา
+            }
         }
     }
     
    private void selectPanel(javax.swing.JPanel panel) {
+        if (!panel.isEnabled()) {
+            selectedPanel = null;
+            return; // panel ผ่านเวลาแล้ว เลือกไม่ได้
+        }
         // คืนสี panel เก่ากลับเป็นสีขาว
         if (selectedPanel != null) {
             selectedPanel.setBackground(new Color(255,255,255)); 
@@ -231,6 +239,20 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         
         int count =Integer.parseInt(label.getText()) ;
          return manager.checkCount(count);
+    }
+    private boolean checkTime( javax.swing.JPanel panel ){
+         boolean status;
+        if(panel.isEnabled()){
+            status = true;
+        }else{
+            status = false;
+        }
+        AlertManager manager = new AlertManager();
+        PopAlert alert = new PopAlert(parentFrame, true); // ใช้ dialog เดิม
+        manager.registerObserver(alert);
+        
+        
+         return manager.checkTimeInDetail(status);
     }
     
    private void loadService() {
@@ -1087,81 +1109,168 @@ private String calculateFinishTime(String startTime, int hoursToAdd) {
 
     private void time9PanalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time9PanalMouseClicked
         String[] parts =jLabel6.getText().split(":");
-        if(checkQueue(time9Label)){
-              System.out.println("ไอน้องพี่มาแล้ว "+ parts[0] );
+        
+        //ต้องเช็คว่ามันเป็นของวันปัจจุบันไหม
+        if(isPastDateTime(day, month, year, "09:00")){
+             if(checkTime(backJPanal2)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time9Label)){
+                System.out.println("จองได้ "+ parts[0] );
+                selectPanel(backJPanal2);
+            }else{
+                 System.out.println("จองไม่ได้ "+ parts[0] );
+            }
+            
+             
         }
+       
+        
       
-       selectPanel(backJPanal2);
+       
       
     }//GEN-LAST:event_time9PanalMouseClicked
 
     private void time10PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time10PanelMouseClicked
-      
-          if(checkQueue(time10Label)){
-              System.out.println("ไอน้องพี่มาแล้ว " + jLabel10.getText());
+         if(isPastDateTime(day, month, year, "10:00")){
+             if(checkTime(backJPanal1)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time10Label)){
+                System.out.println("จองได้ " + jLabel10.getText());
+                selectPanel(backJPanal1);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel10.getText());
+            }
+            
+             
         }
-      
-          selectPanel(backJPanal1);
+       
     }//GEN-LAST:event_time10PanelMouseClicked
 
     private void time11PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time11PanelMouseClicked
-        
-         if(checkQueue(time11Label)){
-              System.out.println("ไอน้องพี่มาแล้ว "+ jLabel8.getText()  );
+        if(isPastDateTime(day, month, year, "11:00")){
+             if(checkTime(backJPanal3)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time11Label)){
+                System.out.println("จองได้ " + jLabel11.getText());
+                selectPanel(backJPanal3);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel11.getText());
+            }
+            
+             
         }
       
-         selectPanel(backJPanal3);
     }//GEN-LAST:event_time11PanelMouseClicked
 
     private void time14PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time14PanelMouseClicked
-        
-          if(checkQueue(time14Label)){
-              System.out.println("ไอน้องพี่มาแล้ว " +jLabel9.getText() );
+         if(isPastDateTime(day, month, year, "14:00")){
+             if(checkTime(backJPanal5)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time14Label)){
+                System.out.println("จองได้ " + jLabel9.getText());
+                selectPanel(backJPanal5);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel9.getText());
+            }
+            
+             
         }
-      
-          selectPanel(backJPanal5);
+       
+        
     }//GEN-LAST:event_time14PanelMouseClicked
 
     private void time15PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time15PanelMouseClicked
-      
-         if(checkQueue(time15Label)){
-              System.out.println("ไอน้องพี่มาแล้ว "+jLabel11.getText()  );
+       if(isPastDateTime(day, month, year, "15:00")){
+             if(checkTime(backJPanal6)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time15Label)){
+                System.out.println("จองได้ " + jLabel11.getText());
+                selectPanel(backJPanal6);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel11.getText());
+            }
+            
+             
         }
-      
-         selectPanel(backJPanal6);
+       
     }//GEN-LAST:event_time15PanelMouseClicked
 
     private void time16PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time16PanelMouseClicked
-       
-         if(checkQueue(time16Label)){
-              System.out.println("ไอน้องพี่มาแล้ว "+jLabel12.getText()  );
+        if(isPastDateTime(day, month, year, "16:00")){
+             if(checkTime(backJPanal7)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time16Label)){
+                System.out.println("จองได้ " + jLabel12.getText());
+                selectPanel(backJPanal7);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel12.getText());
+            }
+            
+             
         }
+       
       
-         selectPanel(backJPanal7);
-        
     }//GEN-LAST:event_time16PanelMouseClicked
 
     private void time17PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time17PanelMouseClicked
-       
-         if(checkQueue(time17Label)){
-              System.out.println("ไอน้องพี่มาแล้ว "+jLabel13.getText()  );
+       if(isPastDateTime(day, month, year, "17:00")){
+             if(checkTime(backJPanal8)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time17Label)){
+                System.out.println("จองได้ " + jLabel13.getText());
+                selectPanel(backJPanal8);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel13.getText());
+            }
+            
+             
         }
+       
       
-         selectPanel(backJPanal8);
+       
     }//GEN-LAST:event_time17PanelMouseClicked
 
     private void time13PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time13PanelMouseClicked
-       
-         if(checkQueue(time13Label)){
-              System.out.println("ไอน้องพี่มาแล้ว "+ jLabel10.getText()  );
+         if(isPastDateTime(day, month, year, "13:00")){
+             if(checkTime(backJPanal4)){
+                System.out.println("เวลานี้ผ่านมาแล้ว ");
+            }
+        }else{
+            if(checkQueue(time13Label)){
+                System.out.println("จองได้ " + jLabel10.getText());
+                selectPanel(backJPanal4);
+            }else{
+                 System.out.println("จองไม่ได้ " + jLabel10.getText());
+            }
+            
+             
         }
+       
       
-         selectPanel(backJPanal4);
+      
     }//GEN-LAST:event_time13PanelMouseClicked
 
     private void comfrimBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comfrimBtnMouseClicked
-    
-        
+       if (selectedPanel == null || !selectedPanel.isEnabled()) {
+            JOptionPane.showMessageDialog(this, "โปรดเลือกเวลาที่สามารถจองได้");
+            selectedPanel = null; // ป้องกันกรณี panel ผ่านเวลาแต่ selectedPanel ยังชี้อยู่
+            return;
+        }
+       
         AlertManager manager = new AlertManager();
         PopAlert alert = new PopAlert(parentFrame, true); // ใช้ dialog เดิม
         manager.registerObserver(alert);
