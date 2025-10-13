@@ -72,8 +72,8 @@ public class HomePage extends javax.swing.JFrame {
             
         } else { 
             // ซ่อนสำหรับ User ปกติ
-            fixAnnouncement.setVisible(true); 
-            fixAnnouncement1.setVisible(true);
+            fixAnnouncement.setVisible(false); 
+            fixAnnouncement1.setVisible(false);
             adminBtn.setVisible(false);
             iconAdmin.setVisible(false);
         }

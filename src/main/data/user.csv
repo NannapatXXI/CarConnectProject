@@ -1,5 +1,6 @@
 UserID,Name,Password,Email,Phone,Role
 0001,Admin,-,-,0929564844,admin
+0002,utest,-,example@email.com,0000000000,user
 6501,Nannapat,11,nannapat@gmail.com,0870100000,user
 6702,สมหญิง สวยงาม,S1@,somying2@example.com,0811000002,user
 6703,อนุชา แก้วใส,Anu#3kL9v2,anucha3@example.com,0811000003,user
@@ -48,5 +49,3 @@ UserID,Name,Password,Email,Phone,Role
 6746,กัญญารัตน์ สดใส,Ka46@tV9mS,kanyarath46@example.com,0811000046,user
 6747,ภานุวัฒน์ กล้าหาญ,Ph47$yL5pR,phanawat47@example.com,0811000047,user
 6748,อัมพร สวยงาม,Um48!pK7nQ,umporn48@example.com,0811000048,user
-,,,,,-- -- 
-,,,,,-- -- 

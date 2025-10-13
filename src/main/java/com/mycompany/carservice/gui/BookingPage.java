@@ -89,10 +89,14 @@ public class BookingPage extends javax.swing.JFrame  {
         
          if(role.equals("admin")){
              System.out.println("Admin !!!!");
+             adminBtn.setVisible(true);  
+             iconAdmin.setVisible(true);
+             close.setVisible(true);
         }else{
              System.out.println("User !!!!");
              adminBtn.setVisible(false);  // user ซ่อนปุ่ม
              iconAdmin.setVisible(false);
+             close.setVisible(false);
              
         }
         
