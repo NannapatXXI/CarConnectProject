@@ -89,14 +89,10 @@ public class BookingPage extends javax.swing.JFrame  {
         
          if(role.equals("admin")){
              System.out.println("Admin !!!!");
-             adminBtn.setVisible(true);  
-             iconAdmin.setVisible(true);
-             close.setVisible(true);
         }else{
              System.out.println("User !!!!");
              adminBtn.setVisible(false);  // user ซ่อนปุ่ม
              iconAdmin.setVisible(false);
-             close.setVisible(false);
              
         }
         
@@ -151,7 +147,10 @@ public class BookingPage extends javax.swing.JFrame  {
         }
     }*/
 
-      
+/**
+ * เอาไว้คำนวณว่าในวันนั้นมีการจองกี่คน
+ * @return จำนวนชั่วโมงการจองที่ Map
+ */
 private Map<LocalDate, Integer> calculateDailyBooking() {
     CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
     ArrayList<String[]> data = csvHandler.readCSV();
@@ -763,7 +762,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 closeActionPerformed(evt);
             }
         });
-        getContentPane().add(close, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 750, 140, 30));
+        getContentPane().add(close, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 760, 150, 30));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel13.setText("ปิด");

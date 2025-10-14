@@ -49,7 +49,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
          
           changeStatus();
            loadService();
-          dayLabel.setText("วันที่ "+day +" "+ month + " " + year);
+          dayLabel.setText("Day : "+day +" "+ month + " " + year);
         
         setLocationRelativeTo(null);
         setVisible(true);  
@@ -58,6 +58,14 @@ public class ShowDeteilDay extends javax.swing.JDialog {
       
         
     }
+    /**
+     * เช็คว่าวันนี้ผ่านมาแล้วหรือยัง
+     * @param day วันที่จะเช็ค
+     * @param month เดือนที่จะเช็ค
+     * @param year ปีที่จะเช็ค
+     * @param timeText เวลาที่จะเช็ค
+     * @return  จริง ถ้าเป็นวันที่ผ่านมาแล้ว
+     */
     private boolean isPastDateTime(String day, String month, String year, String timeText) {
             try {
             // แปลงเป็น LocalDate ของวันจอง
@@ -89,6 +97,13 @@ public class ShowDeteilDay extends javax.swing.JDialog {
             return false;
         }
     }
+    
+    
+    /**
+     * เช็คว่าเวลานี้ผ่านมาแล้วหรือยัง และปรับ UI
+     * @param panel ที่ต้องการจะเช็ค
+     * @param timeText เวลาเท่าไหร่
+     */
     private void disablePastTime(javax.swing.JPanel panel, String timeText) {
         if (isPastDateTime(day, month, year, timeText)) {
             panel.setBackground(new Color(200, 200, 200)); // สีเทา
@@ -100,6 +115,11 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         }
     }
     
+    
+   /**
+    * เช็ค Panel ที่เลือก
+    * @param panel ที่ต้องการเลือก
+    */
    private void selectPanel(javax.swing.JPanel panel) {
         if (!panel.isEnabled()) {
             selectedPanel = null;
@@ -117,6 +137,13 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         selectedPanel = panel;
     }
     
+   /**
+    * นับจำนวนคนจองในวันนั้นว่าในแต่ละ ชม มีกี่คน
+    * @param day วันที่จอง
+    * @param month เดือนที่จอง
+    * @param year ปีที่จอง
+    * @return  ค่าที่ Map มาของวันนั้นว่าแต่ละ ชม มีกี่คน
+    */
    private Map<String, Integer> countBookingByTime(String day, String month, String year) {
     CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
     ArrayList<String[]> data = csvHandler.readCSV();
@@ -168,6 +195,15 @@ public class ShowDeteilDay extends javax.swing.JDialog {
 
     return timeCount;
 }
+   
+   /**
+    * ไว้เช็คว่าเวลาที่จะจองตั้งแต่เริ่มถึงจบนั้นว่างที่จะจองได้ไหม
+    * @param startTime เวลาที่เริ่ม
+    * @param endTime    เวลาที่จบ
+    * @param timeCount  จำนวนคนจองในเวลานั้น
+    * @param limit จำนวน จำกัด ต่อ ชม
+    * @return  true ต่อเมื่อสามารถจองได้ , false ต่อเมื่อไม่สามารถจองได้
+    */
    private boolean canBookTimeRange(String startTime, String endTime, Map<String, Integer> timeCount, int limit) {
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     LocalTime start = LocalTime.parse(startTime, timeFormatter);
@@ -180,7 +216,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
 
         // panelTime อยู่ในช่วง start <= panelTime < end
         if(!panelTime.isBefore(start) && panelTime.isBefore(end)) {
-            int count = timeCount.getOrDefault(t,0);
+            int count = timeCount.getOrDefault(t,0); // เอา t ที่เป็นเวลาไปเทียบหาจำนวนคนที่จองในเวลานั้น
             if(count >= limit){
                 return false; // panel เต็ม
             }
@@ -189,7 +225,9 @@ public class ShowDeteilDay extends javax.swing.JDialog {
     return true; // ทุก panel ยังจองได้
 }
 
-
+   /**
+    * ปรับ UI ตามจำนวน คนจองและเวลา
+    */
     private void changeStatus() {
         Map<String, Integer> result = countBookingByTime(day, month, year);
 
@@ -214,7 +252,13 @@ public class ShowDeteilDay extends javax.swing.JDialog {
 
     }
 
-    
+    /**
+     * ค่อยเช็คว่าจำนวนคนเท่าไหร่ แล้วเปลี่ยนสี
+     * @param panel ที่เปลี่ยนสี
+     * @param label ที่จำเปลี่ยนจำนวน
+     * @param timeKey ช่วงเวลาใน panel นั้น
+     * @param timeCount ค่าที่ Map มาแล้วในแต่ละช่วงเวลา
+     */
     private void updatePanelColor(javax.swing.JPanel panel, javax.swing.JLabel label,  String timeKey, Map<String, Integer> timeCount) {
         int count = timeCount.getOrDefault(timeKey, 0);
 
@@ -231,6 +275,11 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         label.setText(count+"");
     }
     
+    /**
+     * เอาไว้เช็คว่ายังจองได้ไหม
+     * @param label ที่จะเช็ค
+     * @return   true = จองได้ , false = จองไม่ได้
+     */
     private boolean checkQueue( javax.swing.JLabel label){
          
         AlertManager manager = new AlertManager();
@@ -240,6 +289,12 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         int count =Integer.parseInt(label.getText()) ;
          return manager.checkCount(count);
     }
+    
+    /**
+     * เช็คว่าช่วงเวลานี้จองได้หริือไม่
+     * @param panel ที่จะเช็ค
+     * @return  เป็น true = ผ่านมาแล้ว , false = ยังไม่ผ่านมา
+     */
     private boolean checkTime( javax.swing.JPanel panel ){
          boolean status;
         if(panel.isEnabled()){
@@ -255,6 +310,9 @@ public class ShowDeteilDay extends javax.swing.JDialog {
          return manager.checkTimeInDetail(status);
     }
     
+   /**
+    * โหลดข้อมูลจาก csv มาลงใน combobox
+    */
    private void loadService() {
     CSVHandler csvHandler = new CSVHandler("src/main/data/service.csv");
     ArrayList<String[]> data = csvHandler.readCSV();
@@ -275,21 +333,27 @@ public class ShowDeteilDay extends javax.swing.JDialog {
     }
 }
 
-private String calculateFinishTime(String startTime, int hoursToAdd) {
-    try {
-        String[] parts = startTime.split(":"); // แยกชั่วโมงและนาที
-        int hour = Integer.parseInt(parts[0]);
-        int minute = Integer.parseInt(parts[1]);
+    /**
+     * คำนวญเวลาที่จะจบ
+     * @param startTime ชม ที่เริ่ม
+     * @param hoursToAdd ทำกี่ชม
+     * @return  ส่ง ชม ที่จะจบออกไป
+     */
+    private String calculateFinishTime(String startTime, int hoursToAdd) {
+        try {
+            String[] parts = startTime.split(":"); // แยกชั่วโมงและนาที
+            int hour = Integer.parseInt(parts[0]);
+            int minute = Integer.parseInt(parts[1]);
 
-        hour += hoursToAdd; // บวกชั่วโมง
-        if(hour >= 24) hour -= 24; // ถ้าเกิน 24 ชั่วโมง
+            hour += hoursToAdd; // บวกชั่วโมง
+            if(hour >= 24) hour -= 24; // ถ้าเกิน 24 ชั่วโมง
 
-        return String.format("%02d:%02d", hour, minute);
-    } catch (Exception e) {
-        e.printStackTrace();
-        return startTime; // fallback
+            return String.format("%02d:%02d", hour, minute);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return startTime; // fallback
+        }
     }
-}
 
     
 // homeBtn.setBackground(Color.GRAY);
@@ -428,7 +492,7 @@ private String calculateFinishTime(String startTime, int hoursToAdd) {
         jLabel5.setText("Service :");
 
         dayLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        dayLabel.setText("วันที่ ");
+        dayLabel.setText("Day : ");
 
         backJPanal1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -1133,11 +1197,13 @@ private String calculateFinishTime(String startTime, int hoursToAdd) {
     }//GEN-LAST:event_time9PanalMouseClicked
 
     private void time10PanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_time10PanelMouseClicked
-         if(isPastDateTime(day, month, year, "10:00")){
+        //เช็คว่าเวลานี้ผ่านมาแล้วหรือยัง
+        if(isPastDateTime(day, month, year, "10:00")){
              if(checkTime(backJPanal1)){
                 System.out.println("เวลานี้ผ่านมาแล้ว ");
             }
         }else{
+            //เช็คว่าคนของเต็มยัง
             if(checkQueue(time10Label)){
                 System.out.println("จองได้ " + jLabel10.getText());
                 selectPanel(backJPanal1);
@@ -1265,11 +1331,12 @@ private String calculateFinishTime(String startTime, int hoursToAdd) {
     }//GEN-LAST:event_time13PanelMouseClicked
 
     private void comfrimBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_comfrimBtnMouseClicked
-       if (selectedPanel == null || !selectedPanel.isEnabled()) {
+       /*
+        if (selectedPanel == null || !selectedPanel.isEnabled()) {
             JOptionPane.showMessageDialog(this, "โปรดเลือกเวลาที่สามารถจองได้");
             selectedPanel = null; // ป้องกันกรณี panel ผ่านเวลาแต่ selectedPanel ยังชี้อยู่
             return;
-        }
+        }*/
        
         AlertManager manager = new AlertManager();
         PopAlert alert = new PopAlert(parentFrame, true); // ใช้ dialog เดิม

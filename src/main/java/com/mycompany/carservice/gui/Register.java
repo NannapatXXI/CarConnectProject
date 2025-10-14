@@ -231,6 +231,11 @@ public class Register extends javax.swing.JFrame {
 
         confirmPassword.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         confirmPassword.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        confirmPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmPasswordActionPerformed(evt);
+            }
+        });
         confirmPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 confirmPasswordKeyTyped(evt);
@@ -567,6 +572,10 @@ public class Register extends javax.swing.JFrame {
             evt.consume();
         }
     }//GEN-LAST:event_emailKeyTyped
+
+    private void confirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmPasswordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_confirmPasswordActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel cautionconfirmpass;
