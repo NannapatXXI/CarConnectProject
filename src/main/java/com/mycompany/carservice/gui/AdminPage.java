@@ -222,8 +222,8 @@ public class AdminPage extends javax.swing.JFrame {
     centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
     for (int i = 0; i < jTable1.getColumnCount(); i++) {
-        if (!jTable1.getColumnName(i).equals("Action") &&
-            !jTable1.getColumnName(i).equals("No")) {
+        if (!jTable1.getColumnName(i).equals("Action") && !jTable1.getColumnName(i).equals("No")) {
+            
             jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
@@ -271,6 +271,8 @@ public class AdminPage extends javax.swing.JFrame {
        chooseStatus.addActionListener(e -> applyFilter());
     }
     
+    
+    
   private void applyFilter() {
     if (sorter == null) return;
 
@@ -278,22 +280,23 @@ public class AdminPage extends javax.swing.JFrame {
     String selectedStatus = (String) chooseStatus.getSelectedItem();
     int searchCol = getSelectedColumnIndex(); // จาก searchComboBox
 
+    //สร้าง list สำหรับเก็บ filter หลาย ๆ อัน เช่น filter จากข้อความ + filter จากสถานะ
     List<RowFilter<Object, Object>> filters = new ArrayList<>();
 
     if (!searchText.isEmpty()) {
         filters.add(RowFilter.regexFilter("(?i)" + searchText, searchCol));
     }
-
+    //เมื่อ table ปัจจุบันคือ "History" และ combobox ไม่ได้เลือก "----------"
     if (selectedTable.equals("History") && selectedStatus != null && !selectedStatus.equals("----------")) {
         int statusColIndex = jTable1.getColumn("Status").getModelIndex(); // ใช้ index จริงจาก JTable
         filters.add(RowFilter.regexFilter("(?i)" + selectedStatus, statusColIndex));
     }
 
-    if (filters.isEmpty()) {
+    if (filters.isEmpty()) { //ถ้าไม่มี filter เลย จะ แสดงข้อมูลทั้งหมด
         sorter.setRowFilter(null);
-    } else if (filters.size() == 1) {
+    } else if (filters.size() == 1) { //ถ้ามี filter เดียว จะ ใช้อันนั้นตรง ๆ
         sorter.setRowFilter(filters.get(0));
-    } else {
+    } else { //ถ้ามีหลายอัน (เช่น search + status) จะ ใช้ RowFilter.andFilter() รวมทั้งสองอัน (ต้องตรงทั้งคู่)
         sorter.setRowFilter(RowFilter.andFilter(filters));
     }
 }

@@ -170,12 +170,14 @@ public class ShowDeteilDay extends javax.swing.JDialog {
                         // panel ที่สนใจ
                         String[] panelTimes = {"09:00","10:00","11:00","12:00",
                                                "13:00","14:00","15:00","16:00","17:00"};
+                        
                         for (String panelTimeStr : panelTimes) {
                             LocalTime panelTime = LocalTime.parse(panelTimeStr, timeFormatter);
-
-                            // ✅ ใช้ inclusive: start <= panelTime < end OR start <= panelTime <= end
-                            if ((panelTime.equals(start) || panelTime.isAfter(start)) &&
-                                (panelTime.equals(end)   || panelTime.isBefore(end))) {
+                            
+                            //  นับเฉพาะ start <= panelTime < end
+                            //  start <= panelTime < end  OR   start <= panelTime <= end
+                            if ((panelTime.equals(start) || panelTime.isAfter(start)) &&  panelTime.isBefore(end)) {
+                               
 
                                 timeCount.put(panelTimeStr, timeCount.getOrDefault(panelTimeStr, 0) + 1);
                             }
@@ -216,6 +218,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
 
         // panelTime อยู่ในช่วง start <= panelTime < end
         if(!panelTime.isBefore(start) && panelTime.isBefore(end)) {
+            
             int count = timeCount.getOrDefault(t,0); // เอา t ที่เป็นเวลาไปเทียบหาจำนวนคนที่จองในเวลานั้น
             if(count >= limit){
                 return false; // panel เต็ม
@@ -341,7 +344,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
      */
     private String calculateFinishTime(String startTime, int hoursToAdd) {
         try {
-            String[] parts = startTime.split(":"); // แยกชั่วโมงและนาที
+            String[] parts = startTime.split(":"); // แยกชั่วโมง เช่น 10:00 เป็น 10
             int hour = Integer.parseInt(parts[0]);
             int minute = Integer.parseInt(parts[1]);
 

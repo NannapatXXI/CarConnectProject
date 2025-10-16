@@ -219,6 +219,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
     
     int monthIndex = monthComboBox1.getSelectedIndex() + 1;
     int year = Integer.parseInt(yearComboBox.getSelectedItem().toString());
+    
     //YearMonth เก็บ ปี + เดือน เท่านั้น 
     YearMonth yearMonth = YearMonth.of(year, monthIndex);//ดึงเดือนกับปี ที่เลือกมาจาก combobox
     int daysInMonth = yearMonth.lengthOfMonth();//นับจำนวนวันในเดือนนั้น
