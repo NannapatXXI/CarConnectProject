@@ -149,6 +149,23 @@ private void updateFirstRowCSV(String name, String newName,   String newPhone) {
         csv.writeCSV(users);
         oldName = newName;
 }
+
+// อัปเดตข้อมูลผู้ใช้ (ชื่อ) ใน CSV History
+private void updateCSVHistory(String name,String oldName){
+    CSVHandler csv = new CSVHandler("src/main/data/history_user.csv");
+        ArrayList<String[]> users = csv.readCSV();
+       
+        for (String[] row : users) {
+            System.out.println("row[1] name : " + row[1] + " new name "+oldName);
+            if (row[1].contentEquals(oldName)) {
+                row[1] = name; // เปลี่ยนชื่อใหม่
+                 System.out.println("New name : " + name);
+            }
+        }
+
+        csv.writeCSV(users);
+        oldName = name;
+}
 // ให้รับได้เฉพาะตัวเลข และจำกัดความยาว
 class NumberDocumentFilter extends DocumentFilter {
    private final int maxLength;
@@ -495,8 +512,9 @@ class NumberDocumentFilter extends DocumentFilter {
     private void savebuttonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_savebuttonMouseClicked
     String newName = usernameText.getText();
     String newPhone = phoneText.getText();
+    updateCSVHistory(newName,oldName);
     updateFirstRowCSV(oldName, newName,  newPhone); // อัปเดต CSV
-
+    
     // อัปเดตตัวแปรสำหรับรอบต่อไป
     oldName = newName; 
     currentUserName = newName;

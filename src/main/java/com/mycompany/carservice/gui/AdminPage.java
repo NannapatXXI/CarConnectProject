@@ -143,10 +143,10 @@ public class AdminPage extends javax.swing.JFrame {
          for (int i = 1; i < usersHistory.size(); i++) {   // เริ่มที่ 1 ไม่เอา header
              String[] history = usersHistory.get(i);
                 if(history[7].equalsIgnoreCase("complete")){
-                    System.out.println("complete " );
+                    
                     countCompleted++;
                 }else if(history[7].equalsIgnoreCase("process")){
-                     System.out.println("process"  );
+                     
                      countProcess++;
                 }   
                 
@@ -155,11 +155,14 @@ public class AdminPage extends javax.swing.JFrame {
 
                //นับจำนวนงานนั้นวันนั้น
                 if(today.equals(inputDate)){
-                    System.out.println("วันนี้ตรงกับ " + history[3]);
+                   // System.out.println("วันนี้ตรงกับ " + history[3]);
                     countTask++;
                 }
+                
         }
-         
+          System.out.println("process to day : "+ countProcess );
+          System.out.println("complete to day : "+ countCompleted );
+          System.out.println("Task to day : " + countTask);
         if(countCompleted != 0){
              completedLable.setText(Integer.toString(countCompleted));
         }else{
@@ -251,7 +254,7 @@ public class AdminPage extends javax.swing.JFrame {
     */
     private void setupFilter() {
        
-         System.out.println("โหล " );
+        
         searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             private void filter() {
                 if (!searchField.isFocusOwner()) return;
@@ -285,11 +288,13 @@ public class AdminPage extends javax.swing.JFrame {
 
     if (!searchText.isEmpty()) {
         filters.add(RowFilter.regexFilter("(?i)" + searchText, searchCol));
+         System.out.println("Now Add filter Text " );
     }
     //เมื่อ table ปัจจุบันคือ "History" และ combobox ไม่ได้เลือก "----------"
     if (selectedTable.equals("History") && selectedStatus != null && !selectedStatus.equals("----------")) {
         int statusColIndex = jTable1.getColumn("Status").getModelIndex(); // ใช้ index จริงจาก JTable
         filters.add(RowFilter.regexFilter("(?i)" + selectedStatus, statusColIndex));
+         System.out.println("Now Add filter Status " );
     }
 
     if (filters.isEmpty()) { //ถ้าไม่มี filter เลย จะ แสดงข้อมูลทั้งหมด
@@ -322,7 +327,7 @@ public class AdminPage extends javax.swing.JFrame {
         searchComboBox.addItem("Search : ID");
         searchComboBox.addItem("Search : Service");
         searchComboBox.addItem("Search : Date");
-        searchComboBox.addItem("Search : Status");
+        
     }
     
 }
@@ -359,8 +364,8 @@ public class AdminPage extends javax.swing.JFrame {
                     return 3; // column 2 = Service
                 case "Search : Date":
                     return 4; // column 3 = Date
-                case "Search : Status":
-                    return 8; // column 6 = Status
+                //case "Search : Status":
+                    //return 8; // column 6 = Status
                 default:
                     return 1; // fallback ไปที่ Name
             }

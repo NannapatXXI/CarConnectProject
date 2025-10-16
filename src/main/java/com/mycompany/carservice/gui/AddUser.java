@@ -4,9 +4,11 @@
  */
 package com.mycompany.carservice.gui;
 
+import com.mycompany.carservice.entity.RoundedPanel;
 import com.mycompany.carservice.entity.CSVHandler;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -49,7 +51,7 @@ public class AddUser extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        jPanel3 = new RoundedPanel(30); // 30 radius;
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();

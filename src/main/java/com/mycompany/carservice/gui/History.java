@@ -16,9 +16,11 @@ import java.net.URL;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import com.mycompany.carservice.entity.RoundedPanel;
+import java.awt.Component;
 import java.util.ArrayList;
 import javax.swing.table.TableRowSorter;
 import javax.swing.RowFilter;
+import javax.swing.border.MatteBorder;
 
 /**
  *
@@ -178,9 +180,47 @@ private void loadHistoryData() {
         // เปิดระบบ sorter (เรียงลำดับและค้นหา)
         sorter = new TableRowSorter<>(model);
         jTable1.setRowSorter(sorter);
-        
+         jTable1.getColumnModel().getColumn(7).setCellRenderer(new StatusRenderer());//สร้าง คอลัมน์ Status ลง Table
     setupFilter(); // ฟังก์ชันกรองข้อมูล (ค้นหา)
 }
+
+  /**
+    * เอาไว้สร้างคอลัมน์ Status
+    */
+    class StatusRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, boolean hasFocus,
+                                                   int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            if (value != null) {
+                
+                 String status = value.toString().toLowerCase();
+                 
+                    if(status.equals("process")) {
+                         setBackground(Color.YELLOW);
+                    } else if (status.equals("complete")) {
+                         setBackground(Color.GREEN);
+                    }else if (status.equals("booked")) {
+                         setBackground(Color.GRAY);
+                    } else {
+                         setBackground(table.getBackground());
+                    }
+            } else {
+                  setBackground(table.getBackground());
+            }
+
+            setForeground(Color.BLACK);
+
+             // สร้างขอบด้านบนและล่าง สีดำ หนา 1 px
+             setBorder(new MatteBorder(1, 0, 1, 0, Color.BLACK));
+
+             setHorizontalAlignment(SwingConstants.CENTER);
+
+             return this;
+        }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

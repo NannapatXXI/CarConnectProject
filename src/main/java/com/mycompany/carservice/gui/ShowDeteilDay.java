@@ -490,6 +490,11 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
 
         serviceCombobox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        serviceCombobox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serviceComboboxActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel5.setText("Service :");
@@ -1396,6 +1401,10 @@ public class ShowDeteilDay extends javax.swing.JDialog {
 
       
     }//GEN-LAST:event_comfrimBtnMouseClicked
+
+    private void serviceComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceComboboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_serviceComboboxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
