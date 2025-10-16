@@ -50,7 +50,7 @@ public class Profile extends javax.swing.JFrame {
         this.currentUserName = userName;
         profile.setHorizontalAlignment(JLabel.RIGHT);
         loadUserProfile(this.userName);
-        ((AbstractDocument) phoneText.getDocument()).setDocumentFilter(new NumberDocumentFilter(10));
+        ((AbstractDocument) phoneText.getDocument()).setDocumentFilter(new NumberDocumentFilter(10));  // ตั้งค่าช่องเบอร์โทรให้พิมพ์ได้แค่ตัวเลข และไม่เกิน 10 ตัว
         setupui();
         
         setSize(1200, 800);        
@@ -146,7 +146,7 @@ private void updateFirstRowCSV(String name, String newName,   String newPhone) {
             }
         }
 
-        csv.writeCSV(users);
+        csv.writeCSV(users); // เขียนกลับเข้าไฟล์
         oldName = newName;
 }
 
@@ -177,7 +177,7 @@ class NumberDocumentFilter extends DocumentFilter {
         @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                 throws BadLocationException {
-            //  text ไม่ว่าง, มีแต่ตัวเลข, และความยาวรวมไม่เกิน maxLength
+            // ต้องเป็นตัวเลขทั้งหมด และไม่เกินความยาวสูงสุด
             if (text != null && text.matches("\\d+") &&
                 fb.getDocument().getLength() - length + text.length() <= maxLength) {
                 super.replace(fb, offset, length, text, attrs);     // ยอมให้แทนที่ข้อความ
