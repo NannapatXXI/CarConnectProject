@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.mycompany.carservice.gui;
 
 import com.mycompany.carservice.entity.CSVHandler;
@@ -11,6 +8,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import com.mycompany.carservice.entity.RoundedPanel;
+import java.awt.event.KeyEvent;
 
 /**
  * คลาส Register ใช้สำหรับสร้างหน้าต่างสมัครสมาชิก (Register Page)
@@ -26,40 +24,40 @@ import com.mycompany.carservice.entity.RoundedPanel;
  */
 public class Register extends javax.swing.JFrame {
     /**
-     * Logger สำหรับบันทึกข้อผิดพลาดหรือข้อความสำคัญในระบบ 
-     */
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Register.class.getName());
-    
-    /**
      * คอนสตรัคเตอร์ของคลาส Register
      * ใช้สำหรับตั้งค่าหน้าต่างสมัครสมาชิกและกำหนดค่าเริ่มต้นขององค์ประกอบต่าง ๆ
      */
         public Register() {
-                // เรียกใช้เมธอดที่ NetBeans สร้างขึ้นเพื่อจัดการส่วนประกอบในหน้า
                 initComponents();
-
-                // กำหนดขนาดหน้าต่าง (width=1200, height=800)
                 setSize(1200, 800);
-
-                // จัดตำแหน่งหน้าต่างให้อยู่ตรงกลางหน้าจอ
                 setLocationRelativeTo(null);
-
-                // แสดงหน้าต่าง Register
                 setVisible(true);
-
+                setCaution();
+                setupIcon();
+                
+        }
+        /**
+        * ซ่อนข้อความเตือนทั้งหมดที่เกี่ยวกับการกรอกข้อมูลไม่ถูกต้อง
+        */
+        private void setCaution(){
                 // ซ่อนข้อความเตือนทั้งหมดไว้ก่อน (จะโชว์เมื่อข้อมูลไม่ถูกต้อง)
                 cautionusername.setVisible(false); 
                 cautionpass.setVisible(false); 
                 cautionconfirmpass.setVisible(false); 
                 cautiontel.setVisible(false); 
                 cautionemail.setVisible(false);
-
+        }
+        /**
+        * ตั้งค่าไอคอนสำหรับ JLabel ที่เกี่ยวข้องกับช่องกรอกข้อมูลต่างๆ
+        */
+        private void setupIcon(){
                 try {
                     // โหลดภาพไอคอนจากโฟลเดอร์ src/main/image/
                     URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
                     URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
                     URL emailIconURL = new File("src/main/image/email.png").toURI().toURL();
                     URL telIconURL = new File("src/main/image/phone-call.png").toURI().toURL();
+                    URL viewIconURL = new File("src/main/image/view.png").toURI().toURL();
 
                     // ตั้งค่าไอคอนให้กับ JLabel ที่อยู่ข้างช่องกรอกข้อมูล
                     iconusername.setIcon(new ImageIcon(userIconURL));
@@ -67,10 +65,10 @@ public class Register extends javax.swing.JFrame {
                     iconconfirmpassword.setIcon(new ImageIcon(passIconURL));
                     iconemail.setIcon(new ImageIcon(emailIconURL));
                     icontel.setIcon(new ImageIcon(telIconURL));
+                    eyepassword.setIcon(new ImageIcon(viewIconURL));
+                    eyeconfirm.setIcon(new ImageIcon(viewIconURL));
                 } catch (Exception e) {
-                    // ถ้ามีปัญหาในการโหลดไฟล์ภาพ
                     System.out.println(e);
-                    logger.severe("Cannot load icon images");
                 }       
         }
         
@@ -109,7 +107,143 @@ public class Register extends javax.swing.JFrame {
             // คืนค่าในรูปแบบตัวเลข 4 หลัก เช่น "0005"
             return String.format("%04d", maxID);
         }
+        /**
+        * ตอนคลิกปุ่ม Register
+        * เมธอดนี้จะตรวจสอบว่าถูกต้องตามเงื่อนไขที่ได้ตั้งไว้ในเเต่ล่ะส่วนหรือไม่ของ
+        * username ,password,confirm password, email, phone number
+        * มี
+        * - ตรวจสอบว่าช่องว่างหรือไม่
+        * - ตรวจสอบความซับซ้อนของรหัสผ่าน
+        * - ตรวจสอบการยืนยันรหัสผ่าน
+        * - ตรวจสอบเบอร์โทรและอีเมล
+        * 
+        * ถ้าข้อมูลถูกต้องทั้งหมด → เขียนข้อมูลใหม่ลงไฟล์ user.csv
+        * จากนั้นจะปิดหน้าต่างสมัครสมาชิกและเปิดหน้า Login ใหม่
+        * 
+        *.@param evt เหตุการณ์ MouseEvent เมื่อผู้ใช้คลิกปุ่มสมัคร
+        */
+        private void confirmRegisterPress(){
 
+                // แปลงรหัสผ่านและยืนยันรหัสผ่านจากช่อง Password Field เป็น String
+                String pass = new String(password.getPassword()).trim();
+                String confirmpass = new String(confirmPassword.getPassword()).trim();
+                // ตัวแปรใช้เก็บสถานะการตรวจสอบแต่ละช่อง (0 = ผ่าน, 1 = ไม่ผ่าน)
+                int sumuser = 0;
+                int sumpass = 0;
+                int sumconfirm = 0;
+                int sumtel = 0;
+                int sumemail = 0;
+
+                //ตรวจสอบช่อง Username ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
+                if (username.getText().trim().isEmpty()) {
+                    cautionusername.setText("Need to input username");
+                    cautionusername.setVisible(true);
+                    sumuser=1;
+                }else{
+                    cautionusername.setText("");
+                    cautionusername.setVisible(false);
+                    sumuser=0;
+                }
+                //ตรวจสอบช่อง Password ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
+                if (pass.isEmpty()) {
+                    cautionpass.setText("Need to input password");
+                    cautionpass.setVisible(true);
+                    sumpass=1;
+                }else if (pass.length() < 6) {
+                    cautionpass.setText("Password need at least 6 characters");
+                    cautionpass.setVisible(true);
+                    sumpass=1;
+                }else if (!pass.matches(".*\\d.*")) {
+                    cautionpass.setText("Password must have at least one number");
+                    cautionpass.setVisible(true);
+                    sumpass=1;
+                }else if (!pass.matches(".*[a-z].*")) {
+                    cautionpass.setText("Password must have at least one lowercase letter");
+                    cautionpass.setVisible(true);
+                    sumpass=1;
+                }else if (!pass.matches(".*[A-Z].*")) {
+                    cautionpass.setText("Password must have at least one uppercase letter");
+                    cautionpass.setVisible(true);
+                    sumpass=1;
+                }else if (!pass.matches(".*[!@#$%^&*()].*")) {
+                    cautionpass.setText("Password must have at least one special character");
+                    cautionpass.setVisible(true);
+                    sumpass=1;
+                }else{
+                    cautionpass.setText("");
+                    cautionpass.setVisible(false);
+                    sumpass=0;
+                }
+                //ตรวจสอบช่อง Confirm Password ว่าตรงกับ Password หรือไม่
+                if (confirmpass.isEmpty()) {
+                    cautionconfirmpass.setText("Need to confirm password");
+                    cautionconfirmpass.setVisible(true);
+                    sumconfirm=1;
+
+                // ถ้ารหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน
+                }else if (!confirmpass.equals(pass)) {
+                    cautionconfirmpass.setText("Nah");
+                    cautionconfirmpass.setVisible(true);
+                    sumpass=1;
+                }else{
+                    cautionconfirmpass.setText("");
+                    cautionconfirmpass.setVisible(false);
+                    sumconfirm=0;
+                }
+                //ตรวจสอบช่อง tel หรือ phone number ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
+                if (tel.getText().trim().isEmpty()) {
+                    cautiontel.setText("Need to input your Phone number");
+                    cautiontel.setVisible(true);
+                    sumtel=1;
+                }else if (tel.getText().length() < 10 || tel.getText().length() > 10 ){
+                    cautiontel.setText("Wrong phone number !!");
+                    cautiontel.setVisible(true);
+                    sumtel=1;
+                }else{
+                    cautiontel.setText("");
+                    cautiontel.setVisible(false);
+                    sumtel=0;
+                }
+                //ตรวจสอบช่อง Email ว่าตรงกับ pattern ที่ตั้งไว้หรือไม่
+                String emailText = email.getText().trim();
+                String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.(com|co\\.th)$";
+
+                if (emailText.isEmpty()) {
+                    cautionemail.setText("Need to input your email");
+                    cautionemail.setVisible(true);
+                    sumemail = 1;
+                } else if (!emailText.matches(emailPattern)) {
+                    cautionemail.setText("Invalid email format (must have @ in middle and end with .com, or .co.th)");
+                    cautionemail.setVisible(true);
+                    sumemail = 1;
+                } else {
+                    cautionemail.setText("");
+                    cautionemail.setVisible(false);
+                    sumemail = 0;
+                }
+                //ถ้าทุกช่องผ่านการตรวจสอบทั้งหมดเเล้ว ทำการปิดคำเตือนทั้งหมด 
+                if (sumpass == 0 && sumuser == 0 && sumconfirm==0 &&  sumtel == 0 &&  sumtel == 0){
+                        cautionusername.setVisible(false);
+                        cautionpass.setVisible(false);
+                        cautionconfirmpass.setVisible(false);
+                        cautiontel.setVisible(false);
+                        cautionemail.setVisible(false);
+
+                        // อ่านค่าจากทุกช่องทั้งหมดเเล้วเก็บไว้
+                        String usernameget = username.getText().trim();
+                        String passwordget = new String(password.getPassword()).trim();
+                        String telget = tel.getText().trim();
+                        String emailget = email.getText().trim();
+                        // นำมาเขียนลง user.csv
+                        CSVHandler csvHandler = new CSVHandler("src/main/data/user.csv");
+                        String[] userData = {generateNewUserID() ,usernameget,passwordget,emailget,telget,"user"};
+                        csvHandler.appendCSV(userData);
+
+                        System.out.print(username.getText() + "\n" + pass);
+                        dispose();
+                        new Login();
+                }
+        }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -120,6 +254,8 @@ public class Register extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         logButton = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        eyeconfirm = new javax.swing.JLabel();
+        eyepassword = new javax.swing.JLabel();
         cautionconfirmpass = new javax.swing.JLabel();
         iconusername = new javax.swing.JLabel();
         iconpassword = new javax.swing.JLabel();
@@ -195,6 +331,26 @@ public class Register extends javax.swing.JFrame {
         jLabel4.setToolTipText("");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 70, -1, -1));
 
+        eyeconfirm.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                eyeconfirmMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                eyeconfirmMouseReleased(evt);
+            }
+        });
+        jPanel1.add(eyeconfirm, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 370, 50, 40));
+
+        eyepassword.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                eyepasswordMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                eyepasswordMouseReleased(evt);
+            }
+        });
+        jPanel1.add(eyepassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(997, 270, 50, 40));
+
         cautionconfirmpass.setForeground(new java.awt.Color(255, 0, 0));
         cautionconfirmpass.setText("Passwords don't match !!! please try again");
         cautionconfirmpass.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -214,6 +370,9 @@ public class Register extends javax.swing.JFrame {
         username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
         username.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                usernameKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 usernameKeyTyped(evt);
             }
@@ -223,6 +382,9 @@ public class Register extends javax.swing.JFrame {
         password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         password.setMargin(new java.awt.Insets(2, 55, 2, 6));
         password.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                passwordKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 passwordKeyTyped(evt);
             }
@@ -231,12 +393,10 @@ public class Register extends javax.swing.JFrame {
 
         confirmPassword.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         confirmPassword.setMargin(new java.awt.Insets(2, 55, 2, 6));
-        confirmPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                confirmPasswordActionPerformed(evt);
-            }
-        });
         confirmPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                confirmPasswordKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 confirmPasswordKeyTyped(evt);
             }
@@ -275,6 +435,9 @@ public class Register extends javax.swing.JFrame {
         tel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         tel.setMargin(new java.awt.Insets(2, 55, 2, 6));
         tel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                telKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 telKeyTyped(evt);
             }
@@ -284,6 +447,9 @@ public class Register extends javax.swing.JFrame {
         email.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         email.setMargin(new java.awt.Insets(2, 55, 2, 6));
         email.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                emailKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 emailKeyTyped(evt);
             }
@@ -356,153 +522,7 @@ public class Register extends javax.swing.JFrame {
     }//GEN-LAST:event_registerFinishMouseEntered
 
     private void registerFinishMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerFinishMouseClicked
-        /**
-        * ตอนคลิกปุ่ม Register
-        * เมธอดนี้จะตรวจสอบว่าถูกต้องตามเงื่อนไขที่ได้ตั้งไว้ในเเต่ล่ะส่วนหรือไม่ของ
-        * ีusername ,password,confirm password, email, phone number
-        * มี
-        * - ตรวจสอบว่าช่องว่างหรือไม่
-        * - ตรวจสอบความซับซ้อนของรหัสผ่าน
-        * - ตรวจสอบการยืนยันรหัสผ่าน
-        * - ตรวจสอบเบอร์โทรและอีเมล
-        * 
-        * ถ้าข้อมูลถูกต้องทั้งหมด → เขียนข้อมูลใหม่ลงไฟล์ user.csv
-        * จากนั้นจะปิดหน้าต่างสมัครสมาชิกและเปิดหน้า Login ใหม่
-        * 
-        *.@param evt เหตุการณ์ MouseEvent เมื่อผู้ใช้คลิกปุ่มสมัคร
-        */
-        
-        // แปลงรหัสผ่านและยืนยันรหัสผ่านจากช่อง Password Field เป็น String
-        String pass = new String(password.getPassword()).trim();
-        String confirmpass = new String(confirmPassword.getPassword()).trim();
-        // ตัวแปรใช้เก็บสถานะการตรวจสอบแต่ละช่อง (0 = ผ่าน, 1 = ไม่ผ่าน)
-        int sumuser = 0;
-        int sumpass = 0;
-        int sumconfirm = 0;
-        int sumtel = 0;
-        int sumemail = 0;
-        
-        //ตรวจสอบช่อง Username ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
-        if (username.getText().trim().isEmpty()) {
-            cautionusername.setText("Need to input username");
-            cautionusername.setVisible(true);
-            sumuser=1;
-        }else{
-            cautionusername.setText("");
-            cautionusername.setVisible(false);
-            sumuser=0;
-        }
-        //ตรวจสอบช่อง Password ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
-        if (pass.isEmpty()) {
-            cautionpass.setText("Need to input password");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (pass.length() < 6) {
-            cautionpass.setText("Password need at least 6 characters");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*\\d.*")) {
-            cautionpass.setText("Password must have at least one number");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*[a-z].*")) {
-            cautionpass.setText("Password must have at least one lowercase letter");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*[A-Z].*")) {
-            cautionpass.setText("Password must have at least one uppercase letter");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else if (!pass.matches(".*[!@#$%^&*()].*")) {
-            cautionpass.setText("Password must have at least one special character");
-            cautionpass.setVisible(true);
-            sumpass=1;
-        }else{
-            cautionpass.setText("");
-            cautionpass.setVisible(false);
-            sumpass=0;
-        }
-        //ตรวจสอบช่อง Confirm Password ว่าตรงกับ Password หรือไม่
-        if (confirmpass.isEmpty()) {
-            cautionconfirmpass.setText("Need to confirm password");
-            cautionconfirmpass.setVisible(true);
-            sumconfirm=1;
-            
-        // ถ้ารหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน
-        }else if (!confirmpass.equals(pass)) {
-            cautionconfirmpass.setText("Nah");
-            cautionconfirmpass.setVisible(true);
-            sumpass=1;
-        }else{
-            cautionconfirmpass.setText("");
-            cautionconfirmpass.setVisible(false);
-            sumconfirm=0;
-        }
-        //ตรวจสอบช่อง tel หรือ phone number ว่าตรงกับเงื่อนไขที่ตั้งไว้หรือไม่
-        if (tel.getText().trim().isEmpty()) {
-            cautiontel.setText("Need to input your Phone number");
-            cautiontel.setVisible(true);
-            sumtel=1;
-        }else if (tel.getText().length() < 10 || tel.getText().length() > 10 ){
-            cautiontel.setText("Wrong phone number !!");
-            cautiontel.setVisible(true);
-            sumtel=1;
-        }else{
-            cautiontel.setText("");
-            cautiontel.setVisible(false);
-            sumtel=0;
-        }
-        //ตรวจสอบช่อง Email ว่าตรงกับ pattern ที่ตั้งไว้หรือไม่
-        String emailText = email.getText().trim();
-        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.(com|co\\.th)$";
-
-        if (emailText.isEmpty()) {
-            cautionemail.setText("Need to input your email");
-            cautionemail.setVisible(true);
-            sumemail = 1;
-        } else if (!emailText.matches(emailPattern)) {
-            cautionemail.setText("Invalid email format (must end with .com, or .co.th)");
-            cautionemail.setVisible(true);
-            sumemail = 1;
-        } else {
-            cautionemail.setText("");
-            cautionemail.setVisible(false);
-            sumemail = 0;
-        }
-        //ถ้าทุกช่องผ่านการตรวจสอบทั้งหมดเเล้ว ทำการปิดคำเตือนทั้งหมด 
-        if (sumpass == 0 && sumuser == 0 && sumconfirm==0 &&  sumtel == 0 &&  sumtel == 0){
-            cautionusername.setVisible(false);
-            cautionpass.setVisible(false);
-            cautionconfirmpass.setVisible(false);
-            cautiontel.setVisible(false);
-            cautionemail.setVisible(false);
-
-            // อ่านค่าจากทุกช่องทั้งหมดเเล้วเก็บไว้
-            String usernameget = username.getText().trim();
-            String passwordget = new String(password.getPassword()).trim();
-            String telget = tel.getText().trim();
-            String emailget = email.getText().trim();
-            // นำมาเขียนลง user.csv
-            try {
-                File f = new File("src/main/data/user.csv");
-                FileWriter fw = new FileWriter(f,true);
-                BufferedWriter bw = new BufferedWriter(fw);
-                System.out.println("Saved successfully!");
-                // เขียนข้อมูลลงไฟล์ CSV ในรูปแบบ: id,username,password,email,tel,role
-                bw.write("\n"+ generateNewUserID() +","+usernameget+","+passwordget+","+emailget+","+telget+",user");
-                bw.close();
-                fw.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            System.out.print(username.getText() + "\n" + pass);
-            // ปิดหน้าต่าง Register เปิดหน้า Login ใหม่
-            dispose();
-            new Login();
-
-        }
-        
+        confirmRegisterPress();
     }//GEN-LAST:event_registerFinishMouseClicked
 
     private void confirmPasswordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_confirmPasswordKeyTyped
@@ -518,13 +538,6 @@ public class Register extends javax.swing.JFrame {
             evt.consume();
         }
     }//GEN-LAST:event_passwordKeyTyped
-
-    private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
-        char c = evt.getKeyChar();
-        if (!Character.isLetter(c)&!Character.isDigit(c)) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_usernameKeyTyped
 
     private void logButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logButtonMouseExited
         logButton.setBackground(Color.WHITE);
@@ -573,9 +586,58 @@ public class Register extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_emailKeyTyped
 
-    private void confirmPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_confirmPasswordActionPerformed
+    private void eyepasswordMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eyepasswordMousePressed
+        password.setEchoChar((char) 0);
+    }//GEN-LAST:event_eyepasswordMousePressed
+
+    private void eyepasswordMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eyepasswordMouseReleased
+        password.setEchoChar('•');
+    }//GEN-LAST:event_eyepasswordMouseReleased
+
+    private void eyeconfirmMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eyeconfirmMousePressed
+        confirmPassword.setEchoChar((char) 0);
+    }//GEN-LAST:event_eyeconfirmMousePressed
+
+    private void eyeconfirmMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eyeconfirmMouseReleased
+        confirmPassword.setEchoChar('•');
+    }//GEN-LAST:event_eyeconfirmMouseReleased
+
+    private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
+        char c = evt.getKeyChar();
+        if (Character.isWhitespace(c)) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_usernameKeyTyped
+
+    private void usernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            confirmRegisterPress();
+        }
+    }//GEN-LAST:event_usernameKeyPressed
+
+    private void passwordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            confirmRegisterPress();
+        }
+    }//GEN-LAST:event_passwordKeyPressed
+
+    private void confirmPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_confirmPasswordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            confirmRegisterPress();
+        }
+    }//GEN-LAST:event_confirmPasswordKeyPressed
+
+    private void emailKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_emailKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            confirmRegisterPress();
+        }
+    }//GEN-LAST:event_emailKeyPressed
+
+    private void telKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_telKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            confirmRegisterPress();
+        }
+    }//GEN-LAST:event_telKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel cautionconfirmpass;
@@ -585,6 +647,8 @@ public class Register extends javax.swing.JFrame {
     private javax.swing.JLabel cautionusername;
     private javax.swing.JPasswordField confirmPassword;
     private javax.swing.JTextField email;
+    private javax.swing.JLabel eyeconfirm;
+    private javax.swing.JLabel eyepassword;
     private javax.swing.JLabel iconconfirmpassword;
     private javax.swing.JLabel iconemail;
     private javax.swing.JLabel iconpassword;

@@ -1,26 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.mycompany.carservice.gui;
 
-
-import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.*;
 import java.io.File;
-import java.net.*;
 import javax.swing.*;
 import java.net.URL;
-import java.io.*;
 import com.mycompany.carservice.entity.CSVHandler;
 import com.mycompany.carservice.entity.RoundedPanel;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-
-
 
 /**
  * คลาส Login 
@@ -29,11 +17,6 @@ import java.util.ArrayList;
  * 
  */
 public class Login extends javax.swing.JFrame {
-    
-    /** ตัว logger สำหรับแสดงและบันทึก error 
-     */
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
-
     /**
      *  Login ใช้สำหรับสร้างหน้าต่างล็อกอินของโปรแกรม
      */
@@ -43,25 +26,34 @@ public class Login extends javax.swing.JFrame {
             setSize(1200, 800);   // กำหนดขนาดหน้าต่าง
             setLocationRelativeTo(null); // จัดให้อยู่กึ่งกลางหน้าจอ
             setVisible(true); // แสดงหน้าต่าง Login
-            
-            // ซ่อนข้อความเตือนของ username และ password ตอนเริ่มต้น
+            cautionSetup();
+            setupUI();
+    }
+        /**
+        * ซ่อนข้อความเตือนทั้งหมดที่เกี่ยวกับการกรอกข้อมูลไม่ถูกต้อง
+        */
+    private void cautionSetup(){
+        // ซ่อนข้อความเตือนของ username และ password ตอนเริ่มต้น
             cautionusername.setVisible(false);
             cautionpass.setVisible(false);
-            
-            try {
-                // โหลดภาพไอคอนของ username และ password จากโฟลเดอร์
-                URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
-                URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
-                // ตั้งค่าไอคอนให้กับ JLabel
-                iconusername.setIcon(new ImageIcon(userIconURL));
-                iconpassword.setIcon(new ImageIcon(passIconURL));
-                
-            } catch (MalformedURLException e) {
-                // แสดง exception ถ้ามีปัญหาในการโหลดไฟล์ภาพ
-                e.printStackTrace();
-                logger.severe("Cannot load icon images");
-            }
-            
+    }
+        /**
+        * ตั้งค่าไอคอนสำหรับ JLabel ที่เกี่ยวข้องกับช่องกรอกข้อมูลต่างๆ
+        */
+    private void setupUI(){
+        try {
+                    // โหลดภาพไอคอนของ username และ password จากโฟลเดอร์
+                    URL userIconURL = new File("src/main/image/user.png").toURI().toURL();
+                    URL passIconURL = new File("src/main/image/padlock.png").toURI().toURL();
+                    URL viewIconURL = new File("src/main/image/view.png").toURI().toURL();
+                    // ตั้งค่าไอคอนให้กับ JLabel
+                    iconusername.setIcon(new ImageIcon(userIconURL));
+                    iconpassword.setIcon(new ImageIcon(passIconURL));
+                    eye.setIcon(new ImageIcon(viewIconURL));
+
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
     }
     /**
      * method CompleteLogin ไว้ตรวจสอบข้อมูลก่อนเข้าสู่ระบบจากไฟล์ CSV
@@ -91,10 +83,16 @@ public class Login extends javax.swing.JFrame {
                         role = parts[5];
                         String confirmlogin = fileUsername + "," + filePassword;
                         
-                        // ตรวจสอบชื่อผู้ใช้กับรหัสผ่าน ว่าตรงกันหรือไม่
-                        if (getBoth.equals(confirmlogin)) {
-                            loginSuccess = true;
-                            break;
+                        // ตรวจสอบ username
+                        if (getUsername.equals(fileUsername)) {
+                            checkedUsername = true;
+
+                            // ตรวจสอบ password เฉพาะเมื่อ username ตรง
+                            if (getBoth.equals(confirmlogin)) {
+                                checkedPassword = true;
+                                loginSuccess = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -102,28 +100,28 @@ public class Login extends javax.swing.JFrame {
                 if (getUsername.trim().isEmpty()) {
                     cautionusername.setText("Need to input username");
                     cautionusername.setVisible(true);
-                }else if(checkedUsername) {
-                    cautionusername.setText("");
-                    cautionusername.setVisible(false);
-                }else{
+                }else if(!checkedUsername) {
                     cautionusername.setText("Username not found. Please register.");
                     cautionusername.setVisible(true);
+                }else{
+                    cautionusername.setText("");
+                    cautionusername.setVisible(false);
                 }
                 
                 //เช็ค password ที่ผู้ใช้ป้อนเข้ามาว่าตรงกับ user.csv ไหม
                 if (getPass.trim().isEmpty()) {
                     cautionpass.setText("Need to input password");
                     cautionpass.setVisible(true);
-                }else if(checkedPassword) {
-                    cautionpass.setText("");
-                    cautionpass.setVisible(false);
-                }else{
+                }else if(!checkedPassword) {
                     cautionpass.setText("Incorrect password. Please try again.");
                     cautionpass.setVisible(true);
+                }else{
+                    cautionpass.setText("");
+                    cautionpass.setVisible(false);
                 }
                 
                 //ถ้า loginSuccess เป็น true จะทำให้ คำเตือนไม่โชว์ ปิดหน้าต่าง Login เเล้วส่งข้อมูล username กับ role ไปหน้า Homepage
-                if (loginSuccess ) {
+                if (loginSuccess && checkedUsername && checkedPassword ) {
                     cautionusername.setVisible(false);
                     cautionpass.setVisible(false);
                     password.setText(""); 
@@ -132,11 +130,8 @@ public class Login extends javax.swing.JFrame {
                     //new BookingPage(getUsername);
                 } else {
                     System.out.println("false");
-                }
-                
+                }  
     }
-    
-   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -154,6 +149,7 @@ public class Login extends javax.swing.JFrame {
         logButton = new javax.swing.JButton();
         registerButton = new javax.swing.JButton();
         jPanel2 = new RoundedPanel(30); // 30 radius;
+        eye = new javax.swing.JLabel();
         iconpassword = new javax.swing.JLabel();
         iconusername = new javax.swing.JLabel();
         loginFinish = new javax.swing.JButton();
@@ -315,6 +311,16 @@ public class Login extends javax.swing.JFrame {
         jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 368, 800));
 
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        eye.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                eyeMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                eyeMouseReleased(evt);
+            }
+        });
+        jPanel2.add(eye, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 300, 50, 40));
         jPanel2.add(iconpassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 290, 50, 60));
         jPanel2.add(iconusername, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 180, 50, 60));
 
@@ -336,6 +342,11 @@ public class Login extends javax.swing.JFrame {
 
         password.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         password.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        password.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                passwordKeyPressed(evt);
+            }
+        });
         jPanel2.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 290, 530, 60));
 
         cautionpass.setForeground(new java.awt.Color(255, 0, 51));
@@ -376,6 +387,11 @@ public class Login extends javax.swing.JFrame {
 
         username.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         username.setMargin(new java.awt.Insets(2, 55, 2, 6));
+        username.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                usernameKeyPressed(evt);
+            }
+        });
         jPanel2.add(username, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 180, 530, 60));
 
         repassword.setText("Forgot password?");
@@ -464,10 +480,31 @@ public class Login extends javax.swing.JFrame {
         repassword.setForeground(Color.BLACK);
     }//GEN-LAST:event_repasswordMouseExited
 
+    private void eyeMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eyeMouseReleased
+        password.setEchoChar('•');
+    }//GEN-LAST:event_eyeMouseReleased
+
+    private void eyeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_eyeMousePressed
+        password.setEchoChar((char) 0);
+    }//GEN-LAST:event_eyeMousePressed
+
+    private void usernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            CompleteLogin();
+        }
+    }//GEN-LAST:event_usernameKeyPressed
+
+    private void passwordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            CompleteLogin();
+        }
+    }//GEN-LAST:event_passwordKeyPressed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel anotherRegister;
     private javax.swing.JLabel cautionpass;
     private javax.swing.JLabel cautionusername;
+    private javax.swing.JLabel eye;
     private javax.swing.JLabel iconpassword;
     private javax.swing.JLabel iconusername;
     private javax.swing.JDialog jDialog1;

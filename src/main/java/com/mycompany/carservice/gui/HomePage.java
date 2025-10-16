@@ -6,11 +6,9 @@ import java.io.File;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.*;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.mycompany.carservice.entity.CSVHandler;
 import com.mycompany.carservice.entity.RoundedPanel;
 import java.awt.Font;
-import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +25,6 @@ import java.util.ArrayList;
  */
 public class HomePage extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomePage.class.getName());
     private final String userName;
     private final String role;
 
@@ -48,35 +45,7 @@ public class HomePage extends javax.swing.JFrame {
         setLocationRelativeTo(null); // จัดกลางหน้าจอ
         setVisible(true);
         SetupIcon();
-        // โหลดและแสดงข้อความประกาศทั่วไป
-        String announcement = loadAnnouncementForLabel();   // เพิ่ม
-        announcementsLabel.setText(announcement);   // เพิ่ม
-        announcementsLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
-        announcementsLabel.setForeground(Color.BLACK);
-        announcementsLabel.setOpaque(false);
-        
-        // โหลดและแสดงบริการกับราคาของบริการ
-        String announcementPromotion = loadAnnouncementServicePrice();   // เพิ่ม
-        announcementsServicePrice.setText(announcementPromotion);   // เพิ่ม
-        announcementsServicePrice.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
-        announcementsServicePrice.setForeground(Color.BLACK);
-        announcementsServicePrice.setOpaque(false);
-        
-        
-        if ("admin".equalsIgnoreCase(role)) {   
-            // แสดงเฉพาะ Admin
-            fixAnnouncement.setVisible(true); 
-            fixAnnouncement1.setVisible(true); 
-            adminBtn.setVisible(true);
-            iconAdmin.setVisible(true); 
-            
-        } else { 
-            // ซ่อนสำหรับ User ปกติ
-            fixAnnouncement.setVisible(false); 
-            fixAnnouncement1.setVisible(false);
-            adminBtn.setVisible(false);
-            iconAdmin.setVisible(false);
-        }
+
     }
     /**
      * ตั้งค่าการจัดวาง UI ของหน้าหลัก
@@ -108,6 +77,21 @@ public class HomePage extends javax.swing.JFrame {
         // ลบขอบ ScrollPane
         jScrollPane1.setBorder(null);
         jScrollPane1.getViewport().setBorder(null);
+        
+        if ("admin".equalsIgnoreCase(role)) {   
+            // แสดงเฉพาะ Admin
+            fixAnnouncement.setVisible(true); 
+            fixAnnouncement1.setVisible(true); 
+            adminBtn.setVisible(true);
+            iconAdmin.setVisible(true); 
+            
+        } else { 
+            // ซ่อนสำหรับ User ปกติ
+            fixAnnouncement.setVisible(false); 
+            fixAnnouncement1.setVisible(false);
+            adminBtn.setVisible(false);
+            iconAdmin.setVisible(false);
+        }
 
     }
     
@@ -151,9 +135,7 @@ public class HomePage extends javax.swing.JFrame {
 
                     } catch (Exception e) {
                         // หากเกิดข้อผิดพลาดขณะโหลดไฟล์ไอคอน ให้พิมพ์ข้อผิดพลาดออกหน้าจอ
-                        // และบันทึกข้อความ error ลงใน log เพื่อใช้ในการตรวจสอบภายหลัง
                         System.out.println(e);
-                        logger.severe("Cannot load icon images");
                     }
         }
         
@@ -162,7 +144,20 @@ public class HomePage extends javax.swing.JFrame {
          * แล้วแสดงผลในหน้าหลัก เช่น จำนวนที่รอดำเนินการ / เสร็จสิ้น
          */
         private void Announcements() {
-            
+                // โหลดและแสดงข้อความประกาศทั่วไป
+                String announcement = loadAnnouncementForLabel();   // เพิ่ม
+                announcementsLabel.setText(announcement);   // เพิ่ม
+                announcementsLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
+                announcementsLabel.setForeground(Color.BLACK);
+                announcementsLabel.setOpaque(false);
+
+                // โหลดและแสดงบริการกับราคาของบริการ
+                String announcementPromotion = loadAnnouncementServicePrice();   // เพิ่ม
+                announcementsServicePrice.setText(announcementPromotion);   // เพิ่ม
+                announcementsServicePrice.setFont(new Font("Tahoma", Font.PLAIN, 16));   // เดิม
+                announcementsServicePrice.setForeground(Color.BLACK);
+                announcementsServicePrice.setOpaque(false);
+                
                 CSVHandler csvHandler = new CSVHandler("src/main/data/history_user.csv");
                 ArrayList<String[]> users = csvHandler.readCSV();
                 int processCount = 0, completedCount = 0, userBookingCount = 0; // ตัวนับ
@@ -328,9 +323,6 @@ public class HomePage extends javax.swing.JFrame {
              }
         }
 }
-   
-    
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
