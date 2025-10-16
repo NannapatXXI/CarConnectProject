@@ -177,7 +177,7 @@ class NumberDocumentFilter extends DocumentFilter {
         @Override
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                 throws BadLocationException {
-            //  text ไม่ว่าง, มีแต่ตัวเลข, และความยาวรวมไม่เกิน maxLength
+            // ต้องเป็นตัวเลขทั้งหมด และไม่เกินความยาวสูงสุด
             if (text != null && text.matches("\\d+") &&
                 fb.getDocument().getLength() - length + text.length() <= maxLength) {
                 super.replace(fb, offset, length, text, attrs);     // ยอมให้แทนที่ข้อความ
