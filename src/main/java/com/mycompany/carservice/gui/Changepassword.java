@@ -31,13 +31,13 @@ public class Changepassword extends javax.swing.JFrame {
     }
     // ตรวจสอบความถูกต้องของรหัสผ่านใหม่
     private String validatePassword(String password) {
-        boolean hasUpper = false, hasDigit = false, hasSpecial = false,hasLower = false;;
+        boolean hasUpper = false, hasDigit = false, hasSpecial = false,hasLower = false;
 
         for (char c : password.toCharArray()) {
             if (Character.isUpperCase(c)) hasUpper = true; // ต้องมีตัวพิมพ์ใหญ่
-            else if (Character.isDigit(c)) hasDigit = true; // ต้องมีตัวพิมพ์เล็ก
-            else if (!Character.isLetterOrDigit(c)) hasSpecial = true; // ต้องมีตัวเลข
-            else if (!Character.isLetterOrDigit(c)) hasSpecial = true; // ต้องมีอักษรพิเศษ
+            else if (Character.isDigit(c)) hasDigit = true; // ต้องมีตัวเลข
+            else if (!Character.isLetterOrDigit(c)) hasSpecial = true; // ต้องมีตัวอักษรพิเศษ
+            if (Character.isLowerCase(c)) hasLower = true; // ต้องมีตัวพิมพ์เล็ก
         }
 
         StringBuilder error = new StringBuilder();
