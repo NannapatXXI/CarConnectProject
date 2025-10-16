@@ -54,6 +54,9 @@ public class AdminPage extends javax.swing.JFrame {
    
    
     private void SetupUi() {
+        UIManager.put("OptionPane.messageFont", new Font("Tahoma", Font.PLAIN, 14));
+        UIManager.put("OptionPane.buttonFont", new Font("Tahoma", Font.BOLD, 12));
+        
         UIManager.put("Table.selectionBackground", new Color(60, 60, 60));
         UIManager.put("Table.selectionForeground",new Color(255, 255, 255));
         UIManager.put("Table.alternateRowColor", new Color(240, 240, 240));
@@ -423,8 +426,8 @@ public class AdminPage extends javax.swing.JFrame {
 
         public ButtonRenderer() {
             setOpaque(true);
-             editButton = new JButton("Edit");
-            deleteButton = new JButton("Delete");
+                editButton = new JButton("Edit");
+                deleteButton = new JButton("Delete");
             
             setLayout(new FlowLayout(FlowLayout.CENTER, 5, 12));
             

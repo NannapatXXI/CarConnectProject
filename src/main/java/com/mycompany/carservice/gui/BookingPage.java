@@ -263,24 +263,25 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             System.out.println("วันที่ " + buttonDate + " จำนวน " + booked);
 
            
-           
+                UIManager.put("OptionPane.messageFont", new Font("Tahoma", Font.PLAIN, 14));
+                UIManager.put("OptionPane.buttonFont", new Font("Tahoma", Font.BOLD, 12));
            if (closedDays.contains(buttonDate)) {//ตรงกับวันที่ร้านปิด
                 dayButton.setBackground(Color.GRAY);
                 dayButton.setForeground(Color.WHITE);
                  dayButton.addActionListener(e -> {
-                    JOptionPane.showMessageDialog(this, "วันนี้ร้านปิด");
+                    JOptionPane.showMessageDialog(this, "Today Garage is closed");
                 });
             } else if (buttonDate.isBefore(today)) { // ถ้าวันนี้ผ่านมาแล้ว
                 dayButton.setBackground(Color.LIGHT_GRAY);
                 dayButton.setForeground(Color.BLACK);
                 dayButton.addActionListener(e -> {
-                    JOptionPane.showMessageDialog(this, "ไม่สามารถจองวันผ่านมาแล้วได้");
+                    JOptionPane.showMessageDialog(this, "Unable to booking past dates");
                 });
             }  else if (booked >= 40) { // เต็ม
                 dayButton.setBackground(new Color(244, 67, 54));
                 dayButton.setForeground(Color.WHITE);
                  dayButton.addActionListener(e -> {
-                    JOptionPane.showMessageDialog(this, "เต็ม");
+                    JOptionPane.showMessageDialog(this, "Full !!!");
                     // ไม่เปลี่ยนสี
                 });
             } else  if (booked >= 30) { // เยอะ
