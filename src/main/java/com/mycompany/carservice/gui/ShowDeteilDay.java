@@ -168,7 +168,7 @@ public class ShowDeteilDay extends javax.swing.JDialog {
                         LocalTime end = LocalTime.parse(times[1].trim(), timeFormatter);
 
                         // panel ที่สนใจ
-                        String[] panelTimes = {"09:00","10:00","11:00","12:00",
+                        String[] panelTimes = {"09:00","10:00","11:00",
                                                "13:00","14:00","15:00","16:00","17:00"};
                         
                         for (String panelTimeStr : panelTimes) {

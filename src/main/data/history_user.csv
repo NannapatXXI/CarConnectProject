@@ -563,9 +563,6 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 0001,Admin,Seat/Carpet Shampoo - 4 hrs,5 November 2025,09:00-13:00,-,d1,booked
 0001,Admin,Headlight Restoration - 1 hr,5 November 2025,09:00-10:00,,sqd,booked
 0001,Admin,Wheel Alignment & Balancing - 2 hrs,5 November 2025,09:00-11:00,,d1,booked
-0001,Admin,Exterior Car Wash - 1 hr,17 October 2025,09:00-10:00,,d1,booked
-0001,Admin,Seat/Carpet Shampoo - 4 hrs,7 November 2025,09:00-13:00,,qx,booked
-0001,Admin,Exterior Car Wash - 1 hr,21 October 2025,13:00-14:00,,ๆไดก,booked
-0001,Admin,Wheel Alignment & Balancing - 2 hrs,16 October 2025,14:00-16:00,,กค0001,booked
-0002,User,Exterior Car Wash - 1 hr,28 October 2025,09:00-10:00,รถพัง ล้างรถให้หน่อย,010ku,booked
-0001,Admin,Car Paint Wax/Polish - 2 hrs,17 October 2025,13:00-15:00,1,14,booked
+0001,Admin,Glass Coating - 6 hrs,17 October 2025,13:00-19:00,,1,booked
+0001,Admin,Glass Coating - 6 hrs,4 November 2025,15:00-21:00,1,1,booked
+0001,Admin,Glass Coating - 6 hrs,18 November 2025,15:00-21:00,1,1,booked

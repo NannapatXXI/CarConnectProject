@@ -189,7 +189,14 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
                 int slots = 0;
                 LocalTime t = start;
                 while (t.isBefore(end)) {
-                    slots++;
+                     int hour = t.getHour();
+                    //  นับเฉพาะชั่วโมง 0–11 และ 13–16
+                    //  ข้ามช่วงเที่ยง (12:00–13:00)
+                    //  ข้ามหลัง 17:00 (17–23)
+                    if (hour < 12 || (hour > 12 && hour <= 17)) {
+                        slots++;
+                    }
+                   
                     t = t.plusHours(1); 
                 }// ex "09:00-12:00" จะนับเป็น 3 ชั่วโมง (09-10, 10-11, 11-12)
                 
