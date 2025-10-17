@@ -479,13 +479,13 @@ public class ShowDeteilDay extends javax.swing.JDialog {
         );
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setText("เต็ม");
+        jLabel2.setText("Full");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel3.setText("ว่าง");
+        jLabel3.setText("Free");
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setText("ใกล้เต็ม");
+        jLabel4.setText("Almost full");
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
 

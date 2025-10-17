@@ -36,18 +36,18 @@ public class AlertManager implements Subject {
     // ตัวอย่าง method สำหรับแจ้งเตือน
     public void checkBooking(int day, int time, int service) {
         if(day <= 0){
-            notifyObservers("ยังไม่ได้เลือกวัน");
+            notifyObservers("Choose Day");
         } else if(time <= 0){
-            notifyObservers("ยังไม่ได้เลือกเวลา");
+            notifyObservers("Choose Time");
         } else if(service <= 0){
-            notifyObservers("ยังไม่ได้เลือกบริการ");
+            notifyObservers("Choose Service");
         }
     }
     
     
     public boolean checkCount(int count){
         if(count >= 5 ){
-         notifyObservers("เวลานี้จองเต็มแล้ว");
+         notifyObservers("This time is full");
          return false;
         }
         return true;
@@ -55,28 +55,28 @@ public class AlertManager implements Subject {
     
       public boolean checkService( String service){
         if(service.equals("-- --")){
-         notifyObservers("เลือก Service ก่อน");
+         notifyObservers("Choose service");
          return false;
         }
         return true;
     }
       public boolean checkTime( javax.swing.JPanel panel){
         if(panel == null){
-         notifyObservers("เลือก เวลา ก่อน");
+         notifyObservers("Choose Time");
          return false;
         }
         return true;
     }
       public boolean checkCantBook( boolean check){
         if(!check){
-         notifyObservers("เวลาก่อนหน้าเต็มแล้ว");
+         notifyObservers("previous time was full");
          return true;
         }
         return false;
     }
       public boolean checkTimeInDetail( boolean check){
         if(check){
-         notifyObservers("เวลานี้ผ่านมาแล้ว");
+         notifyObservers("Time has passed");
          return true;
         }
         return false;

@@ -193,7 +193,7 @@ public class Changepassword extends javax.swing.JFrame {
 
     private void backMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backMouseClicked
         dispose();
-        
+         new Profile(userName, role);
     }//GEN-LAST:event_backMouseClicked
 
     private void saveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveMouseClicked

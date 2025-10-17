@@ -548,7 +548,8 @@ public class AdminPage extends javax.swing.JFrame {
 
         String selected = chooseTable.getSelectedItem().toString();
         if(selected.equals("User")) {
-            new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true, modelRow, data, csvHandler).setVisible(true);
+            dispose();
+            new PopInAdiminUser((Frame) SwingUtilities.getWindowAncestor(table), true, modelRow, data, csvHandler,userName).setVisible(true);
         } else if(selected.equals("History")) {
             new PopInAdiminHistory((Frame) SwingUtilities.getWindowAncestor(table), true, modelRow, data, csvHandler).setVisible(true);
         }

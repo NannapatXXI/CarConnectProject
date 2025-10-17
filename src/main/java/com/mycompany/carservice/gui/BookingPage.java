@@ -667,7 +667,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
             .addGap(0, 20, Short.MAX_VALUE)
         );
 
-        getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 760, 20, 20));
+        getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 760, 20, 20));
 
         jPanel7.setBackground(new java.awt.Color(255, 152, 0));
 
@@ -730,23 +730,23 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         getContentPane().add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 760, -1, 20));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel1.setText("เต็ม");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 760, 30, 20));
+        jLabel1.setText("Full");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 760, 30, 20));
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel9.setText("เยอะ");
+        jLabel9.setText("a lot");
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 760, 40, 20));
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel10.setText("กลาง");
+        jLabel10.setText("middle");
         getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 760, 40, 20));
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel11.setText("น้อย");
+        jLabel11.setText("little");
         getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 760, 40, 20));
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel12.setText("ว่าง");
+        jLabel12.setText("free");
         getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 760, 30, 20));
 
         username.setBackground(new java.awt.Color(0, 0, 0));
@@ -771,7 +771,7 @@ private Map<LocalDate, Integer> calculateDailyBooking() {
         getContentPane().add(close, new org.netbeans.lib.awtextra.AbsoluteConstraints(1030, 760, 150, 30));
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel13.setText("ปิด");
+        jLabel13.setText("Close");
         getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 760, 30, 20));
 
         jPanel11.setBackground(java.awt.Color.gray);

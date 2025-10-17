@@ -540,6 +540,7 @@ class NumberDocumentFilter extends DocumentFilter {
     }//GEN-LAST:event_savebuttonMouseExited
 
     private void changepasswordiconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changepasswordiconMouseClicked
+       dispose();
         new Changepassword(userName, role);
     }//GEN-LAST:event_changepasswordiconMouseClicked
 

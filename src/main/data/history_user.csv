@@ -110,7 +110,7 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 6712,วรภรณ์ รื่นเริง,Interior Vacuum,29 September 2025,16:00-17:00,,กท1108,booked
 6724,อรอุมา ใจดี,Car Paint Wax/Polish,29 September 2025,08:00-10:00,,กท1109,booked
 6726,สุชาดา น่ารัก,Tire Replacement (4 pcs.),29 September 2025,10:00-12:00,,กท1110,booked
-6501,Nannapat,Basic Inspection,29 September 2025,12:00-13:00,,กท1111,booked
+6501,Nannapat,Basic Inspection,29 September 2025,12:00-13:00,,กท1111,process
 6728,จิตรลดา สดใส,Tire Replacement (4 pcs.),29 September 2025,13:00-15:00,,กท1112,booked
 6704,ปาริชาติ รักเรียน,Interior Vacuum,29 September 2025,15:00-16:00,,กท1113,process
 6730,อมราภรณ์ อ่อนโยน,Battery Replacement,29 September 2025,16:00-17:00,,กท1114,complete
@@ -172,7 +172,7 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 6719,ณรงค์ฤทธิ์ แข็งแรง,Tire Replacement (4 pcs.),04 October 2025,09:00-11:00,,กท1170,process
 6737,กิตติ กล้าหาญ,Exterior Dent Repair,04 October 2025,11:00-13:00,,กท1171,booked
 6740,วรภรณ์ น่ารัก,Headlight Restoration,04 October 2025,13:00-14:00,,กท1172,complete
-6501,Nannapat,Engine Oil Change,04 October 2025,14:00-15:00,,กท1173,process
+6501,Nannapat,Engine Oil Change,04 October 2025,14:00-15:00,,กท1173,complete
 6739,ประเสริฐ แข็งแรง,Glass Coating,04 October 2025,08:00-14:00,,กท1174,process
 6702,สมหญิง สวยงาม,Seat/Carpet Shampoo,04 October 2025,14:00-18:00,,กท1175,complete
 6728,จิตรลดา สดใส,Glass Coating,04 October 2025,08:00-14:00,,กท1176,process
@@ -567,5 +567,5 @@ UserID,Name,Service,Date,Time,Note,Car registration,Status
 0001,Admin,Seat/Carpet Shampoo - 4 hrs,7 November 2025,09:00-13:00,,qx,booked
 0001,Admin,Exterior Car Wash - 1 hr,21 October 2025,13:00-14:00,,ๆไดก,booked
 0001,Admin,Wheel Alignment & Balancing - 2 hrs,16 October 2025,14:00-16:00,,กค0001,booked
-6501,Nannapat,Glass Coating - 6 hrs,16 October 2025,14:00-20:00,-,กค0002,booked
 0002,User,Exterior Car Wash - 1 hr,28 October 2025,09:00-10:00,รถพัง ล้างรถให้หน่อย,010ku,booked
+0001,Admin,Car Paint Wax/Polish - 2 hrs,17 October 2025,13:00-15:00,1,14,booked

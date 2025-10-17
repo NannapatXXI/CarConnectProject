@@ -17,15 +17,18 @@ public class PopInAdiminUser extends javax.swing.JDialog {
     private String[] rowData;        // แถวที่เลือก
     private CSVHandler csvHandler;
     private int rowIndex;
+     private String oldName; // เก็บชื่อเก่าก่อนแก้
+
 
     /**
      * Creates new form PopInAdimin
      */
-    public PopInAdiminUser(java.awt.Frame parent, boolean modal,int rowIndex,String[] rowData, CSVHandler csvHandler) {
+    public PopInAdiminUser(java.awt.Frame parent, boolean modal,int rowIndex,String[] rowData, CSVHandler csvHandler ,String name) {
         super(parent, modal);
         this.rowData = rowData;
         this.csvHandler = csvHandler;
         this.rowIndex = rowIndex+1;
+        this.oldName = name;
         initComponents();
          setLocationRelativeTo(null);
          loadData();
@@ -43,7 +46,22 @@ public class PopInAdiminUser extends javax.swing.JDialog {
    System.out.println("row" + rowIndex);
    
 }
+// อัปเดตข้อมูลผู้ใช้ (ชื่อ) ใน CSV History
+private void updateCSVHistory(String name,String oldName){
+    CSVHandler csv = new CSVHandler("src/main/data/history_user.csv");
+        ArrayList<String[]> users = csv.readCSV();
+       
+        for (String[] row : users) {
+            System.out.println("row[1] name : " + row[1] + " new name "+oldName);
+            if (row[1].contentEquals(oldName)) {
+                row[1] = name; // เปลี่ยนชื่อใหม่
+                 System.out.println("New name : " + name);
+            }
+        }
 
+        csv.writeCSV(users);
+        oldName = name;
+}
    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -232,7 +250,7 @@ public class PopInAdiminUser extends javax.swing.JDialog {
     }//GEN-LAST:event_backBtnActionPerformed
 
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-         // อัปเดต rowData จาก GUI
+           // อัปเดต rowData จาก GUI
         rowData[0] = textFieldlUserID.getText();
         rowData[1] = textFieldlName.getText();
         rowData[3] = textFieldlEmail.getText();
@@ -240,7 +258,11 @@ public class PopInAdiminUser extends javax.swing.JDialog {
         
          // อ่าน CSV ทั้งหมด
         ArrayList<String[]> allData = csvHandler.readCSV();
-
+        System.out.println("New name " + rowData[1]);
+        System.out.println("Old name " + oldName);
+        updateCSVHistory(rowData[1],oldName );
+        
+        
         // แก้ไขแถวที่เลือก
         allData.set(rowIndex, rowData);
 
@@ -249,6 +271,8 @@ public class PopInAdiminUser extends javax.swing.JDialog {
 
         System.out.println("Save!!!!!!!! rowIndex=" + rowIndex);
         dispose(); // ปิด dialog
+        new PopSuccess(null,true,"Create user Seucceed");
+        new AdminPage(rowData[1],"admin");
     }//GEN-LAST:event_saveBtnActionPerformed
 
   
